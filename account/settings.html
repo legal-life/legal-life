@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>アカウント設定|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "アカウント設定|legal&life",
+            "url": "https://legal-life.pages.dev/account/settings"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="アカウント設定|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+<body class="account-page">
+<main>
+<div class="account-container">
+    <h1 class="account-title">アカウント設定</h1>
+ 
+    <div id="deletion-pending-banner" class="banner banner-error" style="display:none;">
+        <p class="banner-title">アカウント削除が予約されています</p>
+        <p>削除予定日: <strong id="deletion-scheduled-date"></strong></p>
+        <button id="cancel-deletion-btn" class="btn-secondary"
+                style="margin-top:8px;width:auto;padding:8px 20px;font-size:.85rem;">削除をキャンセルする</button>
+    </div>
+ 
+    <!-- ユーザーカード: アイコン左 + テキスト右 -->
+    <div class="user-card">
+        <!-- アイコン (左) -->
+        <div id="settings-avatar-wrap" class="user-card-avatar">
+            <div class="user-info-avatar-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" width="32" height="32">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+        </div>
+        <!-- テキスト (右) -->
+        <div class="user-card-body">
+            <div class="user-card-row">
+                <span class="user-card-label">アカウント名</span>
+                <span class="user-card-value" id="settings-user-name">読み込み中...</span>
+            </div>
+            <div class="user-card-row">
+                <span class="user-card-label">メールアドレス</span>
+                <span class="user-card-value" id="settings-user-email">読み込み中...</span>
+            </div>
+            <p class="user-card-last">最終ログイン: <span id="settings-last-signin">--</span></p>
+        </div>
+    </div>
+ 
+    <!-- 設定メニュー (SVG) -->
+    <nav class="menu-list">
+        <a href="/account/settings/profile" class="menu-item-link">
+            <span class="menu-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </span>
+            <div class="menu-content">
+                <span class="menu-item-text">プロフィール</span>
+                <span class="menu-item-sub">表示名・メール確認・アカウント削除</span>
+            </div>
+            <span class="menu-arrow">›</span>
+        </a>
+        <!-- 通知SVG修正 (#9) -->
+        <a href="/account/settings/privacy" class="menu-item-link">
+            <span class="menu-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </span>
+            <div class="menu-content">
+                <span class="menu-item-text">通知・プライバシー</span>
+                <span class="menu-item-sub">メール通知・ニュースレター設定</span>
+            </div>
+            <span class="menu-arrow">›</span>
+        </a>
+        <a href="/account/security" class="menu-item-link">
+            <span class="menu-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </span>
+            <div class="menu-content">
+                <span class="menu-item-text">セキュリティ</span>
+                <span class="menu-item-sub">パスワード・二段階認証・デバイス管理</span>
+            </div>
+            <span class="menu-arrow">›</span>
+        </a>
+    </nav>
+ 
+    <button id="settings-logout-btn" class="settings-logout-btn">ログアウト</button>
+    <div class="link-group" style="margin-top:16px;">
+        <a href="/" class="link-item" style="color:#888;font-weight:400;">ホームへ戻る</a>
+    </div>
+</div>
+</main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>

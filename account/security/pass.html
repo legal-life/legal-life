@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>パスワード変更|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "パスワード変更|legal&life",
+            "url": "https://legal-life.pages.dev/account/security/pass"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="パスワード変更|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+    <body class="account-page">
+        <main>
+            <div class="account-container">
+                <a href="/account/security" class="back-link">← セキュリティに戻る</a>
+                <h1 class="account-title" id="pass-card-title">🔑 パスワード</h1>
+                <p class="account-subtitle">安全なパスワードでアカウントを保護しましょう</p>
+            
+                <div class="form-group" id="current-password-row">
+                    <label class="form-label" for="current-password">現在のパスワード</label>
+                    <input id="current-password" type="password" class="form-input" placeholder="現在のパスワード" autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="new-password" id="new-password-label">新しいパスワード</label>
+                    <input id="new-password" type="password" class="form-input" placeholder="6文字以上" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirm-password">パスワード（確認）</label>
+                    <input id="confirm-password" type="password" class="form-input" placeholder="もう一度入力" autocomplete="new-password">
+                </div>
+            
+                <p id="pass-msg" class="settings-msg"></p>
+                <div id="pass-otp-container" style="display:none;"></div>
+                <button id="pass-submit-btn" class="btn-primary" style="margin-top:8px;">パスワードを変更する</button>
+            
+                <div class="link-group" style="margin-top:16px;">
+                    <a href="/account/security" class="link-item">セキュリティに戻る</a>
+                </div>
+            </div>
+        </main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>

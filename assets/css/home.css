@@ -1,0 +1,267 @@
+/* ページタイトルの装飾 */
+.home-title {
+    text-align: center;
+    padding: 60px 20px 40px; /* 上下にゆとりを持たせる */
+}
+
+.home-title h1 {
+    font-size: 2.2rem;
+    color: #333;
+    margin: 0;
+    position: relative;
+    display: inline-block; /* 下線の長さを文字幅に合わせる */
+    letter-spacing: 0.05em; /* 文字の間隔を少し広げて読みやすく */
+}
+
+/* タイトルの下のアクセントライン */
+.home-title h1::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; /* ラインの長さ */
+    height: 4px; /* ラインの太さ */
+    background-color: #7ddce8; /* テーマカラーの水色 */
+    border-radius: 2px;
+}
+
+/* 全体の背景設定 */
+.home_container {
+    background-color: #b2e2e8; /* 画像のような薄い青緑色 */
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px; /* ボックス間の隙間 */
+}
+
+/* 白いボックスの基本設定 */
+.home_box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    padding: 40px 30px 20px;
+    position: relative; /* タイトル配置の基準 */
+    text-align: center;
+}
+
+/* 水色のタイトルラベル */
+.home_box_title {
+    background-color: #7ddce8;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding: 10px 40px;
+    border-radius: 8px;
+    position: absolute;
+    top: -25px; /* ボックスの上に半分出す */
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+}
+
+.home_box_title_sub {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+/* テキストと詳細リンク */
+.home_box_text {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.plus_wrapper {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.home_box_plus {
+    color: #0076a3;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* コンテンツセクションのボタン並び */
+.home_content_card {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.home_content_btn {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home_content_btn:hover {
+    transform: translateY(-5px); /* 上に5px浮く */
+}
+
+.home_content_btn_link {
+    display: inline-block;
+    background-color: #b2e2e8;
+    color: #333;
+    text-decoration: none;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    min-width: 120px;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.home_content_btn_link:hover {
+    background-color: #7ddce8; /* ホバー時に少し濃くする */
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+/* お知らせセクションのリスト表示 */
+.home_info_item_header {
+    font-weight: bold;
+    border-bottom: 2px solid #7ddce8;
+}
+/* --- お知らせセクションの左揃え修正 --- */
+.home_info_list {
+    text-align: left;
+    max-width: 700px; /* 少し広めに調整 */
+    margin: 0 auto;
+}
+
+.home_info_item_header, .home_info_item {
+    display: flex;
+    align-items: center;
+    padding: 12px 5px;
+    border-bottom: 1px solid #7ddce8;
+    text-align: left; /* 左揃えを確定 */
+}
+
+/* 各列の幅を固定して揃える */
+.col-date { width: 100px; flex-shrink: 0; }
+.col-text { flex-grow: 1; padding-left: 10px; }
+.col-link { width: 100px; text-align: center; flex-shrink: 0; }
+
+/* お知らせがない時のスタイル */
+.no-info-msg {
+    padding: 30px 0;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+/* ===お問い合わせフォーム=== */
+.home_contact_btn_area {
+    margin: 30px 0;
+    text-align: center;
+}
+
+/* 仕様を home_content_btn_link と統一 */
+.home_contact_main_btn {
+    display: inline-block;
+    background-color: #b2e2e8; /* コンテンツボタンと同じ薄い青緑 */
+    color: #333 !important;
+    text-decoration: none;
+    padding: 15px 50px; /* お問い合わせ用に少し横幅を広げました */
+    border-radius: 10px; /* home_box等と合わせた角丸 */
+    font-weight: bold;
+    min-width: 150px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
+}
+
+/* ホバー時の動きもコンテンツボタンと統一 */
+.home_contact_main_btn:hover {
+    background-color: #7ddce8; /* ホバー時に少し濃くする */
+    transform: translateY(-5px); /* 上に5px浮く */
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+/* 注意書き（他のテキストの邪魔をしない控えめな色） */
+.home_contact_note {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 15px;
+}
+
+/* =============================================
+   スマートフォン表示の調整 (画面幅 600px 以下)
+   ============================================= */
+@media (max-width: 600px) {
+    /* ページメインタイトル */
+    .home-title {
+        padding: 40px 15px 30px;
+    }
+    .home-title h1 {
+        font-size: 1.6rem; /* 文字を少し小さく */
+    }
+
+    /* 全体コンテナの隙間を調整 */
+    .home_container {
+        padding: 40px 15px;
+        gap: 40px; /* ボックス同士の距離を縮める */
+    }
+
+    /* 白いボックスの余白調整 */
+    .home_box {
+        padding: 35px 15px 15px; /* 左右の余白を削る */
+    }
+
+    /* ボックス上の水色ラベル */
+    .home_box_title {
+        font-size: 1.2rem;
+        padding: 8px 30px;
+        top: -20px; /* 少し上に詰める */
+    }
+
+    .home_box_title_sub {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    /* コンテンツボタン */
+    .home_content_btn_link {
+        padding: 12px 20px;
+        min-width: 100px;
+        font-size: 0.9rem;
+    }
+
+    /* --- お知らせセクションのスマホ対応（縦並びに変更） --- */
+    .home_info_item_header {
+        display: none; /* スマホでは見出し行を隠す */
+    }
+
+    .home_info_item {
+        flex-direction: column; /* 横並びから縦並びに */
+        align-items: flex-start; /* 左寄せ */
+        padding: 15px 5px;
+    }
+
+    .col-date {
+        width: 100%;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .col-text {
+        width: 100%;
+        padding-left: 0;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .col-link {
+        width: 100%;
+        text-align: right; /* リンクだけ右に寄せて押しやすく */
+    }
+
+    /* ===お問い合わせフォーム=== */
+    .home_contact_main_btn {
+        width: 100%;
+        padding: 15px 20px;
+        box-sizing: border-box;
+    }
+}
