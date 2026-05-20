@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>バックアップコード|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "バックアップコード|legal&life",
+            "url": "https://legal-life.pages.dev/account/security/2fa/backup-codes"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="バックアップコード|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+    <body class="account-page">
+        <main>
+            <div class="account-container">
+                <a href="/account/security/2fa" class="back-link">← 二段階認証に戻る</a>
+                <h1 class="account-title">バックアップコード</h1>
+                <p class="account-subtitle">2FAが使えない場合の緊急ログイン用コードです</p>
+            
+                <div class="banner banner-warn">
+                    <p class="banner-title">⚠️ 安全な場所に保管してください</p>
+                    <p style="font-size:.82rem;">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
+                </div>
+            
+                <!-- JSでアクセス制御 + コード表示 -->
+                <div id="backup-codes-grid" class="backup-codes-grid">
+                    <p class="loading-text" style="grid-column:1/-1;">読み込み中...</p>
+                </div>
+            
+                <div style="display:flex;gap:10px;margin-top:4px;">
+                    <button id="copy-codes-btn"       class="btn-secondary backup-action-btn">コードをコピー</button>
+                    <button id="regenerate-codes-btn" class="btn-secondary backup-action-btn">再生成する</button>
+                </div>
+            
+                <div class="link-group" style="margin-top:20px;">
+                    <a href="/account/security/2fa" class="link-item">二段階認証設定に戻る</a>
+                </div>
+            </div>
+        </main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>

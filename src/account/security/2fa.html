@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>二段階認証|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "二段階認証|legal&life",
+            "url": "https://legal-life.pages.dev/account/security/2fa"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="二段階認証|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+    <body class="account-page">
+        <main>
+            <div class="account-container">
+                <a href="/account/security" class="back-link">← セキュリティに戻る</a>
+                <h1 class="account-title">二段階認証</h1>
+                <p class="account-subtitle">アカウントのセキュリティをさらに強化</p>
+            
+                <!-- トグル -->
+                <div style="display:flex;align-items:center;justify-content:space-between;
+                            padding:15px;background:var(--bg-light);border-radius:var(--radius);margin-bottom:16px;">
+                    <div>
+                        <div style="font-weight:700;font-size:.93rem;">二段階認証</div>
+                        <span id="2fa-status-badge" class="status-badge disabled" style="margin-top:4px;">無効</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="two-factor-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            
+                <p style="font-size:.8rem;color:var(--text-sub);line-height:1.6;margin-bottom:16px;">
+                    有効にすると、ログイン時にメールアドレスへ送信される6桁のコードが必要になります。
+                    2FAが使えない場合はバックアップコードでログインできます。
+                </p>
+            
+                <p id="two-factor-msg" class="settings-msg"></p>
+                <div id="twofa-otp-container" style="display:none;"></div>
+            
+                <!-- #5 有効化後の推奨バナー (JSで注入) -->
+                <div id="twofa-recommend" style="display:none;"></div>
+            
+                <div class="section-divider">バックアップ</div>
+                <nav class="menu-list">
+                    <!-- #6 backup-code-link: JSで活性/非活性を制御 -->
+                    <a id="backup-code-link" class="menu-item-link disabled-link"
+                    style="opacity:0.4;pointer-events:none;">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </span>
+                        <div class="menu-content">
+                            <span class="menu-item-text">バックアップコード</span>
+                            <span class="menu-item-sub">2FAが使えない場合の緊急用コード（二段階認証を有効にすると使えます）</span>
+                        </div>
+                        <span class="menu-arrow">›</span>
+                    </a>
+                </nav>
+            
+                <div class="link-group" style="margin-top:22px;">
+                    <a href="/account/security" class="link-item">セキュリティに戻る</a>
+                </div>
+            </div>
+        </main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>
