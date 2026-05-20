@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>アクティビティ|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "アクティビティ|legal&life",
+            "url": "https://legal-life.pages.dev/account/security/activity"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="アクティビティ|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+<body class="account-page">
+<main>
+<div class="account-container wide">
+    <a href="/account/security" class="back-link">← セキュリティに戻る</a>
+    <h1 class="account-title">最近のアクティビティ</h1>
+    <p class="account-subtitle">過去1年間のアカウント操作ログ（最大50件）</p>
+ 
+    <div id="activity-list">
+        <p class="loading-text">読み込み中...</p>
+    </div>
+ 
+    <!-- 注意バナー + ボタン中央 -->
+    <div class="banner banner-warn" style="margin-top:24px;text-align:center;">
+        <p class="banner-title" style="text-align:left;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            身に覚えのない操作がある場合
+        </p>
+        <p style="font-size:.83rem;color:inherit;text-align:left;margin-bottom:14px;">
+            不審なログインや設定変更が見られる場合は、すぐにパスワードを変更してください。
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto;">
+            <a href="/account/security/pass"
+               style="display:block;text-align:center;text-decoration:none;padding:10px;background:var(--danger);color:#fff;border-radius:var(--radius);font-weight:700;font-size:.88rem;">
+                パスワードを変更する
+            </a>
+            <a href="/account/security/2fa"
+               style="display:block;text-align:center;text-decoration:none;padding:10px;background:#fff;color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius);font-weight:700;font-size:.88rem;">
+                二段階認証を確認する
+            </a>
+            <a href="/account/delete"
+               style="display:block;text-align:center;text-decoration:none;padding:10px;background:#fff;color:var(--danger);border:1.5px solid var(--danger);border-radius:var(--radius);font-weight:700;font-size:.88rem;">
+                アカウントを削除する
+            </a>
+        </div>
+    </div>
+ 
+    <div class="link-group" style="margin-top:20px;">
+        <a href="/account/security" class="link-item">セキュリティに戻る</a>
+    </div>
+</div>
+</main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>

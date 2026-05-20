@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>アカウント連携|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "アカウント連携|legal&life",
+            "url": "https://legal-life.pages.dev/account/security/methods"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="アカウント連携|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+<body class="account-page">
+<main>
+<div class="account-container">
+    <a href="/account/security" class="back-link">← セキュリティに戻る</a>
+    <h1 class="account-title">ログイン方法</h1>
+    <p class="account-subtitle">サインインに使用する方法を管理します</p>
+ 
+    <div class="method-list">
+        <!-- パスワード -->
+        <div class="method-item">
+            <div class="method-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <div class="method-info">
+                <span class="method-name">メール / パスワード</span>
+                <span id="status-password" class="method-status unlinked">確認中...</span>
+                <span id="method-email-password" class="method-linked-email"></span>
+            </div>
+            <button id="btn-password" class="provider-link-btn link-btn" disabled>確認中</button>
+        </div>
+ 
+        <!-- Google -->
+        <div class="method-item">
+            <div class="method-icon">
+                <svg width="22" height="22" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.43-8.71l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+            </div>
+            <div class="method-info">
+                <span class="method-name">Google</span>
+                <span id="status-google" class="method-status unlinked">確認中...</span>
+                <span id="method-email-google" class="method-linked-email"></span>
+            </div>
+            <button id="btn-google" class="provider-link-btn link-btn" disabled>確認中</button>
+        </div>
+    </div>
+ 
+    <p id="provider-msg" class="settings-msg" style="margin-top:10px;"></p>
+ 
+    <div id="email-setup-card" class="banner banner-info" style="margin-top:14px;display:none;">
+        <p class="banner-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align:middle;margin-right:4px;">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            メールアドレスを設定する
+        </p>
+        <p style="font-size:.8rem;margin-bottom:10px;">パスワードログインにはメールアドレスが必要です。</p>
+        <input id="set-email-input" type="email" class="form-input" placeholder="メールアドレス">
+        <p id="set-email-msg" class="settings-msg"></p>
+        <button id="set-email-btn" class="btn-primary" style="margin-top:10px;padding:9px;">設定する</button>
+    </div>
+ 
+    <div class="link-group" style="margin-top:22px;">
+        <a href="/account/security" class="link-item">セキュリティに戻る</a>
+    </div>
+</div>
+</main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>

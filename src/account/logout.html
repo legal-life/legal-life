@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>ログアウト|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "ログアウト|legal&life",
+            "url": "https://legal-life.pages.dev/account/logout"
+        }
+        </script>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="ログアウト|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+    <body class="account-page">
+<main>
+<div class="account-container" style="text-align:center;">
+    <div id="logout-loading">
+        <div style="margin:0 auto 16px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" width="40" height="40">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </div>
+        <p style="font-size:1.1rem;font-weight:700;">ログアウト中...</p>
+        <p style="color:#888;font-size:.88rem;margin-top:8px;">しばらくお待ちください</p>
+    </div>
+    <div id="logout-success" style="display:none;">
+        <div style="margin:0 auto 16px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" width="40" height="40">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+        </div>
+        <p style="font-size:1.1rem;font-weight:700;">ログアウトしました</p>
+        <p style="color:#888;font-size:.88rem;margin-top:8px;">3秒後にトップページへ移動します...</p>
+        <div class="link-group" style="margin-top:20px;">
+            <a href="/" class="link-item">今すぐトップへ戻る</a>
+        </div>
+    </div>
+</div>
+</main>
+
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script src="/assets/js/access-log.js"></script>
+    </body>
+</html>
