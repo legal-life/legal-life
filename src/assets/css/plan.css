@@ -1,0 +1,205 @@
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --text-main: #333333;
+    --text-muted: #666666;
+}
+
+.plan-body {
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.plan-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.plan-header h1 {
+    font-size: 24pt;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.plan-header p {
+    color: var(--text-muted);
+    font-size: 11pt;
+}
+
+/* プランカードのレイアウト */
+.plan-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    padding-bottom: 20px;
+}
+
+.plan-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 25px;
+    width: 220px;
+    flex-shrink: 0;
+    text-align: center;
+    transition: transform 0.3s ease;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
+
+.plan-card h2 {
+    margin-top: 0;
+    font-size: 15pt;
+    color: var(--primary-color);
+}
+
+.plan-featured {
+    border: 2px solid var(--accent-color);
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: scale(1.05); 
+    z-index: 1;
+}
+
+.plan-price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+}
+
+.plan-price {
+    font-size: 20pt;
+    font-weight: bold;
+    margin: 0;
+}
+
+.plan-price-sub {
+    display: block;
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.plan-features-list {
+    flex-grow: 1;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-bottom: 25px;
+    font-size: 10pt;
+}
+
+.plan-features-list li {
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--border-color);
+    display: flex;
+    align-items: center; /* 縦方向の中央揃え */
+    justify-content: flex-start; /* 横方向は左寄せ */
+}
+
+.plan-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 10pt;
+    width: 80%;
+}
+
+.plan-btn.plan-accent {
+    background-color: var(--accent-color);
+}
+
+/* 「おすすめ」ラベル本体 */
+.badge-recommended {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%); 
+    background-color: var(--accent-color);
+    color: white;
+    padding: 4px 15px;
+    border-radius: 20px;
+    font-size: 9pt;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+/* 比較テーブル */
+.plan-comparison-section {
+    margin-top: 60px;
+    overflow-x: auto;
+}
+
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 10pt;
+}
+
+.plan-table th, td {
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.plan-table th {
+    background-color: #f1f1f1;
+    color: var(--primary-color);
+}
+
+.plan-feature-name {
+    text-align: left;
+    font-weight: bold;
+    background-color: #fafafa;
+}
+
+@media (max-width: 768px) {
+    .plan-container {
+        padding: 0 10px;
+    }
+    .plan-grid {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-left: 10px;
+        padding-right: 10px;
+        justify-content: flex-start;
+        scroll-snap-type: x mandatory;
+    }
+    .plan-card {
+        width: 280px;
+        min-width: 280px;
+        scroll-snap-align: center;
+        margin-bottom: 10px;
+    }
+    .plan-card.featured {
+        transform: none;
+    }
+    .plan-card.featured .badge-recommended {
+        transform: translateX(-50%);
+    }
+}

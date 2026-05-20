@@ -1,0 +1,83 @@
+/* --- エラーページ全体の設定 --- */
+.error-page {
+    text-align: center;
+    padding: 80px 20px; /* 上下の余白を広げて中央感を強調 */
+    color: #333;
+}
+
+/* --- メッセージを包むコンテナ --- */
+.error-container {
+    max-width: 800px; /* 1000pxから少し絞って読みやすく */
+    min-height: 250px; /* 固定高さから最小高さに変更（はみ出し防止） */
+    margin: 0 auto;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px; /* 少し角を丸く */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* 影を柔らかく深く */
+    border-top: 5px solid #cc0000; /* エラーの赤色をアクセントに */
+}
+
+/* --- エラーコード (401) --- */
+.error-container h1 {
+    font-size: 3em;
+    color: #cc0000;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+/* --- 補助タイトル --- */
+.error-container h2 {
+    font-size: 1.6em;
+    color: #000000;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* --- 説明文 --- */
+.error-container p {
+    line-height: 1.8;
+    color: #444; /* 真っ黒より少しだけグレーにすると読みやすくなります */
+    margin-bottom: 30px;
+    text-align: left; /* 対処法などは左揃えが理解しやすい */
+    display: inline-block; /* 左揃えにしつつ中央に寄せるための工夫 */
+    max-width: 90%;
+}
+
+/* --- ボタン周辺 --- */
+.error-container a {
+    margin-top: 20px;
+    text-decoration: none;
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 5px;
+    border: none;
+    border-radius: 30px; /* 丸みのあるボタンに変更 */
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #00C8E9; /* サイト共通の青色に変更 */
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 200, 233, 0.2);
+}
+
+/* --- ボタンホバー時 --- */
+.error-container button:hover {
+    background-color: #00a3bf;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 200, 233, 0.3);
+    outline: none;
+}
+
+/* --- スマホ対応 --- */
+@media (max-width: 600px) {
+    .error-page {
+        padding: 40px 15px;
+    }
+    .error-container h1 {
+        font-size: 2.2em;
+    }
+    .error-container h2 {
+        font-size: 1.3em;
+    }
+}
