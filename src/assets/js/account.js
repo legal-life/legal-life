@@ -66,7 +66,7 @@ async function getFirebase() {
 
 // ── 定数 ──
 // ★ Resend Worker URL (STEP 6 で実際の URL に変更してください)
-const MAIL_WORKER_URL = "https://legal-life-mailer.CHANGE-ME.workers.dev";
+const MAIL_WORKER_URL = "https://legal-life-mailer.deskside-projects.workers.dev";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
@@ -289,6 +289,34 @@ async function sendOTP(user, code, purpose) {
     const e = await res.json().catch(() => ({}));
     throw new Error(e.error || "メール送信に失敗しました");
   }
+}
+
+async function sendNotif(user, db, actionType, detail = "") {
+    try {
+        if (!user?.email) return;
+        const prefSnap = await getDoc(doc(db,"users",user.uid,"settings","notifications")).catch(()=>null);
+        const prefs = prefSnap?.exists() ? prefSnap.data() : {};
+        if (prefs[actionType] === false) return;
+        const msgs = {
+            login:           "アカウントにログインがありました",
+            passwordChange:  "パスワードが変更されました",
+            emailChange:     "メールアドレスが変更されました",
+            otpChange:       `二段階認証が${detail}されました`,
+            deletionRequest: "アカウント削除が申請されました（30日以内にキャンセル可能）",
+        };
+        const purpose = msgs[actionType];
+        if (!purpose) return;
+        await fetch(MAIL_WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                type:     "notification",
+                to_email: user.email,
+                to_name:  user.displayName || "ユーザー",
+                purpose,
+            }),
+        });
+    } catch (_) {}
 }
 async function is2FA(uid, db) {
   try {
