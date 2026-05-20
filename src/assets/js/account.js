@@ -1,5 +1,6 @@
 /**
- * account.js v5.0
+ * account.js v6.0
+ * 修正: 2FA入場制御/削除申請重複防止/profile.emailVerify修正/activity表示改善/device登録強化
  * 修正: デバイスログアウト/2FA/バックアップコード/ロード速度/URL保持
  */
 import { getApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -64,8 +65,8 @@ async function getFirebase() {
 }
 
 // ── 定数 ──
-const EMAILJS_SERVICE = "service_glirsis";
-const EMAILJS_OTP_TPL = "template_w2ile0p";
+// ★ Resend Worker URL (STEP 6 で実際の URL に変更してください)
+const MAIL_WORKER_URL = "https://legal-life-mailer.CHANGE-ME.workers.dev";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
@@ -218,7 +219,7 @@ const decR = (enc) => {
 };
 function afterLogin() {
   const r = new URLSearchParams(location.search).get("r");
-  window.location.replace((r ? decR(r) : null) || "/account/settings");
+  window.location.replace((r ? decR(r) : null) || "/account/settings/");
 }
 
 // ── アクティビティ (users/{uid}/activity = 3セグメント) ──
@@ -271,14 +272,23 @@ async function clearOTP(uid, db) {
   );
 }
 async function sendOTP(user, code, purpose) {
-  if (!window.emailjs) throw new Error("EmailJS未初期化");
-  await window.emailjs.send(EMAILJS_SERVICE, EMAILJS_OTP_TPL, {
-    to_email: user.email,
-    to_name: user.displayName || "ユーザー",
-    otp_code: code,
-    expiry_minutes: OTP_EXPIRE_MIN,
-    purpose,
+  if (!user?.email) throw new Error("メールアドレスが設定されていません");
+  const res = await fetch(MAIL_WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "otp",
+      to_email: user.email,
+      to_name: user.displayName || "ユーザー",
+      otp_code: code,
+      expiry_minutes: OTP_EXPIRE_MIN,
+      purpose,
+    }),
   });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.error || "メール送信に失敗しました");
+  }
 }
 async function is2FA(uid, db) {
   try {
@@ -736,6 +746,38 @@ async function initLogout() {
 async function initDelete() {
   const user = await requireAuth();
   const { auth, db } = await getFirebase();
+
+  // ★ 削除申請済みかチェック → 申請済みなら専用バナーを表示してフォームを隠す
+  const userSnap = await getDoc(doc(db, "users", user.uid)).catch(() => null);
+  if (userSnap?.exists() && userSnap.data().deletionPending) {
+    hide("delete-form-wrapper");
+    show("deletion-already-banner");
+    const d = userSnap.data().scheduledDeletion?.toDate();
+    const dEl = $("deletion-date-display");
+    if (dEl && d) dEl.textContent = d.toLocaleString("ja-JP");
+    $("cancel-delete-from-delete-page")?.addEventListener("click", async () => {
+      const msgEl = $("cancel-delete-msg");
+      btn("cancel-delete-from-delete-page", "処理中...", true);
+      try {
+        await setDoc(
+          doc(db, "users", user.uid),
+          { deletionPending: false, scheduledDeletion: null },
+          { merge: true },
+        );
+        setMsg(msgEl, "✅ 削除申請をキャンセルしました", "success");
+        setTimeout(() => window.location.replace("/account/settings/"), 1500);
+      } catch (e) {
+        setMsg(msgEl, e.message, "error");
+        btn(
+          "cancel-delete-from-delete-page",
+          "削除申請をキャンセルする",
+          false,
+        );
+      }
+    });
+    return; // フォーム初期化をスキップ
+  }
+
   const cbs = document.querySelectorAll(".deletion-checkbox"),
     execBtn = $("delete-execute-btn");
   const upd = () => {
@@ -861,13 +903,15 @@ async function initProfile() {
       setTimeout(() => (b.textContent = "コピー"), 2000);
     }
   });
+  // ★ reload() で最新のemailVerified状態を取得してからバナー判定
   const cu = auth.currentUser;
-  if (
-    cu?.email &&
-    !cu?.emailVerified &&
-    cu?.providerData?.some((p) => p.providerId === "password")
-  )
+  try {
+    await cu.reload();
+  } catch (_) {}
+  const freshUser = auth.currentUser;
+  if (freshUser?.email && !freshUser?.emailVerified) {
     show("email-verify-banner");
+  }
   $("send-verify-email-btn")?.addEventListener("click", async () => {
     btn("send-verify-email-btn", "送信中...", true);
     setMsg("verify-email-msg", "", "");
@@ -986,6 +1030,54 @@ async function initSecurity() {
     ),
   ]);
   const en = tfSnap?.exists() && (tfSnap.data().enabled ?? false);
+
+  // ★ 2FA有効時はセキュリティセクション入場時にOTP認証を要求
+  if (en && user.email) {
+    const container = document.querySelector(".account-container");
+    if (container) {
+      container.innerHTML = `
+<h1 class="account-title">セキュリティ</h1>
+<p class="account-subtitle">アクセスするには本人確認が必要です</p>
+<div class="banner banner-info" style="margin-bottom:16px;">
+  <p class="banner-title" style="display:flex;align-items:center;gap:6px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    二段階認証が有効です
+  </p>
+  <p style="font-size:.83rem;margin-bottom:12px;">セキュリティ設定を表示するには認証コードが必要です。</p>
+</div>
+<p id="security-otp-msg" class="settings-msg"></p>
+<div id="security-otp-panel"></div>
+<div class="link-group" style="margin-top:16px;"><a href="/account/settings/" class="link-item">アカウント設定に戻る</a></div>`;
+      const code = genOTP();
+      await saveOTP(user.uid, db, code, "security_access");
+      await sendOTP(user, code, "セキュリティセクションへのアクセス");
+      setMsg(
+        "security-otp-msg",
+        `📧 ${user.email} に認証コードを送信しました`,
+        "success",
+      );
+      showOTPPanel("security-otp-panel", {
+        title: "本人確認",
+        desc: "認証コードを入力してください",
+        showBackup: true,
+        onVerify: async (input, isBackup) => {
+          if (isBackup) {
+            const res = await tryBackup(user.uid, db, input);
+            if (!res.ok) return res;
+          } else {
+            const res = await verifyOTP(user.uid, db, input, "security_access");
+            if (!res.ok) return res;
+            await clearOTP(user.uid, db);
+          }
+          window.location.reload(); // 認証後リロードでページ再表示
+          return { ok: true };
+        },
+        onCancel: () => window.location.replace("/account/settings/"),
+      });
+      return; // OTP確認前はページ内容を表示しない
+    }
+  }
+
   const hp = user.providerData.some((p) => p.providerId === "password");
   const b = $("2fa-status-badge");
   if (b) {
@@ -1062,7 +1154,23 @@ async function initActivity() {
           svg = ACT_SVG[data.type] || ACT_SVG._default,
           label = ACT_LABEL[data.type] || data.type,
           ts = data.timestamp;
-        return `<div class="activity-item"><div class="activity-icon-wrap act-icon">${svg}</div><div class="activity-details"><div class="activity-main"><span class="activity-action">${label}</span><span class="activity-time">${ts ? relDate(ts) : "不明"}</span></div><p class="activity-info">${esc(data.browser || "")} / ${esc(data.os || "")}${data.detail ? ` — ${esc(data.detail)}` : ""}</p><p class="activity-info" style="color:#aaa;font-size:11px;">${ts ? fmtDate(ts) : ""}</p></div></div>`;
+        const env = [data.browser, data.os].filter(Boolean).join(" / ");
+        const detail = data.detail
+          ? ` <span style="color:#94a3b8;">— ${esc(data.detail)}</span>`
+          : "";
+        return `<div class="activity-item">
+  <div class="act-icon-wrap">${svg}</div>
+  <div class="act-body">
+    <div class="act-header">
+      <span class="act-label">${esc(label)}</span>
+      <span class="act-time">${ts ? relDate(ts) : "不明"}</span>
+    </div>
+    <div class="act-detail">
+      <span class="act-env">${esc(env)}${detail}</span>
+      <span class="act-full">${ts ? fmtDate(ts) : ""}</span>
+    </div>
+  </div>
+</div>`;
       })
       .join("");
   } catch (e) {
@@ -1085,7 +1193,10 @@ async function renderDevices(user, db) {
   const listEl = $("device-list");
   if (!listEl) return;
   listEl.innerHTML = '<p class="loading-text">読み込み中...</p>';
-  const currentSid = localStorage.getItem(SESSION_KEY);
+  // ★ セッションが未登録の場合に備え、登録してから取得
+  const currentSid = getSid();
+  // まだ Firestore に登録されていなければ登録
+  await regSession(user, db);
   try {
     const q = query(
       collection(db, "users", user.uid, "sessions"),
@@ -1455,10 +1566,40 @@ async function initBackupCode() {
     $("regenerate-codes-btn")?.addEventListener("click", async () => {
       if (!confirm("現在のコードはすべて無効になります。よろしいですか？"))
         return;
-      const nc = await genAndSaveCodes(user.uid, db);
-      renderCodes(gridEl, nc);
-      await logAct(user.uid, "twofa_change", "バックアップコード再生成");
-      toast("バックアップコードを再生成しました", "success");
+      // ★ バックアップコード再生成は 2FA OTP で本人確認
+      const regen = async () => {
+        const nc = await genAndSaveCodes(user.uid, db);
+        renderCodes(gridEl, nc);
+        await logAct(user.uid, "twofa_change", "バックアップコード再生成");
+        toast("バックアップコードを再生成しました", "success");
+      };
+      const isTwoFA = await is2FA(user.uid, db);
+      if (isTwoFA && user.email) {
+        const code = genOTP();
+        await saveOTP(user.uid, db, code, "backup_regen");
+        await sendOTP(user, code, "バックアップコード再生成");
+        toast("📧 認証コードをメールに送信しました", "info");
+        // 簡易 OTP ダイアログ
+        const answer = window.prompt(
+          "メールに送信された6桁の認証コードを入力してください:",
+        );
+        if (!answer) {
+          toast("キャンセルしました", "info");
+          return;
+        }
+        const res = await verifyOTP(
+          user.uid,
+          db,
+          answer.trim(),
+          "backup_regen",
+        );
+        if (!res.ok) {
+          toast(res.reason || "コードが正しくありません", "error");
+          return;
+        }
+        await clearOTP(user.uid, db);
+      }
+      await regen();
     });
     $("copy-codes-btn")?.addEventListener("click", async () => {
       const text = codes.map((c, i) => `${i + 1}. ${c.code || c}`).join("\n");
@@ -1696,7 +1837,6 @@ function renderProfile(user) {
 // ENTRY
 // ─────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
-  if (window.emailjs) window.emailjs.init("eG7KMS7F3Fh0PziYy");
   const fn = {
     signup: initSignup,
     login: initLogin,

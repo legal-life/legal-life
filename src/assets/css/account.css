@@ -592,6 +592,19 @@ input:checked + .slider:before {
   font-family: inherit;
   padding: 0;
 }
+.profile-delete {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+  padding: 11px;
+  background: var(--danger);
+  color: #fff;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.93rem;
+}
 
 /* ─── ログイン方法 ─── */
 .method-list {
@@ -672,55 +685,93 @@ input:checked + .slider:before {
   cursor: not-allowed;
 }
 
-/* ─── アクティビティ SVGアイコン ─── */
+/* アクティビティ項目を見やすく */
 .activity-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  display: grid;
+  grid-template-columns: 40px 1fr;
   gap: 12px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
 }
 .activity-item:last-child {
   border-bottom: none;
 }
-.act-icon {
-  width: 34px;
-  height: 34px;
+.act-icon-wrap {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: var(--bg-light);
+  background: #f0fbfe;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.act-icon svg {
-  width: 16px;
-  height: 16px;
-  stroke: var(--text-sub);
+.act-icon-wrap svg {
+  color: var(--primary);
 }
-.activity-details {
+.act-body {
   flex: 1;
 }
-.activity-main {
+.act-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 3px;
 }
-.activity-action {
-  font-size: 0.9rem;
+.act-label {
+  font-size: .92rem;
   font-weight: 700;
+  color: var(--text);
 }
-.activity-time {
-  font-size: 0.76rem;
+.act-time {
+  font-size: .75rem;
   color: var(--text-sub);
   white-space: nowrap;
 }
-.activity-info {
-  font-size: 0.78rem;
+.act-detail {
+  font-size: .8rem;
   color: var(--text-sub);
-  margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
+}
+.act-detail .act-env {
+  display: inline-block;
+  margin-right: 8px;
+}
+.act-detail .act-full {
+  color: #bbb;
+  font-size: .72rem;
+  margin-top: 2px;
+  display: block; 
+}
+.activity-banner-pass {
+  flex: 1;
+  min-width: 140px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  background: var(--danger);
+  color: #fff;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.activity-banner-2fa {
+  flex: 1;
+  min-width: 140px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  background: #fff;
+  color: var(--text); 
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 /* ─── デバイス ─── */
@@ -1063,18 +1114,6 @@ input:checked + .slider:before {
   font-size: 0.88rem;
   font-weight: 700;
   box-sizing: border-box;
-}
-
-/* ─── アクティビティ パスワード変更ボタン中央 ─── */
-.activity-change-btn-wrap {
-  text-align: center;
-  margin-top: 16px;
-}
-.activity-change-btn-wrap a {
-  display: inline-block;
-  padding: 9px 24px;
-  text-decoration: none;
-  font-size: 0.88rem;
 }
 
 /* ─── トースト ─── */

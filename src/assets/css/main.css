@@ -60,61 +60,6 @@ body {
         align-items: center;
         gap: 15px;
     }
-    /* Google Login - メニュー内配置用のスタイル */
-    .menu-auth-area {
-        margin-bottom: 10px !important;
-        min-height: 0;
-    }
-    .menu-ac-btn {
-        padding: 10px 16px;
-        width: 200px;
-        background-color: #4285f4;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        display: block !important;
-        margin: 0;
-    }
-    .menu-login-btn {
-        background-color: #4285f4;
-        color: white;
-    }
-    .menu-signin-btn:hover {
-        background-color: #357ae8;
-    }
-    .menu-auth-area .auth-user-profile {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 12px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        margin: 0;
-    }
-    .menu-auth-area .auth-user-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 2px solid #00C8E9;
-    }
-    .menu-auth-area .auth-user-name {
-        font-size: 15px;
-        font-weight: 600;
-        color: #333;
-        text-align: center;
-    }
-    .menu-logout-btn {
-        background-color: #e74c3c;
-        color: white;
-    }
-    .menu-logout-btn:hover {
-        background-color: #c0392b;
-    }
     .menu-divider {
         border: none;
         border-top: 2px solid rgba(0, 0, 0, 0.15);
@@ -719,3 +664,94 @@ body {
         background-color: #ffedd5; /* 薄いオレンジ（背景） */
         border: 1px solid #fed7aa; /* 中間のオレンジ（枠線） */
     }
+
+/* ===== ヘッダー アカウントメニュー追加スタイル ===== */
+
+/* ゲスト/ユーザーのリスト項目として自然に収める */
+.menu-auth-item {
+    width: 100%;
+    margin-bottom: 0 !important;
+}
+
+/* ログインリンク */
+.menu-auth-link--login {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #00C8E9;
+    color: #fff !important;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none !important;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background .2s;
+}
+.menu-auth-link--login:hover { background: #00a3bf !important; }
+
+/* ユーザー情報行 */
+.menu-user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0 6px;
+}
+.menu-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #00C8E9;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.menu-user-initial {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #00C8E9;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.menu-user-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+/* アクションリンク群 */
+.menu-user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 6px;
+}
+.menu-user-action-link {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 13px !important;
+    font-weight: 600;
+    color: #444 !important;
+    text-decoration: none !important;
+    border-radius: 6px;
+    transition: background .15s;
+}
+.menu-user-action-link:hover {
+    background: rgba(0,200,233,.08);
+    color: #00a3bf !important;
+}
+.menu-user-action-link--logout {
+    color: #e74c3c !important;
+}
+.menu-user-action-link--logout:hover {
+    background: rgba(231,76,60,.08);
+    color: #c0392b !important;
+}
