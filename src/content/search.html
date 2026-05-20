@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <title>検索|legal&life</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "検索|legal&life",
+            "url": https://legal-life.pages.dev/legal-life/content/search/"
+        }
+        </script>
+        <meta name="description" content="このページはlegal&lifeの法令検索ページです。当ページではe-Gov法令APIを利用して最新の日本の法律・政令・規則をリアルタイムで検索できます。当サイトは法令知識の普及と法知識不足による不利益を生まないことを目指しているサイトです。">
+        <meta name="robots" content="index, follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="検索|legal&life">
+        <meta property="og:image" content="https://github.com/deskside31/legal-life/blob/main/images/site_icon.jpg?raw=true">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account-shared.css">
+        <link rel="stylesheet" href="/assets/css/search.css">
+        <meta name="google-site-verification" content="y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs" />
+    </head>
+    <body class="all-page">
+
+        <div id="header"></div>
+
+        <div class="page-title">
+            <h1>e-gov法令API Version2 法令検索システム</h1>
+            <span class="badge-status is-developing">テスト中の機能</span>
+            <p>
+                e-gov法令API Version2を利用して法令検索機能を作成しています<br>
+                <small>出典 : e-Govポータル (<a href="https://www.e-gov.go.jp/" target="_blank">https://www.e-gov.go.jp</a>)</small>
+            </p>
+        </div>
+
+        <!-- 検索コンテナ -->
+        <div class="lawapi-search-container">
+
+            <!-- 検索方法タブ -->
+            <div class="search-tabs">
+                <button class="search-tab active" data-target="title">法令名で検索</button>
+                <button class="search-tab" data-target="keyword">キーワードで検索</button>
+            </div>
+
+            <!-- フォーム本体 -->
+            <div class="search-form-body">
+
+                <!-- キーワード入力欄 -->
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="SearchInput" class="search-input" placeholder="ここに入力して検索">
+                    <span type="button" id="search-clear" class="search-clear" aria-label="入力をクリア" data-search-clear="SearchInput">
+                        &times;
+                    </span>
+                </div>
+
+                <!-- フィルター行（絞り込み・並び替え） -->
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label for="law_typeSelect">絞り込み(法令種別)：</label>
+                        <select id="law_typeSelect">
+                            <option value="" selected>すべて</option>
+                            <option value="Constitution">憲法</option>
+                            <option value="Act">法律</option>
+                            <option value="CabinetOrder">政令</option>
+                            <option value="ImperialOrder">勅令</option>
+                            <option value="MinisterialOrdinance">府省令</option>
+                            <option value="Rule">規則</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="sortSelect">並び替え：</label>
+                        <select id="sortSelect">
+                            <option value="none" selected>指定なし</option>
+                            <option value="amendment_promulgation_data_desc">最新の改定順</option>
+                            <option value="date_desc">公布日が新しい順</option>
+                            <option value="date_asc">公布日が古い順</option>
+                            <option value="title_asc">法令名順（あいうえお）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 検索ボタン -->
+                <button id="searchButton" onclick="searchLaws()">検索</button>
+
+            </div><!-- /search-form-body -->
+        </div><!-- /lawapi-search-container -->
+
+        <div id="errorMessage"></div>
+        <div id="loadingMessage"></div>
+        <div id="results"></div>
+
+        <div id="footer"></div>
+        <script type="module" src="/assets/js/important.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script defer src="/assets/js/access-log.js"></script>
+        <script src="/assets/js/search.js"></script>
+    </body>
+</html>

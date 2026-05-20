@@ -1,0 +1,126 @@
+/* お知らせ一覧の見出し行（ヘッダー） */
+.home_info_item_header {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    border-bottom: 2px solid #7ddce8; /* 少し太めの水色の線で区切る */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* ヘッダー内の各ラベルの幅設定（データ行の col-date 等と完全に一致させる） */
+.home_info_item_header .col-date {
+    width: 130px; /* 前回の col-date の設定と合わせる */
+    flex-shrink: 0;
+}
+
+.home_info_item_header .col-text {
+    flex-grow: 1;
+    padding-right: 20px;
+    text-align: left;
+}
+
+.home_info_item_header .col-link {
+    width: 100px; /* 前回のリンク列の幅と合わせる */
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* お知らせ一覧のメインコンテナ */
+.home_info_section {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff; /* 白い背景 */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 軽い影で浮き出し */
+}
+
+/* 各お知らせの行設定 */
+.home_info_item {
+    display: flex;
+    align-items: center;
+    padding: 18px 10px;
+    border-bottom: 1px solid #e0f7f9; /* 薄い水色の線 */
+    transition: background-color 0.3s ease;
+}
+
+/* ホバー時に背景色を変えて、どこを指しているか分かりやすくする */
+.home_info_item:hover {
+    background-color: #f5fdfe;
+}
+
+/* --- 各列のレイアウト調整 --- */
+
+/* 公開日（幅を固定して左側に配置） */
+.col-date {
+    width: 130px;
+    flex-shrink: 0; /* 幅が勝手に縮まないようにする */
+    font-size: 0.95rem;
+    color: #666;
+    font-weight: bold;
+}
+
+/* 内容・タイトル（残りの幅をすべて使い、左揃え） */
+.col-text {
+    flex-grow: 1;
+    padding-right: 20px;
+    font-size: 1.05rem;
+    color: #333;
+    text-align: left; /* 左揃えを確定 */
+    line-height: 1.4;
+}
+
+/* リンク（右側に固定） */
+.home_info_link {
+    width: 100px;
+    flex-shrink: 0;
+    text-align: right;
+    color: #0076a3;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.home_info_link:hover {
+    text-decoration: underline; /* ホバー時に下線を表示 */
+}
+
+.home_info_link:visited {
+    color: #0076a3;
+}
+
+.maru-moji {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.25em;
+  height: 1.25em;
+  border: 1.75px solid #227046; /* 線の太さ、種類、色 */
+  border-radius: 50%;
+  font-size: 1em;
+  color: #227046;
+}
+
+
+/* --- レスポンシブ対応（スマホ表示） --- */
+@media (max-width: 650px) {
+    .home_info_item_header {
+        display: none;
+    }
+
+    .home_info_item {
+        flex-direction: column; /* 縦並びに変更 */
+        align-items: flex-start; /* 左寄せ */
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .col-date, .col-text, .home_info_link {
+        width: 100%; /* 横幅いっぱい */
+        text-align: left; /* すべて左揃え */
+        padding: 0;
+    }
+}

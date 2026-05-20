@@ -1,0 +1,103 @@
+/* --- サイト概要ページ専用スタイル --- */
+    /* メインコンテンツのコンテナ */
+    .about_main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* ページ見出しエリア */
+    .about_title_container {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .about_title_main {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    /* 各セクション */
+    .about_section {
+        margin-bottom: 60px;
+        text-align: center;
+    }
+
+    .about_section_h2 {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* 水色のボックス装飾 */
+    .about_box {
+        background-color: #D6F5FA; /* 共通背景より明るい水色 */
+        padding: 30px;
+        border-radius: 4px;
+        display: inline-block;
+        text-align: left;
+        width: 100%;
+        max-width: 750px;
+        box-sizing: border-box;
+        margin: 0 auto;
+        border: none;
+        line-height: 1.8;
+    }
+
+    /*注意書き文章*/
+    .about_text_important {
+        text-align: center;
+        background-color: #fff3cd;
+    }
+
+    /* リスト共通設定 */
+    .about_list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* チェックマーク付きリスト項目 */
+    .about_list_item_check {
+        position: relative;
+        padding-left: 28px;
+        margin-bottom: 12px;
+    }
+
+    .about_list_item_check::before {
+        content: '✓';
+        position: absolute;
+        left: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* 数字付きリスト項目 */
+    .about_list_ordered {
+        counter-reset: about-counter;
+    }
+
+    .about_list_item_num {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 15px;
+    }
+
+    .about_list_item_num::before {
+        content: counter(about-counter) ". ";
+        counter-increment: about-counter;
+        position: absolute;
+        left: 5px;
+        font-weight: bold;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 600px) {
+        .about_box {
+            padding: 20px;
+            font-size: 14px;
+        }
+    }

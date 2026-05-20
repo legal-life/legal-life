@@ -1,0 +1,77 @@
+/* --- サイトマップページ専用スタイル --- */
+
+/* メインコンテナ：横並び（グリッド）の設定 */
+.sitemap-nav {
+    max-width: 1100px; /* 横並びにするため少し幅を広げました */
+    margin: 0 auto 60px;
+    padding: 0 20px;
+    display: grid;
+    /* 画面幅に合わせて自動で横並びの数を調整 */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: start; /* 中身の高さが違っても上揃えにする */
+}
+
+/* カテゴリごとのボックス */
+.sitemap-category {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-top: 4px solid #00C8E9;
+    height: 100%; /* ボックスの高さを揃える */
+    box-sizing: border-box;
+}
+
+/* カテゴリタイトル */
+.sitemap-category h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0faff;
+    display: flex;
+    align-items: center;
+}
+
+/* リンクのスタイル */
+.sitemap-category a {
+    display: block;
+    color: #444;
+    text-decoration: none;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    background-color: #fafafa; /* リンクと分かりやすくするため背景色を追加 */
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.sitemap-category a:hover {
+    background-color: #E6F9FC;
+    color: #008fa6;
+    transform: translateY(-2px); /* 上に少し浮く演出 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- 非公開・隠し機能用 --- */
+.is-hidden {
+    display: none !important;
+}
+
+.is-show-secret {
+    display: block !important;
+    animation: sitemapFadeIn 0.5s ease forwards;
+}
+
+@keyframes sitemapFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* スマホ対応：横幅が狭いときは1列にする */
+@media (max-width: 650px) {
+    .sitemap-nav {
+        grid-template-columns: 1fr;
+    }
+}
