@@ -12,7 +12,7 @@
   --radius: 8px;
   --radius-lg: 16px;
   /* 全ページ共通幅 */
-  --container-w: 480px;
+  --container-w: 520px;
   --container-w-wide: 640px;
 }
 
@@ -20,7 +20,7 @@ body.account-page {
   background: #f0f4f8;
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 40px 16px 80px;
   box-sizing: border-box;
@@ -592,19 +592,6 @@ input:checked + .slider:before {
   font-family: inherit;
   padding: 0;
 }
-.profile-delete {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  text-align: center;
-  text-decoration: none;
-  padding: 11px;
-  background: var(--danger);
-  color: #fff;
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.93rem;
-}
 
 /* ─── ログイン方法 ─── */
 .method-list {
@@ -685,93 +672,55 @@ input:checked + .slider:before {
   cursor: not-allowed;
 }
 
-/* アクティビティ項目を見やすく */
+/* ─── アクティビティ SVGアイコン ─── */
 .activity-item {
-  display: grid;
-  grid-template-columns: 40px 1fr;
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
   gap: 12px;
-  align-items: start;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
 }
 .activity-item:last-child {
   border-bottom: none;
 }
-.act-icon-wrap {
-  width: 36px;
-  height: 36px;
+.act-icon {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: #f0fbfe;
+  background: var(--bg-light);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.act-icon-wrap svg {
-  color: var(--primary);
+.act-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--text-sub);
 }
-.act-body {
+.activity-details {
   flex: 1;
 }
-.act-header {
+.activity-main {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
   margin-bottom: 3px;
 }
-.act-label {
-  font-size: .92rem;
+.activity-action {
+  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--text);
 }
-.act-time {
-  font-size: .75rem;
+.activity-time {
+  font-size: 0.76rem;
   color: var(--text-sub);
   white-space: nowrap;
 }
-.act-detail {
-  font-size: .8rem;
+.activity-info {
+  font-size: 0.78rem;
   color: var(--text-sub);
-  line-height: 1.5;
-}
-.act-detail .act-env {
-  display: inline-block;
-  margin-right: 8px;
-}
-.act-detail .act-full {
-  color: #bbb;
-  font-size: .72rem;
-  margin-top: 2px;
-  display: block; 
-}
-.activity-banner-pass {
-  flex: 1;
-  min-width: 140px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  padding: 10px;
-  background: var(--danger);
-  color: #fff;
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-.activity-banner-2fa {
-  flex: 1;
-  min-width: 140px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  padding: 10px;
-  background: #fff;
-  color: var(--text); 
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* ─── デバイス ─── */
@@ -1114,6 +1063,18 @@ input:checked + .slider:before {
   font-size: 0.88rem;
   font-weight: 700;
   box-sizing: border-box;
+}
+
+/* ─── アクティビティ パスワード変更ボタン中央 ─── */
+.activity-change-btn-wrap {
+  text-align: center;
+  margin-top: 16px;
+}
+.activity-change-btn-wrap a {
+  display: inline-block;
+  padding: 9px 24px;
+  text-decoration: none;
+  font-size: 0.88rem;
 }
 
 /* ─── トースト ─── */

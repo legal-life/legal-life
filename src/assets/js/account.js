@@ -66,7 +66,7 @@ async function getFirebase() {
 
 // ── 定数 ──
 // ★ Resend Worker URL (STEP 6 で実際の URL に変更してください)
-const MAIL_WORKER_URL = "https://legal-life-mailer.deskside-projects.workers.dev";
+const MAIL_WORKER_URL = "legal-life-mailer.deskside-projects.workers.dev";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
@@ -290,34 +290,6 @@ async function sendOTP(user, code, purpose) {
     throw new Error(e.error || "メール送信に失敗しました");
   }
 }
-
-async function sendNotif(user, db, actionType, detail = "") {
-    try {
-        if (!user?.email) return;
-        const prefSnap = await getDoc(doc(db,"users",user.uid,"settings","notifications")).catch(()=>null);
-        const prefs = prefSnap?.exists() ? prefSnap.data() : {};
-        if (prefs[actionType] === false) return;
-        const msgs = {
-            login:           "アカウントにログインがありました",
-            passwordChange:  "パスワードが変更されました",
-            emailChange:     "メールアドレスが変更されました",
-            otpChange:       `二段階認証が${detail}されました`,
-            deletionRequest: "アカウント削除が申請されました（30日以内にキャンセル可能）",
-        };
-        const purpose = msgs[actionType];
-        if (!purpose) return;
-        await fetch(MAIL_WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                type:     "notification",
-                to_email: user.email,
-                to_name:  user.displayName || "ユーザー",
-                purpose,
-            }),
-        });
-    } catch (_) {}
-}
 async function is2FA(uid, db) {
   try {
     const s = await getDoc(doc(db, "users", uid, "security", "twoFactor"));
@@ -475,13 +447,17 @@ async function delSession(user, db) {
 async function requireAuth() {
   const { auth } = await getFirebase();
   return new Promise((resolve) => {
-    const u = onAuthStateChanged(auth, (user) => {
-      u();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      unsub();
       if (!user) {
+        // 既に login ページにいる場合はリダイレクトしない（ループ防止）
+        if (location.pathname.startsWith("/account/login")) return;
         window.location.replace(
           `/account/login?r=${encR(location.pathname + location.search)}`,
         );
-      } else resolve(user);
+      } else {
+        resolve(user);
+      }
     });
   });
 }
@@ -494,7 +470,16 @@ let _pendingEmail = "",
 async function initLogin() {
   const { auth, db } = await getFirebase();
   onAuthStateChanged(auth, (u) => {
-    if (u) afterLogin();
+    if (u) {
+      // ★ rパラメータが /account/login を指している場合は /account/settings/ へ
+      const r = new URLSearchParams(location.search).get("r");
+      const dest = r ? decR(r) : null;
+      if (!dest || dest.startsWith("/account/login")) {
+        window.location.replace("/account/settings/");
+      } else {
+        window.location.replace(dest);
+      }
+    }
   });
 
   // signup リンクに r パラメータを維持
@@ -544,6 +529,48 @@ async function initLogin() {
   }
 
   $("google-login-btn")?.addEventListener("click", doGoogle);
+
+  // ★ Google OneTap 初期化（GSIスクリプト読み込み後に実行）
+  const _initOneTap = () => {
+    if (!window.google?.accounts?.id) return;
+    window.google.accounts.id.initialize({
+      client_id: "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com",
+      callback: async (credentialResponse) => {
+        try {
+          const { GoogleAuthProvider, signInWithCredential } =
+            await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js");
+          const credential = GoogleAuthProvider.credential(
+            credentialResponse.credential,
+          );
+          const result = await signInWithCredential(auth, credential);
+          localStorage.setItem("ll_last_consent", Date.now().toString());
+          await _afterLogin(result.user, "Google OneTap", db);
+        } catch (e) {
+          setMsg("google-error", e.message, "error");
+          $("google-error")?.style.setProperty("display", "block");
+        }
+      },
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    const container = $("google-onetap-container");
+    if (container) {
+      window.google.accounts.id.renderButton(container, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        width: container.offsetWidth || 320,
+        locale: "ja",
+      });
+    }
+    window.google.accounts.id.prompt();
+  };
+  // GSIスクリプトが非同期なので確実に読み込み後に初期化
+  if (window.google?.accounts?.id) {
+    _initOneTap();
+  } else {
+    window.addEventListener("load", _initOneTap, { once: true });
+  }
 
   const doEmail = async () => {
     const email = $("login-email")?.value.trim(),
@@ -931,13 +958,23 @@ async function initProfile() {
       setTimeout(() => (b.textContent = "コピー"), 2000);
     }
   });
-  // ★ reload() で最新のemailVerified状態を取得してからバナー判定
-  const cu = auth.currentUser;
+  // ★ reload() で最新の emailVerified 状態を取得してからバナー判定
   try {
-    await cu.reload();
+    await auth.currentUser?.reload();
   } catch (_) {}
   const freshUser = auth.currentUser;
-  if (freshUser?.email && !freshUser?.emailVerified) {
+  // パスワード認証ユーザー or メール未確認なら表示
+  const hasEmailProvider = (freshUser?.providerData || []).some(
+    (p) => p.providerId === "password",
+  );
+  if (
+    freshUser?.email &&
+    !freshUser?.emailVerified &&
+    (hasEmailProvider || (freshUser?.providerData || []).length === 0)
+  ) {
+    show("email-verify-banner");
+  } else if (freshUser?.email && !freshUser?.emailVerified) {
+    // どんな方法でもメール未確認なら表示
     show("email-verify-banner");
   }
   $("send-verify-email-btn")?.addEventListener("click", async () => {
@@ -1059,11 +1096,24 @@ async function initSecurity() {
   ]);
   const en = tfSnap?.exists() && (tfSnap.data().enabled ?? false);
 
-  // ★ 2FA有効時はセキュリティセクション入場時にOTP認証を要求
+  // ★ 2FA有効時 → account-Passage Cookie がなければ OTP 認証を要求
   if (en && user.email) {
-    const container = document.querySelector(".account-container");
-    if (container) {
-      container.innerHTML = `
+    // Cookie ヘルパー（scope: /account/security/ 配下）
+    const PASS_COOKIE = "account-Passage";
+    const hasPassage = () =>
+      document.cookie
+        .split(";")
+        .some((c) => c.trim().startsWith(PASS_COOKIE + "=valid"));
+    const setPassage = () => {
+      // 30分間有効、パスを /account/security/ に限定
+      const exp = new Date(Date.now() + 30 * 60 * 1000).toUTCString();
+      document.cookie = `${PASS_COOKIE}=valid; path=/account/security/; expires=${exp}; SameSite=Strict`;
+    };
+
+    if (!hasPassage()) {
+      const container = document.querySelector(".account-container");
+      if (container) {
+        container.innerHTML = `
 <h1 class="account-title">セキュリティ</h1>
 <p class="account-subtitle">アクセスするには本人確認が必要です</p>
 <div class="banner banner-info" style="margin-bottom:16px;">
@@ -1076,33 +1126,49 @@ async function initSecurity() {
 <p id="security-otp-msg" class="settings-msg"></p>
 <div id="security-otp-panel"></div>
 <div class="link-group" style="margin-top:16px;"><a href="/account/settings/" class="link-item">アカウント設定に戻る</a></div>`;
-      const code = genOTP();
-      await saveOTP(user.uid, db, code, "security_access");
-      await sendOTP(user, code, "セキュリティセクションへのアクセス");
-      setMsg(
-        "security-otp-msg",
-        `📧 ${user.email} に認証コードを送信しました`,
-        "success",
-      );
-      showOTPPanel("security-otp-panel", {
-        title: "本人確認",
-        desc: "認証コードを入力してください",
-        showBackup: true,
-        onVerify: async (input, isBackup) => {
-          if (isBackup) {
-            const res = await tryBackup(user.uid, db, input);
-            if (!res.ok) return res;
-          } else {
-            const res = await verifyOTP(user.uid, db, input, "security_access");
-            if (!res.ok) return res;
-            await clearOTP(user.uid, db);
-          }
-          window.location.reload(); // 認証後リロードでページ再表示
-          return { ok: true };
-        },
-        onCancel: () => window.location.replace("/account/settings/"),
-      });
-      return; // OTP確認前はページ内容を表示しない
+        try {
+          const code = genOTP();
+          await saveOTP(user.uid, db, code, "security_access");
+          await sendOTP(user, code, "セキュリティセクションへのアクセス");
+          setMsg(
+            "security-otp-msg",
+            `📧 ${user.email} に認証コードを送信しました`,
+            "success",
+          );
+        } catch (e) {
+          setMsg(
+            "security-otp-msg",
+            "コード送信に失敗しました: " + e.message,
+            "error",
+          );
+        }
+        showOTPPanel("security-otp-panel", {
+          title: "本人確認",
+          desc: "認証コードを入力してください",
+          showBackup: true,
+          onVerify: async (input, isBackup) => {
+            if (isBackup) {
+              const res = await tryBackup(user.uid, db, input);
+              if (!res.ok) return res;
+            } else {
+              const res = await verifyOTP(
+                user.uid,
+                db,
+                input,
+                "security_access",
+              );
+              if (!res.ok) return res;
+              await clearOTP(user.uid, db);
+            }
+            // ★ Cookie を発行してからリロード（ループしない）
+            setPassage();
+            window.location.reload();
+            return { ok: true };
+          },
+          onCancel: () => window.location.replace("/account/settings/"),
+        });
+        return;
+      }
     }
   }
 
