@@ -1,7 +1,11 @@
 /**
- * account.js v6.0
- * 修正: 2FA入場制御/削除申請重複防止/profile.emailVerify修正/activity表示改善/device登録強化
- * 修正: デバイスログアウト/2FA/バックアップコード/ロード速度/URL保持
+ * account.js v6.1
+ * 変更点:
+ *   - initLogin()  : _initOneTap から renderButton 呼び出しを削除
+ *                    （login.html の google-onetap-container 削除に対応）
+ *                    prompt() は維持するのでフローティングプロンプトは継続動作
+ *   - initSignup() : _initOneTapSignup() を追加
+ *                    signup.html でも One Tap フローティングプロンプトが表示される
  */
 import { getApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -65,12 +69,14 @@ async function getFirebase() {
 }
 
 // ── 定数 ──
-// ★ Resend Worker URL (STEP 6 で実際の URL に変更してください)
 const MAIL_WORKER_URL = "legal-life-mailer.deskside-projects.workers.dev";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
 const CONSENT_INTERVAL = 30 * 24 * 60 * 60 * 1000;
+// Google Client ID（One Tap 共通）
+const GOOGLE_CLIENT_ID =
+  "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 
 const PAGE = (() => {
   const p = location.pathname.replace(/\/$/, "");
@@ -222,7 +228,7 @@ function afterLogin() {
   window.location.replace((r ? decR(r) : null) || "/account/settings/");
 }
 
-// ── アクティビティ (users/{uid}/activity = 3セグメント) ──
+// ── アクティビティ ──
 async function logAct(uid, type, detail = "") {
   const { db } = await getFirebase();
   const ua = parseUA();
@@ -450,7 +456,6 @@ async function requireAuth() {
     const unsub = onAuthStateChanged(auth, (user) => {
       unsub();
       if (!user) {
-        // 既に login ページにいる場合はリダイレクトしない（ループ防止）
         if (location.pathname.startsWith("/account/login")) return;
         window.location.replace(
           `/account/login?r=${encR(location.pathname + location.search)}`,
@@ -462,16 +467,15 @@ async function requireAuth() {
   });
 }
 
-// ─────────────────────────
+// =============================================================
 // LOGIN
-// ─────────────────────────
+// =============================================================
 let _pendingEmail = "",
   _pendingPass = "";
 async function initLogin() {
   const { auth, db } = await getFirebase();
   onAuthStateChanged(auth, (u) => {
     if (u) {
-      // ★ rパラメータが /account/login を指している場合は /account/settings/ へ
       const r = new URLSearchParams(location.search).get("r");
       const dest = r ? decR(r) : null;
       if (!dest || dest.startsWith("/account/login")) {
@@ -530,11 +534,15 @@ async function initLogin() {
 
   $("google-login-btn")?.addEventListener("click", doGoogle);
 
-  // ★ Google OneTap 初期化（GSIスクリプト読み込み後に実行）
+  // ============================================================
+  // ★ 修正: One Tap 初期化（login ページ）
+  //   renderButton は削除済み（login.html に google-onetap-container がないため）
+  //   prompt() のみ → フローティングプロンプト（右上のポップアップ）として動作
+  // ============================================================
   const _initOneTap = () => {
     if (!window.google?.accounts?.id) return;
     window.google.accounts.id.initialize({
-      client_id: "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com",
+      client_id: GOOGLE_CLIENT_ID,
       callback: async (credentialResponse) => {
         try {
           const { GoogleAuthProvider, signInWithCredential } =
@@ -553,19 +561,11 @@ async function initLogin() {
       auto_select: false,
       cancel_on_tap_outside: true,
     });
-    const container = $("google-onetap-container");
-    if (container) {
-      window.google.accounts.id.renderButton(container, {
-        type: "standard",
-        theme: "outline",
-        size: "large",
-        width: container.offsetWidth || 320,
-        locale: "ja",
-      });
-    }
+    // ★ renderButton 呼び出しを削除（二重ボタン問題の修正）
+    //    login.html には google-onetap-container div がないため不要
     window.google.accounts.id.prompt();
   };
-  // GSIスクリプトが非同期なので確実に読み込み後に初期化
+
   if (window.google?.accounts?.id) {
     _initOneTap();
   } else {
@@ -606,7 +606,6 @@ async function initLogin() {
           desc: "メールに送信された6桁のコードを入力してください",
           showBackup: true,
           onVerify: async (input, isBackup) => {
-            // 再サインイン
             let cred2;
             try {
               cred2 = await signInWithEmailAndPassword(
@@ -696,9 +695,9 @@ async function _afterLogin(user, method, db) {
   afterLogin();
 }
 
-// ─────────────────────────
+// =============================================================
 // SIGNUP
-// ─────────────────────────
+// =============================================================
 async function initSignup() {
   const { auth } = await getFirebase();
   onAuthStateChanged(auth, (u) => {
@@ -740,6 +739,47 @@ async function initSignup() {
     } catch (_) {}
   }
   $("google-signup-btn")?.addEventListener("click", doGoogle);
+
+  // ============================================================
+  // ★ 追加: One Tap 初期化（signup ページ）
+  //   signup.html には google-onetap-container がないため
+  //   renderButton は行わず prompt() のみ
+  //   → フローティングプロンプト（右上のポップアップ）として動作
+  // ============================================================
+  const _initOneTapSignup = () => {
+    if (!window.google?.accounts?.id) return;
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: async (credentialResponse) => {
+        try {
+          const { GoogleAuthProvider, signInWithCredential } =
+            await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js");
+          const credential = GoogleAuthProvider.credential(
+            credentialResponse.credential,
+          );
+          const result = await signInWithCredential(auth, credential);
+          localStorage.setItem("ll_last_consent", Date.now().toString());
+          // signup として activity に記録
+          await logAct(result.user.uid, "signup", "Google OneTap");
+          afterLogin();
+        } catch (e) {
+          setMsg("google-error", e.message, "error");
+          $("google-error")?.style.setProperty("display", "block");
+        }
+      },
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    // フローティングプロンプトのみ表示（ボタン描画なし）
+    window.google.accounts.id.prompt();
+  };
+
+  if (window.google?.accounts?.id) {
+    _initOneTapSignup();
+  } else {
+    window.addEventListener("load", _initOneTapSignup, { once: true });
+  }
+
   $("signup-submit")?.addEventListener("click", async () => {
     const name = $("signup-name")?.value.trim(),
       email = $("signup-email")?.value.trim(),
@@ -772,9 +812,9 @@ async function initSignup() {
   });
 }
 
-// ─────────────────────────
+// =============================================================
 // LOGOUT
-// ─────────────────────────
+// =============================================================
 async function initLogout() {
   const { auth, db } = await getFirebase();
   try {
@@ -795,14 +835,13 @@ async function initLogout() {
   }
 }
 
-// ─────────────────────────
+// =============================================================
 // DELETE
-// ─────────────────────────
+// =============================================================
 async function initDelete() {
   const user = await requireAuth();
   const { auth, db } = await getFirebase();
 
-  // ★ 削除申請済みかチェック → 申請済みなら専用バナーを表示してフォームを隠す
   const userSnap = await getDoc(doc(db, "users", user.uid)).catch(() => null);
   if (userSnap?.exists() && userSnap.data().deletionPending) {
     hide("delete-form-wrapper");
@@ -830,7 +869,7 @@ async function initDelete() {
         );
       }
     });
-    return; // フォーム初期化をスキップ
+    return;
   }
 
   const cbs = document.querySelectorAll(".deletion-checkbox"),
@@ -887,9 +926,9 @@ async function _execDelete(user, auth, db) {
   show("delete-success");
 }
 
-// ─────────────────────────
+// =============================================================
 // SETTINGS
-// ─────────────────────────
+// =============================================================
 async function initSettings() {
   const user = await requireAuth();
   const { db } = await getFirebase();
@@ -915,9 +954,9 @@ async function initSettings() {
   });
 }
 
-// ─────────────────────────
-// PROFILE (#11 list format)
-// ─────────────────────────
+// =============================================================
+// PROFILE
+// =============================================================
 async function initProfile() {
   const user = await requireAuth();
   const { auth, db } = await getFirebase();
@@ -958,12 +997,10 @@ async function initProfile() {
       setTimeout(() => (b.textContent = "コピー"), 2000);
     }
   });
-  // ★ reload() で最新の emailVerified 状態を取得してからバナー判定
   try {
     await auth.currentUser?.reload();
   } catch (_) {}
   const freshUser = auth.currentUser;
-  // パスワード認証ユーザー or メール未確認なら表示
   const hasEmailProvider = (freshUser?.providerData || []).some(
     (p) => p.providerId === "password",
   );
@@ -974,7 +1011,6 @@ async function initProfile() {
   ) {
     show("email-verify-banner");
   } else if (freshUser?.email && !freshUser?.emailVerified) {
-    // どんな方法でもメール未確認なら表示
     show("email-verify-banner");
   }
   $("send-verify-email-btn")?.addEventListener("click", async () => {
@@ -1000,9 +1036,9 @@ async function initProfile() {
   });
 }
 
-// ─────────────────────────
+// =============================================================
 // PRIVACY
-// ─────────────────────────
+// =============================================================
 const NOTIFS = [
   { key: "login", label: "ログイン通知", desc: "ログイン時にメールを受け取る" },
   {
@@ -1083,9 +1119,9 @@ async function initPrivacy() {
   }
 }
 
-// ─────────────────────────
-// SECURITY (並列ロード)
-// ─────────────────────────
+// =============================================================
+// SECURITY
+// =============================================================
 async function initSecurity() {
   const user = await requireAuth();
   const { db } = await getFirebase();
@@ -1096,16 +1132,13 @@ async function initSecurity() {
   ]);
   const en = tfSnap?.exists() && (tfSnap.data().enabled ?? false);
 
-  // ★ 2FA有効時 → account-Passage Cookie がなければ OTP 認証を要求
   if (en && user.email) {
-    // Cookie ヘルパー（scope: /account/security/ 配下）
     const PASS_COOKIE = "account-Passage";
     const hasPassage = () =>
       document.cookie
         .split(";")
         .some((c) => c.trim().startsWith(PASS_COOKIE + "=valid"));
     const setPassage = () => {
-      // 30分間有効、パスを /account/security/ に限定
       const exp = new Date(Date.now() + 30 * 60 * 1000).toUTCString();
       document.cookie = `${PASS_COOKIE}=valid; path=/account/security/; expires=${exp}; SameSite=Strict`;
     };
@@ -1160,7 +1193,6 @@ async function initSecurity() {
               if (!res.ok) return res;
               await clearOTP(user.uid, db);
             }
-            // ★ Cookie を発行してからリロード（ループしない）
             setPassage();
             window.location.reload();
             return { ok: true };
@@ -1188,9 +1220,9 @@ async function initSecurity() {
     );
 }
 
-// ─────────────────────────
-// ACTIVITY (SVGアイコン)
-// ─────────────────────────
+// =============================================================
+// ACTIVITY
+// =============================================================
 const ACT_SVG = {
   login:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>',
@@ -1272,9 +1304,9 @@ async function initActivity() {
   }
 }
 
-// ─────────────────────────
-// DEVICE (セッション削除方式)
-// ─────────────────────────
+// =============================================================
+// DEVICE
+// =============================================================
 async function initDevice() {
   const user = await requireAuth();
   const { db } = await getFirebase();
@@ -1287,9 +1319,7 @@ async function renderDevices(user, db) {
   const listEl = $("device-list");
   if (!listEl) return;
   listEl.innerHTML = '<p class="loading-text">読み込み中...</p>';
-  // ★ セッションが未登録の場合に備え、登録してから取得
   const currentSid = getSid();
-  // まだ Firestore に登録されていなければ登録
   await regSession(user, db);
   try {
     const q = query(
@@ -1298,7 +1328,6 @@ async function renderDevices(user, db) {
       limit(10),
     );
     const snap = await getDocs(q);
-    // shouldLogout=true のドキュメントを除外して表示
     const activeDocs = snap.docs.filter(
       (d) => !d.data().shouldLogout || d.data().sessionId === currentSid,
     );
@@ -1338,7 +1367,6 @@ ${!isCur ? `<button class="session-logout-btn" data-sid="${esc(data.sessionId)}"
         b.textContent = "処理中...";
         const sid = b.dataset.sid;
         try {
-          // shouldLogout=true + 即座にUIから削除
           await setDoc(
             doc(db, "users", user.uid, "sessions", sid),
             { shouldLogout: true },
@@ -1391,9 +1419,9 @@ async function logoutAllOthers(user, db) {
   }
 }
 
-// ─────────────────────────
+// =============================================================
 // PASS
-// ─────────────────────────
+// =============================================================
 async function initPass() {
   const user = await requireAuth();
   const { auth, db } = await getFirebase();
@@ -1496,9 +1524,9 @@ async function _execPass(auth, db, cur, newP, hp, user, msgEl) {
   }
 }
 
-// ─────────────────────────
-// 2FA (#5 #6 recommend, backup link)
-// ─────────────────────────
+// =============================================================
+// 2FA
+// =============================================================
 async function initTwoFA() {
   const user = await requireAuth();
   const { db } = await getFirebase();
@@ -1549,7 +1577,6 @@ async function initTwoFA() {
             { enabled: newState },
             { merge: true },
           );
-          // 2FA無効化時はバックアップコードを削除
           if (!newState) {
             await deleteDoc(
               doc(db, "users", user.uid, "security", "BackUpCode"),
@@ -1616,9 +1643,9 @@ function showTwoFARecommend() {
   c.style.display = "block";
 }
 
-// ─────────────────────────
-// BACKUP CODE (アクセス制御 + クリア)
-// ─────────────────────────
+// =============================================================
+// BACKUP CODE
+// =============================================================
 function _genCode() {
   const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from(
@@ -1631,7 +1658,6 @@ async function initBackupCode() {
   const { db } = await getFirebase();
   const gridEl = $("backup-codes-grid");
   if (!gridEl) return;
-  // アクセス制御: 2FA無効時はアクセス不可
   const enabled = await is2FA(user.uid, db);
   if (!enabled) {
     gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-sub);">
@@ -1660,7 +1686,6 @@ async function initBackupCode() {
     $("regenerate-codes-btn")?.addEventListener("click", async () => {
       if (!confirm("現在のコードはすべて無効になります。よろしいですか？"))
         return;
-      // ★ バックアップコード再生成は 2FA OTP で本人確認
       const regen = async () => {
         const nc = await genAndSaveCodes(user.uid, db);
         renderCodes(gridEl, nc);
@@ -1673,7 +1698,6 @@ async function initBackupCode() {
         await saveOTP(user.uid, db, code, "backup_regen");
         await sendOTP(user, code, "バックアップコード再生成");
         toast("📧 認証コードをメールに送信しました", "info");
-        // 簡易 OTP ダイアログ
         const answer = window.prompt(
           "メールに送信された6桁の認証コードを入力してください:",
         );
@@ -1728,9 +1752,9 @@ function renderCodes(gridEl, codes) {
     .join("");
 }
 
-// ─────────────────────────
-// METHODS (#7 email display)
-// ─────────────────────────
+// =============================================================
+// METHODS
+// =============================================================
 async function initMethods() {
   const user = await requireAuth();
   const { auth, db } = await getFirebase();
@@ -1739,7 +1763,6 @@ async function initMethods() {
 async function renderMethods(user, auth, db) {
   const ids = user.providerData.map((p) => p.providerId),
     total = ids.length;
-  // パスワード
   const passLinked = ids.includes("password"),
     passData = user.providerData.find((p) => p.providerId === "password");
   const pSt = $("status-password"),
@@ -1803,7 +1826,6 @@ async function renderMethods(user, auth, db) {
       };
     }
   }
-  // Google
   const gLinked = ids.includes("google.com"),
     gData = user.providerData.find((p) => p.providerId === "google.com");
   const gSt = $("status-google"),
@@ -1877,9 +1899,9 @@ async function renderMethods(user, auth, db) {
   });
 }
 
-// ─────────────────────────
+// =============================================================
 // 共通: カード描画
-// ─────────────────────────
+// =============================================================
 function renderCard(user) {
   const av = $("settings-avatar-wrap");
   if (av)
@@ -1927,9 +1949,9 @@ function renderProfile(user) {
     );
 }
 
-// ─────────────────────────
+// =============================================================
 // ENTRY
-// ─────────────────────────
+// =============================================================
 document.addEventListener("DOMContentLoaded", async () => {
   const fn = {
     signup: initSignup,
