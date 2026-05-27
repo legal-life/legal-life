@@ -27,6 +27,9 @@ body.account-page {
   font-family: "BIZ UDGothic", sans-serif;
   color: var(--text);
 }
+body.account-page main {
+  width: 100%;
+}
 
 /* 全ページ統一コンテナ */
 .account-container {
@@ -35,6 +38,7 @@ body.account-page {
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: var(--container-w);
+  min-width: min(var(--container-w), calc(100vw - 32px));
   padding: 36px 32px;
   box-sizing: border-box;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
