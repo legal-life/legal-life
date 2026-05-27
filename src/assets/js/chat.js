@@ -439,7 +439,7 @@ class LegalChatApp {
       "beforeend",
       `
 <div class="chat-ai-container">
-    <img src="/assets/images/site_icon_clear.png" class="chat-ai-icon">
+    <img src="/assets/images/chat_logo.png" class="chat-ai-icon">
     <div class="chat-message chat-ai-message" style="color:red; border-color:red;">⚠️ ${msg}</div>
 </div>`,
     );
