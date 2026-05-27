@@ -15,7 +15,7 @@ function escapeHtml(str) {
 // 設定
 // ========================================
 const CONFIG = {
-  GEMINI_API_KEY: "__GEMINI_API_KEY__",
+  GEMINI_API_KEY: __GEMINI_API_KEY__,
   GEMINI_API_URL:
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
   STORAGE_KEY: "legalChatHistory",
