@@ -23,63 +23,108 @@
         <link rel="stylesheet" href="/assets/css/main.css">
         <link rel="stylesheet" href="/assets/css/account-shared.css">
         <meta name="google-site-verification" content="wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8" />
+<style>
+/* ========================================
+   暫定対応：メンテナンス中案内ボックス
+   ======================================== */
+.contact-maintenance-box {
+    max-width: 640px;
+    margin: 0 auto 60px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border-top: 5px solid #ffc107; /* メンテナンス警告色 */
+}
+
+.contact-maintenance-inner {
+    padding: 48px 40px;
+    text-align: center;
+}
+
+.contact-maintenance-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.contact-maintenance-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.contact-maintenance-desc {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.9;
+    margin-bottom: 28px;
+}
+
+.contact-gform-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #00C8E9 0%, #00a3bf 100%);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 16px rgba(0, 200, 233, 0.35);
+    transition: all 0.25s ease;
+    letter-spacing: 0.03em;
+}
+
+.contact-gform-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 200, 233, 0.45);
+    background: linear-gradient(135deg, #00a3bf 0%, #008096 100%);
+}
+
+@media (max-width: 600px) {
+    .contact-maintenance-inner {
+        padding: 36px 24px;
+    }
+    .contact-gform-btn {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}
+</style>
     </head>
-
     <body class="all-page">
-        
         <div id="header"></div>
-
-        <main class="chat-content">
-            <div class="page-title">
-                <h1>法令専門AIチャット</h1>
-                <p>
-                    日本の法令に関して聞かれたことに対してAIが詳しく回答します。<br>
-                    履歴はご利用中の端末もしくはサーバーに自動で保存されます。
-                </p>
-            </div>
-
-            <div class="chat_caution_box">
-                <h3 class="chat_caution_title">⚠️ 重要な注意事項</h3>
-                <ul class="chat_caution_list">
-                    <li class="chat_caution_item">個人情報(氏名、住所、電話番号等)は絶対に入力しないでください</li>
-                    <li class="chat_caution_item">本サービスは法的助言ではありません</li>
-                    <li class="chat_caution_item">AI生成の回答には誤りが含まれる可能性があります</li>
-                    <li class="chat_caution_item">重要な判断には必ず専門家にご相談ください</li>
-                </ul>
-                <p class="chat_caution_footer">
-                    当機能利用時は当サイト  <a href="/law/disclaimer" class="chat_caution_link">免責事項</a>  並びに  <a href="/law/privacy#section6" class="chat_caution_link">AI利用に関する詳細情報開示</a>  に同意したものをみなします。
-                </p>
-            </div>
-
-            <div class="chat_search_info_box">
-                <p class="chat_search_info_text">
-                    💡 わからない法令名は
-                    <a href="/content/search" class="chat_search_info_link">法令検索</a>
-                    ページで調べてみよう！
-                </p>
-            </div>
-
-            <div class="chat-container">
-                <div class="chat-wrapper">
-                    <header class="chat-inner-header">
-                        <span>法令専門AIチャット<span class="badge-status is-developing">テスト中の機能</span></span>
-                    </header>
-
-                    <div id="responseArea" class="chat-chat-window"></div>
-
-                    <div class="chat-input-area">
-                        <textarea id="userInput" class="chat-user-input" placeholder="AIと話すにはここに入力..."></textarea>
-                        <button id="sendButton" class="chat-send-btn">送信</button>
-                        <button id="clearAllButton" class="chat-clear-btn">全削除</button>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
+<!-- ========================================
+【暫定対応】アカウントシステム改修中につきお知らせポップアップを表示する
+        ======================================== -->
+<div class="contact-maintenance-box">
+    <div class="contact-maintenance-inner">
+        <span class="contact-maintenance-icon">🛠️</span>
+        <h2 class="contact-maintenance-title">チャット機能は一時停止中です</h2>
+        <p class="contact-maintenance-desc">
+            現在、アカウントシステムの改修作業に伴い、チャット機能を一時停止しております。
+        </p>
+        <a href="/info/details/0017"
+            rel="noopener noreferrer"
+            class="contact-gform-btn">
+            チャット機能に関するお知らせを確認する
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    style="vertical-align:middle; margin-left:6px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+        </a>
+    </div>
+</div>
+<!-- ／暫定対応ここまで -->
         <div id="footer"></div>
         <script type="module" src="/assets/js/important.js"></script>
         <script type="module" src="/assets/js/account.js"></script>
         <script defer src="/assets/js/access-log.js"></script>
-        <script src="/assets/js/chat.js" defer></script>
     </body>
 </html>
