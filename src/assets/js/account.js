@@ -69,7 +69,7 @@ async function getFirebase() {
 }
 
 // ── 定数 ──
-const MAIL_WORKER_URL = "legal-life-mailer.deskside-projects.workers.dev";
+const MAIL_WORKER_URL = "https://legal-life-mailer.deskside-projects.workers.dev";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
@@ -177,20 +177,14 @@ function parseUA() {
 }
 async function fetchLocation() {
   try {
-    const r = await fetch("https://ipapi.co/json", {
-      signal: AbortSignal.timeout(3000),
-    });
-    if (r.ok) {
-      const d = await r.json();
-      if (d?.country_name)
-        return [d.city, d.country_name].filter(Boolean).join(", ");
-    }
-  } catch (_) {}
-  try {
     const r = await fetch("https://cloudflare.com/cdn-cgi/trace", {
       signal: AbortSignal.timeout(2000),
     });
-    if (r.ok) return (await r.text()).match(/loc=([A-Z]{2})/)?.[1] || "不明";
+    if (r.ok) {
+      const text = await r.text();
+      const loc = text.match(/loc=([A-Z]{2})/)?.[1];
+      if (loc) return loc;
+    }
   } catch (_) {}
   return "不明";
 }
@@ -1261,7 +1255,9 @@ async function initActivity() {
   const { db } = await getFirebase();
   const listEl = $("activity-list");
   if (!listEl) return;
+ 
   listEl.innerHTML = '<p class="loading-text">読み込み中...</p>';
+ 
   try {
     const q = query(
       collection(db, "users", user.uid, "activity"),
@@ -1269,38 +1265,50 @@ async function initActivity() {
       limit(50),
     );
     const snap = await getDocs(q);
+ 
     if (snap.empty) {
       listEl.innerHTML =
         '<p class="empty-text">アクティビティ履歴はありません</p>';
       return;
     }
+ 
     listEl.innerHTML = snap.docs
       .map((d) => {
-        const data = d.data(),
-          svg = ACT_SVG[data.type] || ACT_SVG._default,
-          label = ACT_LABEL[data.type] || data.type,
-          ts = data.timestamp;
+        const data = d.data();
+        const svg   = ACT_SVG[data.type]   || ACT_SVG._default;
+        const label = ACT_LABEL[data.type] || data.type;
+        const ts    = data.timestamp;
+ 
+        // ブラウザ / OS
         const env = [data.browser, data.os].filter(Boolean).join(" / ");
-        const detail = data.detail
-          ? ` <span style="color:#94a3b8;">— ${esc(data.detail)}</span>`
+ 
+        // 詳細テキスト（例: "Google" "パスワード変更" など）
+        const detailHtml = data.detail
+          ? `<span class="act-detail-inline">— ${esc(data.detail)}</span>`
           : "";
+ 
+        // 相対時刻・絶対時刻
+        const timeRel  = ts ? relDate(ts) : "不明";
+        const timeFull = ts ? fmtDate(ts) : "";
+ 
         return `<div class="activity-item">
   <div class="act-icon-wrap">${svg}</div>
   <div class="act-body">
     <div class="act-header">
-      <span class="act-label">${esc(label)}</span>
-      <span class="act-time">${ts ? relDate(ts) : "不明"}</span>
+      <span class="act-label">${esc(label)}${detailHtml}</span>
+      <span class="act-time">${timeRel}</span>
     </div>
     <div class="act-detail">
-      <span class="act-env">${esc(env)}${detail}</span>
-      <span class="act-full">${ts ? fmtDate(ts) : ""}</span>
+      <span class="act-env">${esc(env)}</span>
+      <span class="act-full">${timeFull}</span>
     </div>
   </div>
 </div>`;
       })
       .join("");
+ 
   } catch (e) {
-    listEl.innerHTML = `<p class="error-text">読み込みに失敗: ${esc(e.message)}</p>`;
+    listEl.innerHTML = `<p class="error-text">読み込みに失敗しました: ${esc(e.message)}</p>`;
   }
 }
 

@@ -678,54 +678,223 @@ input:checked + .slider:before {
 }
 
 /* ─── アクティビティ SVGアイコン ─── */
-.activity-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-  gap: 12px;
-}
-.activity-item:last-child {
-  border-bottom: none;
-}
-.act-icon {
-  width: 34px;
-  height: 34px;
+/* ================================================
+   account.css への追記・修正パッチ
+   ================================================ */
+
+/* ─── アクティビティリスト（改善版） ─── */
+.act-icon-wrap {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--bg-light);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.act-icon svg {
+.act-icon-wrap svg {
   width: 16px;
   height: 16px;
   stroke: var(--text-sub);
 }
-.activity-details {
+.act-body {
   flex: 1;
+  min-width: 0;
+  padding-left: 12px;
 }
-.activity-main {
+.act-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 3px;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
-.activity-action {
-  font-size: 0.9rem;
+.act-label {
+  font-size: 0.88rem;
   font-weight: 700;
+  color: var(--text);
 }
-.activity-time {
-  font-size: 0.76rem;
+.act-time {
+  font-size: 0.75rem;
   color: var(--text-sub);
   white-space: nowrap;
+  background: var(--bg-light);
+  padding: 2px 8px;
+  border-radius: 10px;
 }
-.activity-info {
-  font-size: 0.78rem;
+.act-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.act-env {
+  font-size: 0.76rem;
   color: var(--text-sub);
-  margin: 0;
-  line-height: 1.4;
+}
+.act-full {
+  font-size: 0.72rem;
+  color: #bbb;
+}
+
+/* アクティビティアイテム区切り */
+#activity-list .activity-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+#activity-list .activity-item:last-child {
+  border-bottom: none;
+}
+
+/* アクティビティページ バナーボタン */
+.activity-banner-pass,
+.activity-banner-2fa {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.activity-banner-pass {
+  background: var(--danger);
+  color: #fff;
+}
+.activity-banner-pass:hover {
+  background: var(--danger-dark);
+}
+.activity-banner-2fa {
+  background: #fff;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.activity-banner-2fa:hover {
+  background: var(--bg-light);
+}
+
+
+/* ─── ヘッダー ハンバーガーメニュー ログインボタン改善 ─── */
+
+/* ゲスト用：目立つログインボタン */
+.menu-auth-link--login {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--primary);        /* 水色背景 */
+  color: #fff !important;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none !important;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 200, 233, 0.3);
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.menu-auth-link--login:hover {
+  background: var(--primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(0, 200, 233, 0.4);
+}
+.menu-auth-link--login svg {
+  stroke: #fff;
+  flex-shrink: 0;
+}
+
+/* ログインしていない時の補足テキスト */
+.menu-auth-hint {
+  font-size: 0.72rem;
+  color: #999;
+  text-align: center;
+  display: block;
+  margin-bottom: 12px;
+}
+
+/* ユーザー情報行 */
+.menu-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+.menu-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.menu-user-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* アクションリンク */
+.menu-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+.menu-user-action-link {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem !important;
+  font-weight: 700;
+  color: var(--text) !important;
+  text-decoration: none !important;
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+.menu-user-action-link:hover {
+  background: rgba(0, 200, 233, 0.08);
+  color: var(--primary-dark) !important;
+}
+.menu-user-action-link--logout {
+  color: var(--danger) !important;
+  margin-top: 4px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+.menu-user-action-link--logout:hover {
+  background: rgba(231, 76, 60, 0.06);
+  color: var(--danger-dark) !important;
+}
+
+/* メンテナンス中メッセージ */
+.menu-maintenance-msg {
+  font-size: 0.78rem;
+  color: #888;
+  padding: 8px 12px;
+  background: #fff9f0;
+  border-radius: var(--radius);
+  border-left: 3px solid #ffc107;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.menu-maintenance-msg a {
+  color: var(--primary-dark);
+  font-weight: 700;
 }
 
 /* ─── デバイス ─── */
