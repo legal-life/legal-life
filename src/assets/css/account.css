@@ -28,6 +28,7 @@ body.account-page {
   color: var(--text);
 }
 body.account-page main {
+  max-width: 520px;
   width: 100%;
 }
 
