@@ -23,6 +23,82 @@
         <link rel="stylesheet" href="/assets/css/main.css">
         <link rel="stylesheet" href="/assets/css/account-shared.css">
         <meta name="google-site-verification" content="wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8" />
+        <style>
+/* ========================================
+   暫定対応：メンテナンス中案内ボックス
+   ======================================== */
+.contact-maintenance-box {
+    max-width: 640px;
+    margin: 0 auto 60px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border-top: 5px solid #ffc107; /* メンテナンス警告色 */
+}
+
+.contact-maintenance-inner {
+    padding: 48px 40px;
+    text-align: center;
+}
+
+.contact-maintenance-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.contact-maintenance-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.contact-maintenance-desc {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.9;
+    margin-bottom: 28px;
+}
+
+.contact-gform-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #00C8E9 0%, #00a3bf 100%);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 16px rgba(0, 200, 233, 0.35);
+    transition: all 0.25s ease;
+    letter-spacing: 0.03em;
+}
+
+.contact-gform-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 200, 233, 0.45);
+    background: linear-gradient(135deg, #00a3bf 0%, #008096 100%);
+}
+
+.contact-maintenance-note {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+@media (max-width: 600px) {
+    .contact-maintenance-inner {
+        padding: 36px 24px;
+    }
+    .contact-gform-btn {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}
+        </style>
     </head>
 
     <body class="all-page">
@@ -38,313 +114,55 @@
                     メールアドレスをご入力いただいた場合、担当者より後日ご返信いたします。
                 </p>
             </div>
-
-            <!-- === フォーム本体 === -->
-            <div id="contact-form-wrapper">
-                <div id="storage-consent-banner" class="storage-banner">
-                    <div class="storage-banner-content">
-                        <p class="storage-text">
-                            <strong>入力内容の一時保存</strong><br>
-                            利便性向上のため、入力内容をブラウザに30日間保存できます。
-                        </p>
-                        <div class="storage-switch-container">
-                            <span id="storage-status-text" class="status-text">無効</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="storage-consent-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="contact-section">
-                    <!-- 1.基本情報 -->
-                    <div class="contact-section-title">
-                        <span class="section-badge">1</span>
-                        <h3>基本情報</h3>
-                    </div>
-
-                    <!-- お名前 -->
-                    <div class="form-field" id="field-name-wrapper">
-                        <label class="form-label" for="field-name">
-                            お名前<span class="required-mark">＊必須</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="field-name"
-                            class="form-input"
-                            placeholder="例：山田 太郎"
-                            maxlength="50"
-                            autocomplete="name"
-                        >
-                        <span class="field-error" id="field-name-error"></span>
-                    </div>
-
-                    <!-- 性別 -->
-                    <div class="form-field">
-                        <span class="form-label">性別<span class="required-mark">＊必須</span></span>
-                        <div class="radio-group-inline" id="gender-group">
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="男性"> 男性
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="女性"> 女性
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="gender" value="その他"> その他
-                            </label>
-                        </div>
-                        <span class="field-error" id="gender-group-error"></span>
-                    </div>
-
-                    <!-- 年代 -->
-                    <div class="form-field">
-                        <label class="form-label" for="field-age">
-                            年代<span class="required-mark">＊必須</span>
-                        </label>
-                        <select id="field-age" class="form-select">
-                            <option value="" disabled selected hidden>選択してください</option>
-                            <option value="10代">10代</option>
-                            <option value="20代">20代</option>
-                            <option value="30代">30代</option>
-                            <option value="40代">40代</option>
-                            <option value="50代">50代</option>
-                            <option value="60代">60代</option>
-                            <option value="70代">70代</option>
-                            <option value="80代">80代</option>
-                            <option value="90代">90代</option>
-                        </select>
-                        <span class="field-error" id="field-age-error"></span>
-                    </div>
-
-                    <!-- メールアドレス（任意） -->
-                    <div class="form-field">
-                        <label class="form-label" for="field-email">
-                            返信用メールアドレス<span class="optional-mark">（任意）</span><span class="required-mark">＊返信が必要な方は入力ください</span>
-                        </label>
-                        <input
-                            type="email"
-                            id="field-email"
-                            class="form-input"
-                            placeholder="example@email.com"
-                            autocomplete="email"
-                        >
-                        <span class="field-error" id="field-email-error"></span>
-                    </div>
-
-                    <!-- お問い合わせの種類 -->
-                    <div class="form-field">
-                        <span class="form-label">
-                            お問い合わせの種類<span class="required-mark">＊必須</span>
-                        </span>
-                        <div class="radio-group" id="inquiry-type-group">
-                            <label class="radio-label">
-                                <input type="radio" name="inquiry_type" value="コメント"> 💬 コメント
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="inquiry_type" value="質問"> ❓ 質問
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="inquiry_type" value="バグや不具合の報告"> 🐛 バグや不具合の報告
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="inquiry_type" value="機能のリクエスト"> ✨ 機能のリクエスト
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="inquiry_type" value="その他のお問い合わせ"> 📝 その他のお問い合わせ
-                            </label>
-                        </div>
-                        <span class="field-error" id="inquiry-type-group-error"></span>
-                    </div>
-                </div><!-- /基本情報 -->
-
-
-                <!-- ==============================
-                     ② コメント（条件セクション）
-                     ============================== -->
-                <div class="contact-section conditional-section hidden" id="section-comment">
-                    <div class="contact-section-title">
-                        <span class="section-badge">2</span>
-                        <h3>コメント内容</h3>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="comment-content">
-                            コメント内容<span class="required-mark">＊必須</span>
-                        </label>
-                        <textarea
-                            id="comment-content"
-                            class="form-textarea"
-                            placeholder="コメントをご自由にお書きください"
-                            required
-                        ></textarea>
-                        <span class="textarea-hint">※ 個人情報（住所・電話番号等）は記入しないでください</span>
-                        <span class="field-error" id="comment-content-error"></span>
-                    </div>
-                </div>
-
-
-                <!-- ==============================
-                     ③ 質問（条件セクション）
-                     ============================== -->
-                <div class="contact-section conditional-section hidden" id="section-question">
-                    <div class="contact-section-title">
-                        <span class="section-badge">2</span>
-                        <h3>質問内容</h3>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="question-category">
-                            質問はどの分野が該当しますか？<span class="required-mark">＊必須</span>
-                        </label>
-                        <select id="question-category" class="form-select js-category-select" required></select>
-                        <span class="field-error" id="question-category-error"></span>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="question-content">
-                            お問い合わせ内容<span class="required-mark">＊必須</span>
-                        </label>
-                        <textarea
-                            id="question-content"
-                            class="form-textarea"
-                            placeholder="ご質問内容をできるだけ詳しくお書きください"
-                            required
-                        ></textarea>
-                        <span class="field-error" id="question-content-error"></span>
-                    </div>
-                </div>
-
-
-                <!-- ==============================
-                     ④ バグ・不具合（条件セクション）
-                     ============================== -->
-                <div class="contact-section conditional-section hidden" id="section-bug">
-                    <div class="contact-section-title">
-                        <span class="section-badge">2</span>
-                        <h3>バグ・不具合の報告</h3>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="bug-category">
-                            バグや不具合はどの分野が該当しますか？<span class="required-mark">＊必須</span>
-                        </label>
-                        <select id="bug-category" class="form-select js-category-select" required></select>
-                        <span class="field-error" id="bug-category-error"></span>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="bug-content">
-                            お問い合わせ内容<span class="required-mark">＊必須</span>
-                        </label>
-                        <textarea
-                            id="bug-content"
-                            class="form-textarea"
-                            placeholder="発生したバグや不具合の内容を詳しくお書きください（発生手順・使用ブラウザなども記載いただけると助かります）"
-                            required
-                        ></textarea>
-                        <span class="field-error" id="bug-content-error"></span>
-                    </div>
-                </div>
-
-
-                <!-- ==============================
-                     ⑤ 機能リクエスト（条件セクション）
-                     ============================== -->
-                <div class="contact-section conditional-section hidden" id="section-feature">
-                    <div class="contact-section-title">
-                        <span class="section-badge">2</span>
-                        <h3>新機能のリクエスト</h3>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="feature-category">
-                            新機能のリクエストはどの分野が該当しますか？<span class="required-mark">＊必須</span>
-                        </label>
-                        <select id="feature-category" class="form-select js-category-select" required></select>
-                        <span class="field-error" id="feature-category-error"></span>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="feature-content">
-                            お問い合わせ内容<span class="required-mark">＊必須</span>
-                        </label>
-                        <textarea
-                            id="feature-content"
-                            class="form-textarea"
-                            placeholder="ご希望の機能についてできるだけ詳しくお書きください"
-                            required
-                        ></textarea>
-                        <span class="field-error" id="feature-content-error"></span>
-                    </div>
-                </div>
-
-
-                <!-- ==============================
-                     ⑥ その他（条件セクション）
-                     ============================== -->
-                <div class="contact-section conditional-section hidden" id="section-other">
-                    <div class="contact-section-title">
-                        <span class="section-badge">2</span>
-                        <h3>その他のお問い合わせ</h3>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="other-content">
-                            お問い合わせ内容<span class="required-mark">＊必須</span>
-                        </label>
-                        <textarea
-                            id="other-content"
-                            class="form-textarea"
-                            placeholder="お問い合わせ内容をお書きください"
-                            required
-                        ></textarea>
-                        <span class="field-error" id="other-content-error"></span>
-                    </div>
-                </div>
-
-
-                <!-- ==============================
-                     送信ボタンエリア
-                     ============================== -->
-                <div class="contact-submit-area">
-                    <div id="submit-error" hidden>
-                        ⚠️ 送信に失敗しました。<br>時間をおいて再度お試しいただくか、
-                        <a href="https://forms.gle/oCpvfHFZB5NsLHwR9" target="_blank" rel="noopener">こちら</a>
-                        からお問い合わせください。
-                    </div>
-                    <button type="button" id="contact-submit">送信する</button>
-                    <button type="button" id="contact-clear" class="btn-clear-form">入力をクリア</button>
-                    <p class="privacy-note">
-                        送信することで <a href="/law/privacy">プライバシーポリシー</a> および
-                        <a href="/law/terms">利用規約</a> に同意したものとみなされます。
-                    </p>
-                </div>
-
-            </div><!-- /#contact-form-wrapper -->
-
-
-            <!-- ==============================
-                 送信完了画面
-                 ============================== -->
-            <div id="contact-success" hidden>
-                <span class="success-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 24 24" fill="none" stroke="#28A745" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </span>
-                <p class="success-title">送信が完了しました</p>
-                <p class="success-body">お問い合わせフォームでの入力が正常に送信されました。<br>メールアドレスを入力された方につきましては、後日担当者から返信がありますので、今しばらくお待ちください。<br><br>また、今回お問い合わせしていただき誠にありがとうございます。<br>当サイトは利用者からのお問い合わせを基に、サイトの改善・更新をしております。<br>今後ともlegal&lifeをよろしくお願いいたします。</p>
-                <a href="/" class="success-home-btn">ホームへ戻る</a>
-            </div>
-        </main>
-
+<!-- ========================================
+        【暫定対応】アカウントシステム改修中につき
+        Google フォームへ誘導するブロック
+        Resend 移行完了後にこのブロックごと削除し、
+        下部のコメントアウトを解除してください
+        ======================================== -->
+<div class="contact-maintenance-box">
+    <div class="contact-maintenance-inner">
+        <span class="contact-maintenance-icon">🛠️</span>
+        <h2 class="contact-maintenance-title">お問い合わせフォームは一時停止中です</h2>
+        <p class="contact-maintenance-desc">
+            現在、アカウントシステムの改修作業に伴い、サイト内フォームを一時停止しております。<br>
+            大変ご不便をおかけしますが、以下の Google フォームよりお問い合わせください。
+        </p>
+        <a href="https://forms.gle/oCpvfHFZB5NsLHwR9"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-gform-btn">
+            お問い合わせフォームを開く
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    style="vertical-align:middle; margin-left:6px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+        </a>
+        <p class="contact-maintenance-note">
+            ※ 新しいタブで Google フォームが開きます
+        </p>
+        <a href="/info/details/0018"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-gform-btn">
+            お問い合わせに関するお知らせを確認する
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    style="vertical-align:middle; margin-left:6px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+        </a>
+    </div>
+</div>
+<!-- ／暫定対応ここまで -->
         <div id="footer"></div>
-        <template id="category-options-template">
-            <option value="" disabled selected hidden>選択してください</option>
-            <option value="サイト全般について">サイト全般について</option>
-            <option value="法令学習コンテンツについて">法令学習コンテンツについて</option>
-            <option value="チャットコンテンツについて">チャットコンテンツについて</option>
-            <option value="法令検索コンテンツについて">法令検索コンテンツについて</option>
-            <option value="ニュースコンテンツについて">ニュースコンテンツについて</option>
-            <option value="アカウント機能について">アカウント機能について</option>
-            <option value="法的文章について">法的文章について（プライバシーポリシー・利用規約・免責事項・クッキーポリシー）</option>
-            <option value="その他の分野・ページ">その他の分野・ページ</option>
-        </template>
-        <script src="/assets/js/contact.js" defer></script>
         <script type="module" src="/assets/js/important.js"></script>
         <script type="module" src="/assets/js/account.js"></script>
         <script defer src="/assets/js/access-log.js"></script>
