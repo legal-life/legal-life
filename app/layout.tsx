@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div id="header"><Header /></div>
         <main>{children}</main>
         <div id="footer"><Footer /></div>
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </body>
     </html>
   );

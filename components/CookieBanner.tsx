@@ -22,17 +22,17 @@ export default function CookieBanner() {
   if (!visible) return null;
 
   return (
-    <div id="cookie-banner" className="cookie-banner is-show">
-      <div className="cookie-content">
-        <p>
+    <div className="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur text-white p-5 shadow-[0_-2px_15px_rgba(0,0,0,0.3)] z-[9999] max-h-screen">
+      <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-5">
+        <p className="text-sm leading-relaxed flex-1 m-0">
           本サイトでは、アクセス解析およびサービス向上のためにCookieを使用しています。
           「同意する」をクリックすることで、Google Analytics等の外部サービスによるデータ処理に同意したものとみなされます。
-          詳細は<Link href="/law/privacy#section5" className="cookie-inline-link">外部サービスの利用とデータ提供</Link>
-          および<Link href="/law/cookie" className="cookie-inline-link">クッキーポリシー</Link>をご確認ください。
+          詳細は<Link href="/law/privacy#section5" className="text-sky-400 underline">外部サービスの利用とデータ提供</Link>
+          および<Link href="/law/cookie" className="text-sky-400 underline">クッキーポリシー</Link>をご確認ください。
         </p>
-        <div className="cookie-buttons">
+        <div className="flex gap-2.5 flex-wrap items-center">
           <button
-            className="cookie-btn cookie-btn-accept"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-md px-6 py-3"
             onClick={() => {
               acceptCookies();
               setVisible(false);
@@ -41,7 +41,7 @@ export default function CookieBanner() {
             同意する
           </button>
           <button
-            className="cookie-btn cookie-btn-reject"
+            className="bg-gray-500 hover:bg-gray-600 text-white font-bold text-sm rounded-md px-6 py-3"
             onClick={() => {
               rejectCookies();
               setVisible(false);
@@ -49,7 +49,9 @@ export default function CookieBanner() {
           >
             拒否する
           </button>
-          <Link href="/law/cookie" className="cookie-link">詳細を見る</Link>
+          <Link href="/law/cookie" className="border border-white text-white text-sm rounded-md px-6 py-3">
+            詳細を見る
+          </Link>
         </div>
       </div>
     </div>
