@@ -1,6 +1,11 @@
 # ビルド成果物
 dist/
 _site/
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
 
 # 環境設定ファイル
 .env
