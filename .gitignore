@@ -8,3 +8,9 @@ _site/
 
 # エディタ設定
 .vscode/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
