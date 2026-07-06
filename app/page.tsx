@@ -47,7 +47,7 @@ export default function HomePage() {
           <p className="text-sm font-bold text-primary-dark uppercase">Information</p>
           <p className="text-lg font-bold mb-4">お知らせ</p>
           <div className="divide-y">
-            {infoDetails.map((d) => (
+            {infoDetails.slice(0, 5).map((d) => (
               <div key={d.slug} className="flex items-center gap-4 py-2 text-sm">
                 <span className="text-gray-500 w-24 shrink-0">{d.date}</span>
                 <span className="flex-1">{d.title}</span>
