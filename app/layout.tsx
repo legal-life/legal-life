@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   title: { default: "legal&life", template: "%s | legal&life" },
   description: "法令の学習・相談・検索ができる legal&life です。",
   verification: {
-    google: "4c8af5b7bb85ef0b",
+    // 旧サイトではページによって異なる値(y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs)が
+    // account系ページにのみ混在していたが、他の大多数のページで使われていたこちらを正としている。
+    google: "wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8",
+  },
+  icons: {
+    icon: "/assets/images/favicon.png",
   },
   openGraph: {
     images: ["/assets/images/logo.png"],
