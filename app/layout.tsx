@@ -26,7 +26,8 @@ export const metadata: Metadata = {
     icon: "/assets/images/favicon.png",
   },
   openGraph: {
-    images: ["/assets/images/logo.png"],
+    // share.png はSNS等でシェアされた際のプレビュー画像用アセット
+    images: ["/assets/images/share.png"],
   },
 };
 
