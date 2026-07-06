@@ -48,11 +48,29 @@ lrgal&lifeというサイトを作成しています。
 その他お知らせは、<a href="https://legal-life.pages.dev/info" target="_blank" rel="noopener, noreferrer">お知らせページ</a>をご確認ください。
 
 ## 既知の問題
-- フォント  
-apple系列のOSを利用中の場合、フォントが正常に読み込まれない問題  
->改善策として、フォントファイルをサイトデータに追加し、読み込む方式を採択。環境がないため表示を確認することが不可能。
-
 - Webアクセシビリティ  
 ハンガーメニュー表示時並びに、アカウントログイン画面表示時に後ろ側もTabキーが反応してしまう問題  
 それ以外のページにおいてもボタンに2回もTabキーが反応してしまう問題
 >改善するために、様々なページにて検証を重ねております。
+
+## 技術スタック(Next.jsへの全面リライト後)
+本サイトはCloudflare Pages上の静的HTML/CSS/vanilla-JSサイトから、Next.js(App Router)+ TypeScript + Tailwind CSSへ全面リライトし、Vercelへ移行しました。
+
+- **フレームワーク**: Next.js 15 (App Router) + TypeScript
+- **スタイル**: Tailwind CSS(`next/font/local`でBIZUDGothicフォントを自己ホスト化。旧woff2ファイルは実体が壊れたフォントデータだったため削除・修正済み)
+- **認証**: Firebase Authentication(Google / メール・パスワード、2FA、セッション管理)
+- **データベース**: Firebase Firestore
+- **メール送信**: Resend(旧legal-life-mailerリポジトリのCloudflare Workers実装を`/api/mail`, `/api/mail/audience`としてこのリポジトリに統合。legal-life-mailerリポジトリはアーカイブ予定)
+- **AIチャット**: Gemini API(APIキーはサーバー側`/api/chat`経由のみで使用し、クライアントに露出しない構成)
+- **法令検索**: e-Gov法令API
+- **ホスティング**: Vercel
+
+### 必要な環境変数
+| 変数名 | 用途 |
+| --- | --- |
+| `NEXT_PUBLIC_FIREBASE_CONFIG` | Firebase設定(JSON文字列) |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Firebase App Check用reCAPTCHA v3サイトキー |
+| `NEXT_PUBLIC_SITE_URL` | サイトの本番URL(メタデータ・サイトマップ生成に使用) |
+| `GEMINI_API_KEY` | Gemini API(サーバー専用、`/api/chat`のみで参照) |
+| `RESEND_API_KEY` / `FROM_EMAIL` / `CONTACT_TO_EMAIL` | メール送信(Resend) |
+| `AUDIENCE_MAINTENANCE` / `AUDIENCE_FEATURE` / `AUDIENCE_NEWSLETTER` | Resend Audience ID(通知設定連携用) |
