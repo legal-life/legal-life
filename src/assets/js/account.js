@@ -69,7 +69,7 @@ async function getFirebase() {
 }
 
 // ── 定数 ──
-const MAIL_WORKER_URL = "https://legal-life-mailer.deskside-projects.workers.dev";
+const MAIL_WORKER_URL = "https://legal-life-mailer.vercel.app";
 const OTP_EXPIRE_MIN = 5;
 const SESSION_KEY = "legallife_session_id";
 const BACKUP_CODE_COUNT = 10;
