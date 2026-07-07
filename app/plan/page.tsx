@@ -56,31 +56,35 @@ export default function PlanPage() {
         <p className="text-sm text-gray-500 mt-2">あなたの学習スタイルに合わせた最適なプランをお選びください</p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+      <div className="flex gap-5 mb-12 overflow-x-auto pb-2 lg:justify-center lg:overflow-visible">
         {PLANS.map((p) => (
           <div
             key={p.name}
-            className={`relative bg-white border rounded-xl p-6 text-center ${p.featured ? "border-primary shadow-lg" : "border-gray-200"}`}
+            className={`relative flex flex-col items-center shrink-0 w-[220px] sm:w-[240px] bg-white border rounded-lg px-6 pt-10 pb-6 text-center transition-transform ${
+              p.featured ? "border-2 border-[#3498db] scale-105 shadow-[0_10px_20px_rgba(0,0,0,0.1)] z-10" : "border-[#e0e0e0]"
+            }`}
           >
             {p.featured && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold rounded-full px-3 py-1">
+              <span className="absolute top-2.5 left-1/2 -translate-x-1/2 bg-[#3498db] text-white text-xs font-bold rounded-full px-4 py-1 whitespace-nowrap shadow-[0_2px_5px_rgba(0,0,0,0.2)]">
                 おすすめ
               </span>
             )}
-            <h2 className="font-bold text-lg mb-3">{p.name}</h2>
-            <div className="mb-4">
+            <h2 className="font-bold text-lg text-[#2c3e50] mb-3">{p.name}</h2>
+            <div className="flex flex-col items-center justify-center h-[100px] mb-2">
               <div className="text-2xl font-bold">{p.price}</div>
-              {p.priceSub && <div className="text-xs text-gray-400">{p.priceSub}</div>}
+              {p.priceSub && <div className="text-xs text-gray-400 mt-1">{p.priceSub}</div>}
             </div>
-            <ul className="text-sm text-gray-600 space-y-1.5 mb-5 text-left">
+            <ul className="w-full text-sm text-gray-600 text-left mb-6 flex-grow">
               {p.features.map((f) => (
-                <li key={f}>・{f}</li>
+                <li key={f} className="py-2.5 border-b border-dotted border-[#e0e0e0]">
+                  {f}
+                </li>
               ))}
             </ul>
             <Link
               href={p.href}
-              className={`block w-full text-center font-bold rounded-lg py-2.5 text-sm ${
-                p.featured ? "bg-primary text-white" : "border border-gray-300 text-gray-700"
+              className={`block w-4/5 text-center font-bold rounded px-5 py-2.5 text-sm text-white ${
+                p.featured ? "bg-[#3498db]" : "bg-[#2c3e50]"
               }`}
             >
               {p.label}
