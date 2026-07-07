@@ -72,5 +72,5 @@ lrgal&lifeというサイトを作成しています。
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Firebase App Check用reCAPTCHA v3サイトキー |
 | `NEXT_PUBLIC_SITE_URL` | サイトの本番URL(メタデータ・サイトマップ生成に使用) |
 | `GEMINI_API_KEY` | Gemini API(サーバー専用、`/api/chat`のみで参照) |
-| `RESEND_API_KEY` / `FROM_EMAIL` / `CONTACT_TO_EMAIL` | メール送信(Resend) |
-| `AUDIENCE_MAINTENANCE` / `AUDIENCE_FEATURE` / `AUDIENCE_NEWSLETTER` | Resend Audience ID(通知設定連携用) |
+| `RESEND_API_KEY` / `FROM_EMAIL` / `CONTACT_TO_EMAIL` | メール送信(Resend)。`FROM_EMAIL`はResendでドメイン認証済みの独自ドメインが必須(gmail.com等の共有ドメインは送信元に指定不可) |
+| `SEGMENT_MAINTENANCE` / `SEGMENT_FEATURE` / `SEGMENT_NEWSLETTER` | Resend Segment ID(`seg_`から始まる。旧Audience機能から移行後の名称。通知設定連携用) |
