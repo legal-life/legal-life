@@ -66,7 +66,7 @@ export default function BackupCodePage() {
   if (!user || loading) return null;
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <Link href="/account/security/2fa" className="text-sm text-gray-500">← 二段階認証に戻る</Link>
       <h1 className="text-xl font-bold mt-3 mb-1">バックアップコード</h1>
       <p className="text-sm text-gray-500 mb-5">2FAが使えない場合の緊急ログイン用コードです</p>

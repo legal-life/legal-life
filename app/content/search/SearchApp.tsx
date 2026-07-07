@@ -108,60 +108,89 @@ export default function SearchApp() {
         </p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-5">
-        <div className="flex gap-2 mb-4">
+      <div className="max-w-[800px] mx-auto bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.1)] overflow-hidden">
+        <div className="flex">
           <button
-            className={`px-4 py-2 text-sm rounded-lg font-semibold ${target === "title" ? "bg-primary text-white" : "bg-gray-100"}`}
+            className={`flex-1 px-5 py-3.5 font-bold tracking-wide transition-colors border-r border-black/[0.08] ${
+              target === "title" ? "bg-[#00bcd4] text-white" : "bg-[#b2dfdb] text-[#00695c] hover:bg-[#80cbc4] hover:text-white"
+            }`}
             onClick={() => setTarget("title")}
           >
             法令名で検索
           </button>
           <button
-            className={`px-4 py-2 text-sm rounded-lg font-semibold ${target === "keyword" ? "bg-primary text-white" : "bg-gray-100"}`}
+            className={`flex-1 px-5 py-3.5 font-bold tracking-wide transition-colors ${
+              target === "keyword" ? "bg-[#00bcd4] text-white" : "bg-[#b2dfdb] text-[#00695c] hover:bg-[#80cbc4] hover:text-white"
+            }`}
             onClick={() => setTarget("keyword")}
           >
             キーワードで検索
           </button>
         </div>
 
-        <input
-          type="text"
-          className="w-full border border-gray-300 rounded-full px-4 py-2.5 text-sm mb-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-          placeholder="ここに入力して検索"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && runSearch(0)}
-        />
+        <div className="px-5 sm:px-6 pt-5 pb-6">
+          <div className="relative mb-4">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2">🔍</span>
+            <input
+              type="text"
+              className="w-full border-2 border-[#e0e0e0] rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-[#00bcd4] focus:ring-4 focus:ring-[#00bcd4]/10"
+              placeholder="ここに入力して検索"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && runSearch(0)}
+            />
+            {input && (
+              <button
+                type="button"
+                aria-label="入力をクリア"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xl leading-none"
+                onClick={() => setInput("")}
+              >
+                &times;
+              </button>
+            )}
+          </div>
 
-        <div className="flex flex-wrap gap-4 mb-4 text-sm">
-          <label className="flex items-center gap-2">
-            絞り込み(法令種別):
-            <select className="border border-gray-300 rounded px-2 py-1" value={lawType} onChange={(e) => setLawType(e.target.value)}>
-              <option value="">すべて</option>
-              {Object.entries(LAW_TYPE_LABELS).map(([v, label]) => (
-                <option key={v} value={v}>{label}</option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2">
-            並び替え:
-            <select className="border border-gray-300 rounded px-2 py-1" value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="none">指定なし</option>
-              <option value="amendment_promulgation_data_desc">最新の改定順</option>
-              <option value="date_desc">公布日が新しい順</option>
-              <option value="date_asc">公布日が古い順</option>
-              <option value="title_asc">法令名順(あいうえお)</option>
-            </select>
-          </label>
+          <div className="flex flex-wrap gap-4 mb-4 text-sm">
+            <label className="flex items-center gap-2 font-bold text-[#546e7a]">
+              絞り込み(法令種別):
+              <select
+                className="flex-1 border-2 border-[#e0e0e0] rounded-lg px-3 py-1.5 font-bold text-[#212121]"
+                value={lawType}
+                onChange={(e) => setLawType(e.target.value)}
+              >
+                <option value="">すべて</option>
+                {Object.entries(LAW_TYPE_LABELS).map(([v, label]) => (
+                  <option key={v} value={v}>{label}</option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 font-bold text-[#546e7a]">
+              並び替え:
+              <select
+                className="flex-1 border-2 border-[#e0e0e0] rounded-lg px-3 py-1.5 font-bold text-[#212121]"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+              >
+                <option value="none">指定なし</option>
+                <option value="amendment_promulgation_data_desc">最新の改定順</option>
+                <option value="date_desc">公布日が新しい順</option>
+                <option value="date_asc">公布日が古い順</option>
+                <option value="title_asc">法令名順(あいうえお)</option>
+              </select>
+            </label>
+          </div>
+
+          <button
+            id="searchButton"
+            className="w-full py-3.5 rounded-lg font-bold tracking-wide text-white transition-all disabled:opacity-60"
+            style={{ background: "linear-gradient(135deg, #00bcd4 0%, #0097a7 100%)", boxShadow: "0 3px 10px rgba(0,188,212,0.3)" }}
+            disabled={loading}
+            onClick={() => runSearch(0)}
+          >
+            検索
+          </button>
         </div>
-
-        <button
-          className="bg-primary hover:bg-primary-dark text-white font-bold rounded-lg px-6 py-2.5 text-sm disabled:opacity-60"
-          disabled={loading}
-          onClick={() => runSearch(0)}
-        >
-          検索
-        </button>
       </div>
 
       {error && <div className="text-red-600 text-sm mt-4">{error}</div>}

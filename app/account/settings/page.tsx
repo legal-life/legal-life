@@ -41,15 +41,15 @@ export default function SettingsPage() {
     : "--";
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <h1 className="text-xl font-bold mb-5">アカウント設定</h1>
 
       {deletionPending && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
-          <p className="font-bold text-sm mb-1">アカウント削除が予約されています</p>
-          <p className="text-sm mb-2">削除予定日: <strong>{scheduledDate}</strong></p>
+        <div className="border-[1.5px] border-red-400 bg-[#fff9f9] rounded-[10px] p-5 mb-6">
+          <p className="text-[#c0392b] font-bold text-sm mb-2">アカウント削除が予約されています</p>
+          <p className="text-sm mb-3">削除予定日: <strong>{scheduledDate}</strong></p>
           <button
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-gray-50"
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-bold hover:bg-gray-50"
             onClick={cancelDeletion}
           >
             削除をキャンセルする
@@ -57,50 +57,44 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 mb-5">
+      <div className="flex items-center gap-4 mb-6">
         {user.photoURL ? (
           <Image src={user.photoURL} alt="avatar" width={56} height={56} className="rounded-full object-cover" />
         ) : (
           <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">👤</div>
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">アカウント名</span>
-            <span className="font-semibold truncate ml-2">{user.displayName || "名前未設定"}</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-500">メールアドレス</span>
-            <span className="font-semibold truncate ml-2">{user.email || "（未設定）"}</span>
-          </div>
-          <p className="text-xs text-gray-400 mt-2">最終ログイン: {lastSignIn}</p>
+          <p className="font-bold truncate">{user.displayName || "名前未設定"}</p>
+          <p className="text-sm text-[#5f6368] truncate">{user.email || "（未設定）"}</p>
+          <p className="text-xs text-gray-400 mt-1">最終ログイン: {lastSignIn}</p>
         </div>
       </div>
 
-      <nav className="space-y-2 mb-5">
-        <Link href="/account/settings/profile" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
-          <div className="flex-1">
-            <p className="font-semibold text-sm">プロフィール</p>
-            <p className="text-xs text-gray-500">表示名・メール確認・アカウント削除</p>
-          </div>
-          <span className="text-gray-300">›</span>
-        </Link>
-        <Link href="/account/settings/privacy" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
-          <div className="flex-1">
-            <p className="font-semibold text-sm">通知・プライバシー</p>
-            <p className="text-xs text-gray-500">メール通知・ニュースレター設定</p>
-          </div>
-          <span className="text-gray-300">›</span>
-        </Link>
-        <Link href="/account/security" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
-          <div className="flex-1">
-            <p className="font-semibold text-sm">セキュリティ</p>
-            <p className="text-xs text-gray-500">パスワード・二段階認証・デバイス管理</p>
-          </div>
-          <span className="text-gray-300">›</span>
-        </Link>
+      <nav className="flex flex-col mb-6 border-t border-[#f1f3f4]">
+        {[
+          { href: "/account/settings/profile", icon: "👤", label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
+          { href: "/account/settings/privacy", icon: "🔔", label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
+          { href: "/account/security", icon: "🛡️", label: "セキュリティ", sub: "パスワード・二段階認証・デバイス管理" },
+        ].map((m) => (
+          <Link
+            key={m.href}
+            href={m.href}
+            className="flex items-center gap-3.5 py-4 border-b border-[#f1f3f4] hover:bg-[#f8f9fa] -mx-2 px-2 rounded-lg transition-colors"
+          >
+            <span className="w-9 h-9 rounded-full bg-[#f0fbfc] flex items-center justify-center shrink-0">{m.icon}</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm">{m.label}</p>
+              <p className="text-xs text-[#5f6368] mt-0.5">{m.sub}</p>
+            </div>
+            <span className="text-gray-300 shrink-0">›</span>
+          </Link>
+        ))}
       </nav>
 
-      <Link href="/account/logout" className="block w-full text-center border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50">
+      <Link
+        href="/account/logout"
+        className="block w-full text-center border-[1.5px] border-[#dadce0] rounded-lg py-2.5 text-sm font-bold hover:bg-gray-50"
+      >
         ログアウト
       </Link>
       <div className="text-center mt-4">

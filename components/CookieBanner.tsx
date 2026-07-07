@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { acceptCookies, denyConsent, getCookie, grantConsent, rejectCookies } from "@/lib/consent";
+import { acceptCookies, denyConsent, getCookie, grantConsent, initConsentDefaults, rejectCookies } from "@/lib/consent";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // window.gtag はここで初期化しないと未定義のままgrantConsent/denyConsentが
+    // 呼ばれてクラッシュする(cookie_consentが既に保存されているリピーター訪問時に必ず発生)。
+    initConsentDefaults();
     const consent = getCookie("cookie_consent");
     if (!consent) {
       const t = setTimeout(() => setVisible(true), 500);

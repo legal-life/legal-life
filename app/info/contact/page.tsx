@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold">お問い合わせ</h1>
-        <p className="text-sm text-gray-500 mt-2">
+    <div className="max-w-[760px] mx-auto px-5 pt-10 pb-20">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-[#333] mb-3">お問い合わせ</h1>
+        <p className="max-w-[560px] mx-auto text-sm text-[#555] leading-relaxed">
           ご質問・ご意見・バグ報告など、お気軽にお送りください。
           <br />
           メールアドレスをご入力いただいた場合、担当者より後日ご返信いたします。

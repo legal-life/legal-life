@@ -69,7 +69,7 @@ export default function SecurityPage() {
 
   if (needsGate) {
     return (
-      <div className="max-w-md mx-auto px-4 py-10">
+      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
         <h1 className="text-xl font-bold mb-1">セキュリティ</h1>
         <p className="text-sm text-gray-500 mb-4">アクセスするには本人確認が必要です</p>
         <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-2">
@@ -98,7 +98,7 @@ export default function SecurityPage() {
     : "--";
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <Link href="/account/settings" className="text-sm text-gray-500">← アカウント設定に戻る</Link>
       <h1 className="text-xl font-bold mt-3">セキュリティ</h1>
       <p className="text-sm text-gray-500 mb-5">最終ログイン: {lastSignIn}</p>

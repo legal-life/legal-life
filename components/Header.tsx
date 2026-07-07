@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import PopupLink from "./PopupLink";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -35,10 +36,10 @@ export default function Header() {
             }`}
           >
             <li className="mb-5"><Link href="/" className="text-gray-800 hover:text-primary-dark">ホーム</Link></li>
-            <li className="mb-5"><Link href="/content/study" className="text-gray-800 hover:text-primary-dark">法令学習</Link></li>
+            <li className="mb-5"><PopupLink className="text-gray-800 hover:text-primary-dark">法令学習</PopupLink></li>
             <li className="mb-5"><Link href="/content/chat" className="text-gray-800 hover:text-primary-dark">AIチャット</Link></li>
             <li className="mb-5"><Link href="/content/search" className="text-gray-800 hover:text-primary-dark">法令検索</Link></li>
-            <li className="mb-5"><Link href="/content/news" className="text-gray-800 hover:text-primary-dark">ニュース</Link></li>
+            <li className="mb-5"><PopupLink className="text-gray-800 hover:text-primary-dark">ニュース</PopupLink></li>
             <li className="mb-5"><hr className="border-t-2 border-black/15" /></li>
             <li className="mb-5 text-xs text-gray-500">
               アカウントはメンテナンス中です。詳しくは

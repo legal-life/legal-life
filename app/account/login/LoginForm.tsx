@@ -209,9 +209,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] px-4 py-10">
-      <div className="w-full max-w-[420px] bg-white border border-gray-200 rounded-2xl shadow-lg p-8">
-        <h1 className="text-xl font-bold text-center mb-1">ログイン</h1>
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
+        <h1 className="text-2xl font-bold text-center mb-1.5">ログイン</h1>
         <p className="text-center text-sm text-gray-500 mb-6">legal&life アカウントにログイン</p>
 
         <button
@@ -304,7 +303,6 @@ export default function LoginForm() {
         <div className="text-center mt-2">
           <Link href="/" className="text-sm text-gray-400">ホームへ戻る</Link>
         </div>
-      </div>
     </div>
   );
 }

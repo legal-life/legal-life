@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FirebaseInit from "@/components/FirebaseInit";
+import AccessLogger from "@/components/AccessLogger";
+import SessionWatcher from "@/components/SessionWatcher";
+import ScrollTopButton from "@/components/ScrollTopButton";
+import MaintenancePopup from "@/components/MaintenancePopup";
 import "./globals.css";
 
 // 元リポジトリの BIZUDGothic-Bold.woff2 は拡張子のみwoff2で実体が壊れたフォントデータのため
@@ -18,9 +25,8 @@ export const metadata: Metadata = {
   title: { default: "legal&life", template: "%s | legal&life" },
   description: "法令の学習・相談・検索ができる legal&life です。",
   verification: {
-    // 旧サイトではページによって異なる値(y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs)が
-    // account系ページにのみ混在していたが、他の大多数のページで使われていたこちらを正としている。
-    google: "wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8",
+    // Vercelドメイン移行に伴うSearch Console再確認用の値のみを使用する。
+    google: "Cd5Qt9qv8B4IZtsMqdvPt8tDfUoGh0ueLpghxhEsTSE",
   },
   icons: {
     icon: "/assets/images/favicon.png",
@@ -39,6 +45,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <div id="footer"><Footer /></div>
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
+        <FirebaseInit />
+        <AccessLogger />
+        <SessionWatcher />
+        <ScrollTopButton />
+        <MaintenancePopup />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
