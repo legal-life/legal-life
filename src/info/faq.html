@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <title>よくある質問|legal&life</title>
+            <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "よくある質問|legal&life",
+                "url": https://legal-life.pages.dev/info/faq/"
+            }
+        </script>
+        <meta name="description" content="このページはlegal&lifeのよくある質問ページです。当ページではサイトについて寄せられることが多い質問と回答をまとめて提示しています。当サイトは法令知識の普及と法知識不足による不利益を生まないことを目指しているサイトです。">
+        <meta name="robots" content="index, follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+        <meta property="og:title" content="よくある質問|legal&life">
+        <meta property="og:image" content="https://legal-life.pages.dev/assets/images/logo.png">
+        <meta property="og:type" content="website">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/assets/css/faq.css">
+        <link rel="stylesheet" href="/assets/css/main.css">
+        <link rel="stylesheet" href="/assets/css/account-shared.css">
+        <meta name="google-site-verification" content="wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8" />
+    </head>
+
+    <body class="all-page">
+    <div id="header"></div>
+        <main>
+            <article>
+                <h1 class="faq-title">よくある質問（FAQ）</h1>
+                <p class="faq-update-data">最終更新日: 2025年1月30日</p>
+                <section class="faq-section">
+                    <p>
+                        LEGAL&LIFEに関するよくある質問をまとめました。<br>
+                        ご不明な点がある場合は、お問い合わせページよりお気軽にご連絡ください。
+                    </p>
+
+                    <div class="faq_section">
+                        <div class="search-container">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="SearchInput" class="search-input" placeholder="キーワードを入力してください">
+                            <span type="button" id="search-clear" class="search-clear" aria-label="入力をクリア" data-search-clear="SearchInput">
+                                &times;
+                            </span>
+                        </div>
+                        <div class="faq_layout">
+                            <aside class="faq_sidebar">
+                                <button class="faq_tab_btn active" data-category="all">すべて</button>
+                                <button class="faq_tab_btn" data-category="service">サービス全般</button>
+                                <button class="faq_tab_btn" data-category="ai">AIチャット機能</button>
+                                <button class="faq_tab_btn" data-category="login">アカウントログイン機能</button>
+                                <button class="faq_tab_btn" data-category="privacy">個人情報・プライバシー</button>
+                                <button class="faq_tab_btn" data-category="trouble">トラブルシューティング</button>
+                                <button class="faq_tab_btn" data-category="legal">法的な質問</button>
+                                <button class="faq_tab_btn" data-category="other">その他</button>
+                            </aside>
+                            <main class="faq_content">
+                                <!-- サービス全般について -->
+                                <div class="faq_item" data-category="service" id="q-service-00001">
+                                    <div class="faq_question">LEGAL&LIFEとは、どのようなサービスですか？</div>
+                                    <div class="faq_answer">
+                                        <p>LEGAL&LIFEは、法令に関する学習支援と一般的な情報提供を目的とした無料のウェブサイトです。</p>
+                                        <p><strong>主な機能</strong>:</p>
+                                        <p>・<strong>学習機能</strong>: 法令の基礎知識から応用知識まで、わかりやすく学習できます</p>
+                                        <p>・<strong>AIチャット機能</strong>: AIを活用して、法令に関する一般的な質問に回答します</p>
+                                        <p>・<strong>法令検索</strong>: e-Gov法令APIを利用して、日本国の法令を検索できます</p>
+                                        <p>有志メンバーによる非営利運営で、完全無料でご利用いただけます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00002">
+                                    <div class="faq_question">利用料金はかかりますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>完全無料</strong>です。すべての機能を無料でご利用いただけます。</p>
+                                        <p>将来的に有料サービスを導入する場合は、事前に告知いたします。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00003">
+                                    <div class="faq_question">会員登録は必要ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>会員登録は<strong>不要</strong>です。</p>
+                                        <p>ただし、チャット履歴を保存し、別の端末からも閲覧したい場合は、Googleログインをご利用ください（任意）。Googleログインなしでも、すべての基本機能をご利用いただけます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00004">
+                                    <div class="faq_question">誰が運営していますか？</div>
+                                    <div class="faq_answer">
+                                        <p>LEGAL&LIFE運営チームという有志メンバーによって運営されています。</p>
+                                        <p>法人格を持たない非営利の任意団体で、法令に関する情報提供を通じて社会貢献することを目的としています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00005">
+                                    <div class="faq_question">どのようなブラウザで利用できますか？</div>
+                                    <div class="faq_answer">
+                                        <p>以下のブラウザを推奨しています：</p>
+                                        <p>・<strong>Google Chrome</strong>（最新版）</p>
+                                        <p>・<strong>Safari</strong>（最新版）</p>
+                                        <p>・<strong>Microsoft Edge</strong>（最新版）</p>
+                                        <p>・<strong>Firefox</strong>（最新版）</p>
+                                        <p>古いバージョンのブラウザでは、一部機能が正常に動作しない場合があります。最新版へのアップデートをお願いします。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00006">
+                                    <div class="faq_question">スマートフォンでも利用できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、スマートフォンに最適化されています。</strong></p>
+                                        <p>レスポンシブデザインを採用しており、以下のデバイスで快適に利用できます：</p>
+                                        <p>・スマートフォン（iPhone、Android）</p>
+                                        <p>・タブレット（iPad、Android タブレット）</p>
+                                        <p>・PC（Windows、Mac、Linux）</p>
+                                        <p>画面サイズに応じて自動的にレイアウトが調整されます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00007">
+                                    <div class="faq_question">インターネット接続は必要ですか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、必須です。</strong></p>
+                                        <p>本サービスは以下の理由でオンライン接続が必要です：</p>
+                                        <p>・AIチャット機能（Google AI Studioとの通信）</p>
+                                        <p>・法令検索機能（e-Gov APIとの通信）</p>
+                                        <p>・チャット履歴の保存・読み込み（Firebaseとの通信）</p>
+                                        <p>オフラインでは利用できません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00008">
+                                    <div class="faq_question">e-Gov法令検索とは何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>総務省が提供する<strong>公式の法令データベース</strong>です。</p>
+                                        <p>LEGAL&LIFEでは、e-Gov法令APIを利用して、日本国の現行法令を検索できます。検索結果は公式データに基づいているため、正確性が高いです。</p>
+                                        <p>ただし、最新の法改正が反映されるまでに数日から数週間かかる場合があります。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00009">
+                                    <div class="faq_question">法令検索で見つからない法律があります</div>
+                                    <div class="faq_answer">
+                                        <p>以下の理由が考えられます：</p>
+                                        <p>1. <strong>廃止された法令</strong>: 現行法令のみが検索対象です</p>
+                                        <p>2. <strong>地方自治体の条例</strong>: e-Gov法令APIは国の法令のみを対象としています</p>
+                                        <p>3. <strong>キーワードの相違</strong>: 正式名称または略称で検索してください</p>
+                                        <p>4. <strong>最新の法令</strong>: 公布直後の法令は反映に時間がかかります</p>
+                                        <p>最新の情報を確認したい場合は、e-GOV方式ページより検索ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00010">
+                                    <div class="faq_question">学習機能とは何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>法令の基礎知識から応用知識まで、<strong>段階的に学習できる教材コンテンツ</strong>です。</p>
+                                        <p>主な学習内容：</p>
+                                        <p>・法律の基礎知識（法の種類、法体系）</p>
+                                        <p>・各法分野の概要（民法、刑法、行政法など）</p>
+                                        <p>・実務的な手続き方法</p>
+                                        <p>現在準備中のコンテンツもあり、順次追加予定です。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="service" id="q-service-00011">
+                                    <div class="faq_question">アカウントを削除したい場合は？</div>
+                                    <div class="faq_answer">
+                                        <p>お問い合わせページから、以下の情報を含めてご連絡ください：</p>
+                                        <p>・登録時のメールアドレス</p>
+                                        <p>・削除希望の旨</p>
+                                        <p>確認後、すべてのデータ（チャット履歴、ユーザー情報）を完全に削除いたします。</p>
+                                        <p>削除後は復元できませんのでご注意ください。</p>
+                                    </div>
+                                </div>
+
+                                <!-- AIチャット機能について -->
+                                <div class="faq_item" data-category="ai" id="q-ai-00001">
+                                    <div class="faq_question">AIチャット機能とは何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>Google AI Studio（Gemini 3 Flash Preview）を活用した法令に関する対話サービスです。</p>
+                                        <p>法令に関する一般的な質問に対して、AIが自動で回答を生成します。ただし、<strong>法的助言ではなく</strong>、あくまで一般的な情報提供です。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00002">
+                                    <div class="faq_question">AIチャット機能は法的助言になりますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、法的助言ではありません。</strong></p>
+                                        <p>本サービスは一般的な情報提供を目的としており、特定の事案に対する法的助言を提供するものではありません。</p>
+                                        <p>具体的な法律問題については、<strong>必ず弁護士等の専門家にご相談ください</strong>。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00003">
+                                    <div class="faq_question">AI回答の精度はどのくらいですか？</div>
+                                    <div class="faq_answer">
+                                        <p>当方の推定では、以下の精度です：</p>
+                                        <p>・<strong>一般的な質問</strong>: 70-85%程度</p>
+                                        <p>・<strong>専門的な質問</strong>: 50-70%程度</p>
+                                        <p>AI生成の回答には誤りが含まれる可能性があるため、重要な判断には必ず専門家の確認を受けてください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00004">
+                                    <div class="faq_question">どのような質問をしてはいけませんか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>以下の情報は絶対に入力しないでください</strong>：</p>
+                                        <p>・<strong>個人情報</strong>: 氏名、住所、電話番号、マイナンバー、クレジットカード番号、健康情報等</p>
+                                        <p>・<strong>機密情報</strong>: 企業の営業秘密、訴訟係属中の詳細、インサイダー情報等</p>
+                                        <p>・<strong>第三者の秘密情報</strong></p>
+                                        <p>また、以下の目的での利用も禁止されています：</p>
+                                        <p>・訴訟における証拠資料としての利用</p>
+                                        <p>・行政手続における申請書類への転用</p>
+                                        <p>・契約書、遺言書等の法的文書の作成</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00005">
+                                    <div class="faq_question">チャット内容の履歴は保存されますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>アカウントにログインしている場合のみ</strong>、チャット履歴がFirebase Firestoreに保存されます。</p>
+                                        <p>保存されるデータ:</p>
+                                        <p>・ユーザーID</p>
+                                        <p>・質問内容</p>
+                                        <p>・AI生成回答</p>
+                                        <p>・チャット日時</p>
+                                        <p>ログインしていない場合、チャット内容はローカルにのみ保存されます。いつでも履歴は削除可能です。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00006">
+                                    <div class="faq_question">最新の法改正に対応していますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>Googleからの公式声明が出ていないため、断定することが出来ません。</strong></p>
+                                        <p>使用しているAIモデル（gemini 3.5 flash）の詳細な知識カットオフは公表されていません。最新の法改正や判例については、必ず公式サイトや専門家で確認してください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00007">
+                                    <div class="faq_question">AIチャットの文字数制限はありますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、あります。</strong></p>
+                                        <p>・1回の質問: <strong>最大1000文字</strong>まで入力可能です</p>
+                                        <p>・回答生成のタイムアウト: <strong>60秒</strong>で自動的に終了します</p>
+                                        <p>長文の質問や複雑な内容については、質問を分割してお送りいただくことをおすすめします。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00008">
+                                    <div class="faq_question">AIチャットで使用されるモデルは何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>Gemini 3.5 Flash</strong>を使用しています。</p>
+                                        <p>Google AI Studioが提供するAIモデルで、高速な応答と一般的な精度を両立しています。ただし、専門的な法律相談には対応していません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00009">
+                                    <div class="faq_question">AIチャットで「生成中」のまま止まってしまいます</div>
+                                    <div class="faq_answer">
+                                        <p>以下の原因が考えられます：</p>
+                                        <p>1. <strong>タイムアウト</strong>: 60秒以内に回答が生成されない場合、自動的に中断されます</p>
+                                        <p>2. <strong>ネットワークエラー</strong>: インターネット接続を確認してください</p>
+                                        <p>3. <strong>Google AI Studioの障害</strong>: 外部サービスの一時的な障害の可能性があります</p>
+                                        <p>4. <strong>質問が複雑すぎる</strong>: より簡潔な質問に言い換えてみてください</p>
+                                        <p>ページをリロードして再度お試しください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00010">
+                                    <div class="faq_question">チャット履歴はどこに保存されますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>ログインしている場合のみ</strong>（Google・Twitter・LINE・メール・パスワードいずれかでのログインが必要）、以下の場所に保存されます：</p>
+                                        <p>・<strong>ローカルストレージ</strong>: ブラウザ内に一時保存（未ログイン時も）</p>
+                                        <p>・<strong>Firebase Firestore</strong>: クラウドデータベースに永続保存（ログイン時のみ）</p>
+                                        <p>ログインせずに使用した場合、ブラウザを閉じるとローカルストレージのデータは失われる可能性があります。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00011">
+                                    <div class="faq_question">カテゴリー自動判定はどのように機能しますか？</div>
+                                    <div class="faq_answer">
+                                        <p>AIチャット機能では、質問内容から<strong>Gemini AIが自動的にカテゴリーを判定</strong>します。</p>
+                                        <p>判定されるカテゴリー例：</p>
+                                        <p>・民法、刑法、商法などの法分野</p>
+                                        <p>・相続、離婚、労働問題などの具体的テーマ</p>
+                                        <p>・一般的な法律知識、手続き方法</p>
+                                        <p>この機能により、より適切な回答を生成できるようにシステムが調整されています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00012">
+                                    <div class="faq_question">同時に複数の質問をすることはできますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、1つずつ順番に質問してください。</strong></p>
+                                        <p>AIは前後の文脈を考慮して回答を生成しますが、1つの質問に対して1つの回答を生成する仕様です。</p>
+                                        <p>複数の質問がある場合は、1つ目の回答を確認してから次の質問を送信してください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="ai" id="q-ai-00013">
+                                    <div class="faq_question">AIの回答を訂正・改善することはできますか？</div>
+                                    <div class="faq_answer">
+                                        <p>現在、ユーザー側で直接訂正する機能はありません。</p>
+                                        <p>ただし、以下の方法で対応できます：</p>
+                                        <p>・<strong>追加質問</strong>: 「もっと詳しく教えて」「別の角度から説明して」などと追加で質問</p>
+                                        <p>・<strong>質問の言い換え</strong>: より具体的または簡潔な質問に変更</p>
+                                        <p>・<strong>フィードバック</strong>: お問い合わせページから誤った回答を報告</p>
+                                    </div>
+                                </div>
+
+                                <!-- アカウントログインについて -->
+                                <div class="faq_item" data-category="login" id="q-login-00001">
+                                    <div class="faq_question">アカウントログインは必須ですか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、任意です。</strong></p>
+                                        <p>アカウントログインなしでも、すべての基本機能（学習、チャット、法令検索）をご利用いただけます。</p>
+                                        <p>チャット履歴を保存し、別の端末からでも見たいなどのことがある場合、アカウントログインをご利用ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00002">
+                                    <div class="faq_question">アカウントログインで取得される情報は何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>以下の情報が取得されます：</p>
+                                        <p>・ユーザーID（UID、匿名化された識別子）</p>
+                                        <p>・メールアドレス</p>
+                                        <p>・表示名</p>
+                                        <p>・プロフィール写真URL</p>
+                                        <p>これらの情報は、チャット履歴の管理にのみ使用されます。詳細は<a href="/law/privacy">プライバシーポリシー</a>をご確認ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00003">
+                                    <div class="faq_question">チャット履歴を削除できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、いつでも削除可能です。</strong></p>
+                                        <p>チャットページから、個別に履歴を削除することや、一括で削除する機能をご用意しています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00004">
+                                    <div class="faq_question">複数のアカウントで利用できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、可能です。</strong></p>
+                                        <p>ログアウト後、別のアカウント（Googleまたはメールアドレスとパスワード）でログインすることで、アカウントごとに異なるチャット履歴を管理できます。</p>
+                                        <p>ただし、同時に複数のアカウントをログインすることはできません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00005">
+                                    <div class="faq_question">Firebase Firestoreとは何ですか?</div>
+                                    <div class="faq_answer">
+                                        <p>Googleが提供する<strong>クラウドデータベースサービス</strong>です。</p>
+                                        <p>LEGAL&LIFEでは、アカウントログイン時のチャット機能での履歴を保存する際に使用しています。</p>
+                                        <p>保存場所: <strong>東京リージョン</strong>（バックアップは米国）</p>
+                                        <p>データは暗号化され、適切なアクセス制御により保護されています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00006">
+                                    <div class="faq_question">ローカルストレージとFirestoreの違いは？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>ローカルストレージ</strong>（未ログイン時）:</p>
+                                        <p>・ブラウザ内に一時保存</p>
+                                        <p>・デバイス固有（他のデバイスからアクセス不可）</p>
+                                        <p>・ブラウザのキャッシュクリアで削除される可能性あり</p>
+                                        <p><strong>Firestore</strong>（ログイン時）:</p>
+                                        <p>・クラウドに永続保存</p>
+                                        <p>・どのデバイスからでもアクセス可能</p>
+                                        <p>・2年間保存（最終アクセスから）</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00007">
+                                    <div class="faq_question">ログアウトするとチャット機能の履歴データは消えますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、消えません。</strong></p>
+                                        <p>アカウントにログインすることで保存されたチャット履歴は、ログアウト後もFirestoreに保存されています。</p>
+                                        <p>そのため、再度同じアカウントでログインすれば、過去のチャット履歴にアクセスできます。</p>
+                                        <p>また、再ログイン後に履歴削除を実施することが可能です。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00008">
+                                    <div class="faq_question">ログイン方法を追加・連携できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、アカウント設定ページから連携できます。</strong></p>
+                                        <p>Googleとメールアドレスとパスワードによるログインをアカウント設定ページから連携・管理できます。</p>
+                                        <p><strong>【Google連携に関する注意】</strong><br>
+                                        1つのGoogleアカウントは、1つの当サイトアカウントにのみ連携できます。<br>
+                                        また、最後のログイン方法は解除できません。ログイン方法を変更する場合は、先に新しい方法を連携してから旧方法を解除してください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00009">
+                                    <div class="faq_question">アカウントのパスワードを設定・変更できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、アカウント設定ページから行えます。</strong></p>
+                                        <p>パスワードが未設定の場合はパスワードの新規設定画面が表示されます。パスワードを設定すると、メールアドレス＋パスワードでも同一アカウントにログインできるようになります。</p>
+                                        <p>パスワード変更の際は、現在のパスワードの入力と再確認が必要です。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="login" id="q-login-00010">
+                                    <div class="faq_question">二段階認証を設定できますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、メールによる二段階認証を設定できます。</strong></p>
+                                        <p>アカウント設定ページの「🔐 二段階認証」セクションからトグルスイッチで有効・無効を切り替えることができます。</p>
+                                        <p><strong>【二段階認証が有効な場合の動作】</strong></p>
+                                        <p>・パスワードを変更する際に、登録済みのメールアドレスへ6桁の認証コードが送信されます</p>
+                                        <p>・二段階認証の有効・無効を切り替える際も、メールによる本人確認が行われます</p>
+                                        <p>・認証コードの有効期限は5分間です</p>
+                                        <p><strong>【ご利用上の注意】</strong></p>
+                                        <p>・二段階認証を利用するにはメールアドレスの設定が必要です</p>
+                                        <p>・メールアドレスが未設定の場合はアカウント設定ページから先に設定してください</p>
+                                    </div>
+                                </div>
+
+                                <!-- 個人情報・プライバシーについて -->
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00001">
+                                    <div class="faq_question">どのような個人情報が収集されますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>能動的に提供される情報</strong>:</p>
+                                        <p>・お問い合わせフォーム: 氏名（任意）、メールアドレス、問い合わせ内容</p>
+                                        <p>・Googleログイン時: GoogleアカウントのUID、メールアドレス、表示名、プロフィール写真URL</p>
+                                        <p>・AIチャット機能: 質問内容、AI回答</p>
+                                        <p><strong>自動的に取得される情報</strong>:</p>
+                                        <p>・IPアドレス（匿名化処理あり）</p>
+                                        <p>・Cookie情報</p>
+                                        <p>・デバイス・ブラウザ情報</p>
+                                        <p>・閲覧履歴</p>
+                                        <p>詳細は<a href="/law/privacy">プライバシーポリシー</a>をご確認ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00002">
+                                    <div class="faq_question">データは海外に送信されますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、米国等に送信されます。</strong></p>
+                                        <p>当サイトは以下の米国企業のサービスを利用しています：</p>
+                                        <p>・Google AI Studio（米国）</p>
+                                        <p>・Firebase（東京リージョン、バックアップは米国）</p>
+                                        <p>・Google Analytics（米国、欧州、アジア太平洋）</p>
+                                        <p>これらのサービス提供者は、適切な安全管理措置を実施していますが、日本の個人情報保護法と同等の保護水準が保証されるわけではありません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00003">
+                                    <div class="faq_question">Cookieは使用されていますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、使用しています。</strong></p>
+                                        <p>初回訪問時にCookie同意バナーが表示されます。「同意する」を選択すると、Google Analytics等の分析Cookieが有効になります。</p>
+                                        <p>「拒否する」を選択した場合、必須Cookie以外は使用されません。</p>
+                                        <p>詳細は<a href="/law/cookie">クッキーポリシー</a>をご確認ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00004">
+                                    <div class="faq_question">チャット内容は第三者に見られますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、原則として見られません。</strong></p>
+                                        <p>ただし、以下の場合はデータにアクセスされる可能性があります：</p>
+                                        <p>・<strong>Google AI Studio</strong>: API経由で質問内容が送信されますが、学習には使用されません（Googleのポリシーによる）</p>
+                                        <p>・<strong>運営者</strong>: システム障害の調査や不正利用の防止目的でのみアクセスします</p>
+                                        <p>・<strong>法的要請</strong>: 裁判所命令や法執行機関からの正式な要請があった場合</p>
+                                        <p>機密情報や個人情報は絶対に入力しないでください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00005">
+                                    <div class="faq_question">SSL/TLS暗号化は使用されていますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、使用しています。</strong></p>
+                                        <p>本サイトはHTTPS通信で保護されており、ブラウザとサーバー間の通信は暗号化されています。</p>
+                                        <p>ただし、Google AI StudioやFirebaseとの通信も含め、すべての通信経路でSSL/TLS暗号化が適用されています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00006">
+                                    <div class="faq_question">IPアドレスは記録されますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、記録されます。</strong></p>
+                                        <p>Google Analyticsによって、以下の情報が自動的に収集されます：</p>
+                                        <p>・IPアドレス（匿名化処理済み）</p>
+                                        <p>・アクセス元の国・地域</p>
+                                        <p>・デバイス情報、ブラウザ情報</p>
+                                        <p>・閲覧ページ、滞在時間</p>
+                                        <p>これらはサイト改善のためのアクセス解析に使用され、個人を特定する目的では使用されません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00007">
+                                    <div class="faq_question">Google Analyticsとは何ですか？</div>
+                                    <div class="faq_answer">
+                                        <p>Googleが提供する<strong>ウェブサイト分析ツール</strong>です。</p>
+                                        <p>LEGAL&LIFEでは、以下の目的で使用しています：</p>
+                                        <p>・ページビュー数の把握</p>
+                                        <p>・ユーザーの行動パターン分析</p>
+                                        <p>・サイトの改善点の発見</p>
+                                        <p>・人気コンテンツの把握</p>
+                                        <p>Cookie同意バナーで「拒否する」を選択すると、Google Analyticsは無効になります。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00008">
+                                    <div class="faq_question">プライバシーポリシーはどこで確認できますか？</div>
+                                    <div class="faq_answer">
+                                        <p>以下のページで確認できます：</p>
+                                        <p><a href="/law/privacy">プライバシーポリシー</a></p>
+                                        <p>個人情報の取り扱い、第三者提供、データ保存期間などの詳細情報が記載されています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="privacy" id="q-privacy-00009">
+                                    <div class="faq_question">データの保存期間はどのくらいですか？</div>
+                                    <div class="faq_answer">
+                                        <p>データの種類によって異なります：</p>
+                                        <p>・<strong>チャット履歴</strong>: 最終アクセスから2年間</p>
+                                        <p>・<strong>ユーザー情報</strong>: アカウント削除まで永続保存</p>
+                                        <p>・<strong>アクセスログ</strong>: 最大26ヶ月間（Google Analyticsの設定による）</p>
+                                        <p>・<strong>お問い合わせ内容</strong>: 対応完了後3年間</p>
+                                        <p>保存期間経過後、自動的に削除されます。</p>
+                                    </div>
+                                </div>
+
+                                <!-- トラブルシューティング -->
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00001">
+                                    <div class="faq_question">AIチャットが機能しません</div>
+                                    <div class="faq_answer">
+                                        <p>以下をご確認ください：</p>
+                                        <p>1. <strong>インターネット接続</strong>を確認してください</p>
+                                        <p>2. <strong>ブラウザを最新版</strong>に更新してください（推奨: Chrome、Safari、Edge、Firefox）</p>
+                                        <p>3. <strong>ブラウザのキャッシュをクリア</strong>してください</p>
+                                        <p>4. <strong>Google AI StudioまたはFirebaseの障害</strong>が発生している可能性があります</p>
+                                        <p>5. 上記で解決しない場合は、お問い合わせページよりご連絡ください</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00002">
+                                    <div class="faq_question">Googleログインができません</div>
+                                    <div class="faq_answer">
+                                        <p>以下をご確認ください：</p>
+                                        <p>1. <strong>Googleアカウント</strong>にログインしていますか？</p>
+                                        <p>2. <strong>ポップアップブロック</strong>が有効になっていませんか？</p>
+                                        <p>3. <strong>Cookieが無効</strong>になっていませんか？</p>
+                                        <p>4. <strong>プライベートブラウジング</strong>（シークレットモード）を使用していませんか？</p>
+                                        <p>5. <strong>Firebaseの障害</strong>が発生している可能性があります</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00003">
+                                    <div class="faq_question">チャット履歴が表示されません</div>
+                                    <div class="faq_answer">
+                                        <p>以下をご確認ください：</p>
+                                        <p>1. <strong>Googleログイン</strong>していますか？（ログインしていない場合、履歴は保存されません）</p>
+                                        <p>2. <strong>同じGoogleアカウント</strong>でログインしていますか？</p>
+                                        <p>3. 最終アクセスから<strong>2年以上経過</strong>していませんか？（2年経過後、自動削除されます）</p>
+                                        <p>4. <strong>Firebaseの障害</strong>が発生している可能性があります</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00004">
+                                    <div class="faq_question">ページが正しく表示されません</div>
+                                    <div class="faq_answer">
+                                        <p>以下をお試しください：</p>
+                                        <p>1. <strong>ページを再読み込み</strong>してください（Ctrl+R または Cmd+R）</p>
+                                        <p>2. <strong>キャッシュをクリア</strong>してください（Ctrl+Shift+R または Cmd+Shift+R）</p>
+                                        <p>3. <strong>別のブラウザ</strong>で試してください</p>
+                                        <p>4. <strong>JavaScriptが有効</strong>になっていることを確認してください</p>
+                                        <p>5. 上記で解決しない場合は、お問い合わせページよりブラウザ名とバージョンを明記してご連絡ください</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00005">
+                                    <div class="faq_question">「安全フィルタに引っかかりました」と表示されます</div>
+                                    <div class="faq_answer">
+                                        <p>これは<strong>Google AI Studioの安全フィルタ</strong>が作動した状態です。</p>
+                                        <p>以下の内容が含まれていると判定された可能性があります：</p>
+                                        <p>・暴力的または過激な表現</p>
+                                        <p>・差別的または攻撃的な内容</p>
+                                        <p>・違法行為に関する質問</p>
+                                        <p>・性的な表現</p>
+                                        <p>質問内容を見直し、より中立的な表現で再度お試しください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00006">
+                                    <div class="faq_question">モバイルで正しく動作しません</div>
+                                    <div class="faq_answer">
+                                        <p>以下をご確認ください：</p>
+                                        <p>1. <strong>対応ブラウザ</strong>: Safari（iOS）、Chrome（Android）の最新版を推奨</p>
+                                        <p>2. <strong>画面の向き</strong>: 縦向き（ポートレート）での利用を推奨</p>
+                                        <p>3. <strong>JavaScriptが有効</strong>か確認してください</p>
+                                        <p>4. <strong>プライベートブラウジング</strong>（シークレットモード）では一部機能が制限されます</p>
+                                        <p>5. <strong>アプリ内ブラウザ</strong>（LINEやInstagram内ブラウザ）では正常に動作しない場合があります</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00007">
+                                    <div class="faq_question">エラーコードが表示されました</div>
+                                    <div class="faq_answer">
+                                        <p>以下の主なエラーコードと対処法：</p>
+                                        <p>・<strong>500エラー</strong>: サーバー側の問題。時間をおいて再度お試しください</p>
+                                        <p>・<strong>403エラー</strong>: アクセス権限の問題。Cookieを削除して再度お試しください</p>
+                                        <p>・<strong>401エラー</strong>: 認証エラー。ログアウト後、再ログインしてください</p>
+                                        <p>・<strong>429エラー</strong>: APIリクエスト制限超過。しばらく時間をおいてください</p>
+                                        <p>解決しない場合は、エラーコードとスクリーンショットを添えてお問い合わせください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="trouble" id="q-trouble-00008">
+                                    <div class="faq_question">ブラウザのキャッシュをクリアする方法は？</div>
+                                    <div class="faq_answer">
+                                        <p>主要ブラウザでのキャッシュクリア方法：</p>
+                                        <p><strong>Chrome</strong>: 設定 → プライバシーとセキュリティ → 閲覧履歴データの削除</p>
+                                        <p><strong>Safari</strong>: 環境設定 → プライバシー → Webサイトデータを管理</p>
+                                        <p><strong>Edge</strong>: 設定 → プライバシー、検索、サービス → 閲覧データをクリア</p>
+                                        <p><strong>Firefox</strong>: オプション → プライバシーとセキュリティ → Cookieとサイトデータ</p>
+                                        <p>または、キーボードショートカット: <strong>Ctrl+Shift+Delete</strong>（Windows）/ <strong>Cmd+Shift+Delete</strong>（Mac）</p>
+                                    </div>
+                                </div>
+
+                                <!-- 法的な質問 -->
+                                <div class="faq_item" data-category="legal" id="q-legal-00001">
+                                    <div class="faq_question">訴訟や契約に使えますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、使用できません。</strong></p>
+                                        <p>本サイトの情報は一般的な参考情報であり、以下の目的での利用は禁止されています：</p>
+                                        <p>・訴訟における証拠資料</p>
+                                        <p>・行政手続における申請書類</p>
+                                        <p>・契約書、遺言書等の法的文書の作成</p>
+                                        <p>・税務申告、登記申請</p>
+                                        <p>これらの目的には、<strong>必ず弁護士等の専門家にご相談ください</strong>。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="legal" id="q-legal-00002">
+                                    <div class="faq_question">AI回答に誤りがあった場合、責任を取ってもらえますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、当方は一切の責任を負いません。</strong></p>
+                                        <p>本サイトの情報に基づいて取った行動により生じた損害について、当方は責任を負いません（故意または重過失による場合を除く）。</p>
+                                        <p>詳細は<a href="/law/disclaimer">免責事項</a>をご確認ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="legal" id="q-legal-00003">
+                                    <div class="faq_question">弁護士に相談すべきケースは？</div>
+                                    <div class="faq_answer">
+                                        <p>以下の場合は、<strong>必ず弁護士等の専門家に相談してください</strong>：</p>
+                                        <p>・訴訟を提起する、または提起された場合</p>
+                                        <p>・刑事事件に関与した場合</p>
+                                        <p>・契約書の作成・締結を行う場合</p>
+                                        <p>・不動産取引、相続、離婚等の重要な法律行為</p>
+                                        <p>・行政処分を受けた、または受ける可能性がある場合</p>
+                                        <p>・労働問題（解雇、未払賃金等）</p>
+                                        <p>・金銭的損害が100万円以上見込まれる場合</p>
+                                        <p>・時効が迫っている場合</p>
+                                        <p><strong>無料法律相談</strong>: 法テラス（0570-078374）、弁護士会の法律相談センター</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="legal" id="q-legal-00004">
+                                    <div class="faq_question">利用規約はどこで確認できますか？</div>
+                                    <div class="faq_answer">
+                                        <p>以下のページで確認できます：</p>
+                                        <p><a href="/law/terms">利用規約</a></p>
+                                        <p>サービスの利用条件、禁止事項、免責事項などが記載されています。</p>
+                                        <p>本サービスを利用することで、利用規約に同意したものとみなされます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="legal" id="q-legal-00005">
+                                    <div class="faq_question">著作権や知的財産権について教えてください</div>
+                                    <div class="faq_answer">
+                                        <p>本サイトのコンテンツに関する権利：</p>
+                                        <p>・<strong>オリジナルコンテンツ</strong>: LEGAL&LIFE運営チームに帰属</p>
+                                        <p>・<strong>AI生成回答</strong>: 利用者とLEGAL&LIFEの共同著作物とみなされます</p>
+                                        <p>・<strong>法令データ</strong>: e-Gov法令APIから取得した公開情報</p>
+                                        <p>個人的な利用の範囲内であれば、AI生成回答のコピー・保存は可能ですが、商用利用や再配布は禁止されています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="legal" id="q-legal-00006">
+                                    <div class="faq_question">サービスの利用を制限されることはありますか？</div>
+                                    <div class="faq_answer">
+                                        <p>以下の場合、利用を制限または停止することがあります：</p>
+                                        <p>・利用規約に違反した場合</p>
+                                        <p>・不正アクセスや攻撃行為を行った場合</p>
+                                        <p>・過度なAPIリクエストでサーバーに負荷をかけた場合</p>
+                                        <p>・虚偽の情報を提供した場合</p>
+                                        <p>・他のユーザーや第三者に迷惑をかけた場合</p>
+                                        <p>利用制限の際は、事前に通知する場合がありますが、緊急時は予告なく停止することがあります。</p>
+                                    </div>
+                                </div>
+
+                                <!-- その他 -->
+                                <div class="faq_item" data-category="other" id="q-other-00001">
+                                    <div class="faq_question">サービスが終了することはありますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、可能性があります。</strong></p>
+                                        <p>本サイトは有志による非営利運営のため、運営メンバーの事情により、予告なくサービスを縮小または終了する可能性があります。</p>
+                                        <p>サービス終了時は、少なくとも30日前に告知し、ユーザーデータは告知から60日後に完全削除されます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00002">
+                                    <div class="faq_question">新機能の提案はできますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、大歓迎です！</strong></p>
+                                        <p>お問い合わせページより、新機能のアイデアや改善提案をお送りください。すべてのご提案を検討させていただきます。</p>
+                                        <p>ただし、有志運営のため、実装をお約束することはできませんのでご了承ください。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00003">
+                                    <div class="faq_question">問題や不具合を見つけた場合は？</div>
+                                    <div class="faq_answer">
+                                        <p>お問い合わせページより、以下の情報を含めてご連絡ください：</p>
+                                        <p>・問題が発生した日時</p>
+                                        <p>・使用しているブラウザとバージョン</p>
+                                        <p>・問題の内容（可能であればスクリーンショット）</p>
+                                        <p>・再現手順</p>
+                                        <p>迅速に対応させていただきます。ご協力ありがとうございます。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00004">
+                                    <div class="faq_question">サイトの運営に協力したいのですが？</div>
+                                    <div class="faq_answer">
+                                        <p>ありがとうございます！現時点では、以下の形でご協力いただけます：</p>
+                                        <p>・<strong>フィードバック</strong>: サービスの改善提案をお送りください</p>
+                                        <p>・<strong>不具合報告</strong>: 問題を発見された場合はご報告ください</p>
+                                        <p>・<strong>セキュリティ脆弱性報告</strong>: 責任ある開示にご協力ください</p>
+                                        <p>・<strong>口コミ</strong>: 周りの方にLEGAL&LIFEをご紹介ください</p>
+                                        <p>運営メンバー募集については、現時点では予定しておりません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00005">
+                                    <div class="faq_question">オープンソースですか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>いいえ、オープンソースではありません。</strong></p>
+                                        <p>改善提案やバグレポートは、<a href="/info/contact">お問い合わせページ</a>からお願いします。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00006">
+                                    <div class="faq_question">cloudflare Pagesでホスティングされていますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、cloudflare Pagesを使用しています。</strong></p>
+                                        <p>サイトページ: <a href="/">cloudflare Pages</a></p>
+                                        <p>静的サイトとしてホスティングされており、高速かつ安定した動作を提供しています。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00007">
+                                    <div class="faq_question">お問い合わせへの返信はどのくらいかかりますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>2週間以内に一次回答</strong>をさせていただきます。</p>
+                                        <p>しかし、チーム作成サイトのため一次回答が遅れる可能性があります。</p>
+                                        <p>内容によっては調査に時間がかかる場合がありますが、その場合も進捗状況をお知らせします。</p>
+                                        <p>緊急性の高い問題（セキュリティ脆弱性など）は優先的に対応します。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00008">
+                                    <div class="faq_question">どのような技術スタックで構築されていますか？</div>
+                                    <div class="faq_answer">
+                                        <p>本サイトは以下の技術で構築されています：</p>
+                                        <p><strong>フロントエンド</strong>:</p>
+                                        <p>・HTML5、CSS3、JavaScript（Vanilla JS）</p>
+                                        <p>・レスポンシブデザイン</p>
+                                        <p><strong>バックエンド・外部サービス</strong>:</p>
+                                        <p>・Google AI Studio（Gemini 2.0 Flash API）</p>
+                                        <p>・Firebase Authentication（Googleログイン）</p>
+                                        <p>・Firebase Firestore（データベース）</p>
+                                        <p>・e-Gov法令API（法令検索）</p>
+                                        <p>・Google Analytics（アクセス解析）</p>
+                                        <p><strong>ホスティング</strong>:</p>
+                                        <p>・cloudflare Pages</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00009">
+                                    <div class="faq_question">サービスの更新情報はどこで確認できますか？</div>
+                                    <div class="faq_answer">
+                                        <p>現在、専用の更新情報ページは準備中です。</p>
+                                        <p>重要な更新がある場合は、以下の方法でお知らせします：</p>
+                                        <p>・トップページのお知らせバナー</p>
+                                        <p>・プライバシーポリシー、利用規約の「最終更新日」表記</p>
+                                        <p>・お問い合わせいただいたユーザーへのメール通知（重大な変更の場合）</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00010">
+                                    <div class="faq_question">API利用制限はありますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>はい、以下の制限があります：</strong></p>
+                                        <p>・<strong>Google AI Studio API</strong>: 1分あたりのリクエスト数に制限あり</p>
+                                        <p>・<strong>e-Gov法令API</strong>: 公式の利用制限に準拠</p>
+                                        <p>・<strong>Firebase</strong>: 無料枠の範囲内で運用</p>
+                                        <p>過度なリクエストを送信した場合、一時的に利用制限がかかる場合があります。</p>
+                                        <p>正常な利用範囲であれば、制限に達することはほとんどありません。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00011">
+                                    <div class="faq_question">サイトの利用統計は公開されていますか？</div>
+                                    <div class="faq_answer">
+                                        <p><strong>現在、公開していません。</strong></p>
+                                        <p>プライバシー保護の観点から、個別のユーザー情報やアクセス統計は公開しておりません。</p>
+                                        <p>将来的に、匿名化された統計情報（月間訪問者数など）を公開する可能性はあります。</p>
+                                    </div>
+                                </div>
+
+                                <div class="faq_item" data-category="other" id="q-other-00012">
+                                    <div class="faq_question">アクセシビリティへの対応状況は？</div>
+                                    <div class="faq_answer">
+                                        <p>本サイトは基本的なアクセシビリティに配慮していますが、完全な対応には至っていません。</p>
+                                        <p>現在対応している内容：</p>
+                                        <p>・セマンティックHTMLの使用</p>
+                                        <p>・キーボード操作への対応</p>
+                                        <p>・適切な色コントラスト</p>
+                                        <p>・レスポンシブデザイン</p>
+                                        <p>今後、WCAG 2.1基準への対応を進めていく予定です。アクセシビリティに関するご意見・ご要望は、お問い合わせページからお寄せください。</p>
+                                    </div>
+                                </div>
+
+                                <div id="faq-empty-message" style="display:none; text-align:center; padding: 40px; color: #94a3b8;">
+                                    該当する質問が見つかりませんでした。
+                                </div>
+                            </main>
+                        </div>
+                    </div>
+
+                    <div class="faq-footer-contact">
+                        <div class="contact-card">
+                            <h2 class="contact-title">解決しませんでしたか？</h2>
+                            <p class="contact-text">
+                                お調べの件が解決しなかった場合は、<br>
+                                担当者が詳しくお答えいたします。
+                            </p>
+                            <div class="contact-button-area">
+                                <a href="/info/contact" class="contact-btn">
+                                    お問い合わせフォームへ
+                                </a>
+                            </div>
+                            <p class="contact-note">※通常、1週間以内に回答させていただきます</p>
+                        </div>
+                    </div>
+
+                    
+
+                </section>
+            </article>
+        </main>
+        <div id="footer"></div>
+        <script src="/assets/js/faq.js"></script>
+        <script type="module" src="/assets/js/important.js"></script>
+        <script type="module" src="/assets/js/account.js"></script>
+        <script defer src="/assets/js/access-log.js"></script>
+    </body>
+
+</html>
