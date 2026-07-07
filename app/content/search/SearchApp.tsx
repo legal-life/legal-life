@@ -124,14 +124,27 @@ export default function SearchApp() {
           </button>
         </div>
 
-        <input
-          type="text"
-          className="w-full border border-gray-300 rounded-full px-4 py-2.5 text-sm mb-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-          placeholder="ここに入力して検索"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && runSearch(0)}
-        />
+        <div className="relative mb-3">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2">🔍</span>
+          <input
+            type="text"
+            className="w-full border border-gray-300 rounded-full pl-10 pr-10 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            placeholder="ここに入力して検索"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && runSearch(0)}
+          />
+          {input && (
+            <button
+              type="button"
+              aria-label="入力をクリア"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xl leading-none"
+              onClick={() => setInput("")}
+            >
+              &times;
+            </button>
+          )}
+        </div>
 
         <div className="flex flex-wrap gap-4 mb-4 text-sm">
           <label className="flex items-center gap-2">

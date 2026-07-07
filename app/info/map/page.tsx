@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import PopupLink from "@/components/PopupLink";
 
 export const metadata: Metadata = {
   title: "サイトマップ",
@@ -8,23 +9,23 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-const CATEGORIES = [
+const CATEGORIES: { title: string; links: { href: string | null; label: string }[] }[] = [
   {
     title: "主要ページ",
     links: [
       { href: "/", label: "🏠 ホーム" },
       { href: "/content", label: "🏠 コンテンツホーム" },
       { href: "/content/chat", label: "💬 チャット" },
-      { href: "/content/study", label: "📖 法令学習" },
+      { href: null, label: "📖 法令学習" },
       { href: "/content/search", label: "🔍 法令検索" },
-      { href: "/content/news", label: "📰 ニュース" },
+      { href: null, label: "📰 ニュース" },
     ],
   },
   {
     title: "サイト情報ページ",
     links: [
       { href: "/info/about", label: "🏢 サイト概要" },
-      { href: "/info/history", label: "📜 沿革" },
+      { href: null, label: "📜 沿革" },
       { href: "/info", label: "ⓘ お知らせ" },
       { href: "/info/faq", label: "❓ よくある質問" },
       { href: "/info/contact", label: "✉️ お問い合わせ" },
@@ -51,11 +52,17 @@ export default function SitemapPage() {
           <div key={cat.title}>
             <h3 className="font-bold text-sm text-gray-500 mb-2">{cat.title}</h3>
             <div className="flex flex-col gap-1">
-              {cat.links.map((l) => (
-                <Link key={l.href} href={l.href} className="text-sm text-primary-dark hover:underline">
-                  {l.label}
-                </Link>
-              ))}
+              {cat.links.map((l) =>
+                l.href ? (
+                  <Link key={l.label} href={l.href} className="text-sm text-primary-dark hover:underline">
+                    {l.label}
+                  </Link>
+                ) : (
+                  <PopupLink key={l.label} className="text-sm text-primary-dark hover:underline">
+                    {l.label}
+                  </PopupLink>
+                ),
+              )}
             </div>
           </div>
         ))}

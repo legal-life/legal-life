@@ -64,6 +64,7 @@ function loadGoogleAnalytics() {
 }
 
 export function grantConsent() {
+  if (typeof window.gtag !== "function") initConsentDefaults();
   window.gtag("consent", "update", {
     ad_storage: "denied",
     ad_user_data: "denied",
@@ -76,6 +77,7 @@ export function grantConsent() {
 }
 
 export function denyConsent() {
+  if (typeof window.gtag !== "function") initConsentDefaults();
   window.gtag("consent", "update", {
     analytics_storage: "denied",
     functionality_storage: "denied",

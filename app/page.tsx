@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { infoDetails } from "@/data/info-details";
+import PopupLink from "@/components/PopupLink";
 
 export const metadata: Metadata = {
   title: "ホーム",
@@ -33,10 +34,10 @@ export default function HomePage() {
           <p className="text-lg font-bold mb-2">コンテンツ</p>
           <p className="text-gray-700 mb-4">当サイトのコンテンツ一覧です。利用したいコンテンツを選択してください。</p>
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <Link href="/content/study" className="border rounded-lg text-center py-3 hover:bg-gray-50">法令学習</Link>
+            <PopupLink className="border rounded-lg text-center py-3 hover:bg-gray-50 block">法令学習</PopupLink>
             <Link href="/content/chat" className="border rounded-lg text-center py-3 hover:bg-gray-50">チャット</Link>
             <Link href="/content/search" className="border rounded-lg text-center py-3 hover:bg-gray-50">法令検索</Link>
-            <Link href="/content/news" className="border rounded-lg text-center py-3 hover:bg-gray-50">ニュース</Link>
+            <PopupLink className="border rounded-lg text-center py-3 hover:bg-gray-50 block">ニュース</PopupLink>
           </div>
           <Link href="/content" className="text-primary-dark font-semibold">
             &rarr; 詳細を見る

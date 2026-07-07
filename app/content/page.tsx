@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import PopupLink from "@/components/PopupLink";
 
 export const metadata: Metadata = {
   title: "コンテンツ",
@@ -11,7 +12,7 @@ const CARDS = [
   {
     title: "学習",
     desc: "理解することが難しい法令をわかりやすく学習できます。基礎知識から実務で役立つ応用知識まで、あなたの必要なものからでも着実に理解を深めることができます。",
-    href: "/content/study",
+    href: null,
     label: "学習する",
   },
   {
@@ -29,7 +30,7 @@ const CARDS = [
   {
     title: "ニュース",
     desc: "最新の法令ニュースをわかりやすく詳しく閲覧できます。現存の法令の改定から、新たに制定された法令まで最新の法令をお伝えします。",
-    href: "/content/news",
+    href: null,
     label: "閲覧する",
   },
 ];
@@ -55,9 +56,15 @@ export default function ContentPage() {
               <br />
               当機能を利用した際は当サイトのサイトポリシーのすべてを同意したものとみなします。
             </p>
-            <Link href={c.href} className="inline-block bg-primary text-white text-sm font-bold rounded-lg px-5 py-2">
-              {c.label}
-            </Link>
+            {c.href ? (
+              <Link href={c.href} className="inline-block bg-primary text-white text-sm font-bold rounded-lg px-5 py-2">
+                {c.label}
+              </Link>
+            ) : (
+              <PopupLink className="inline-block bg-primary text-white text-sm font-bold rounded-lg px-5 py-2">
+                {c.label}
+              </PopupLink>
+            )}
           </div>
         ))}
       </div>
