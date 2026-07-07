@@ -38,46 +38,52 @@ export default function OtpPanel({
   };
 
   return (
-    <div className="bg-gray-50 rounded-xl border border-gray-200 p-5 mt-4">
-      <p className="font-bold mb-1 text-sm">{title}</p>
-      <p className="text-sm text-gray-600 mb-3">{desc}</p>
-      <input
-        type="text"
-        inputMode="numeric"
-        maxLength={6}
-        placeholder="000000"
-        autoComplete="one-time-code"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none mb-2 text-center tracking-[0.5em] font-mono"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-      />
-      {showBackup && (
-        <>
-          <p className="text-xs text-gray-500 my-2">または バックアップコードを使用</p>
-          <input
-            type="text"
-            maxLength={16}
-            placeholder="XXXXXXXX"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none mb-2"
-            value={backup}
-            onChange={(e) => setBackup(e.target.value)}
-          />
-        </>
-      )}
-      {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
-      <div className="flex gap-2 justify-end mt-2">
-        <button type="button" className="text-sm px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100" onClick={onCancel}>
-          キャンセル
-        </button>
-        <button
-          type="button"
-          className="text-sm px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-dark disabled:opacity-60"
-          disabled={submitting}
-          onClick={handleSubmit}
-        >
-          {submitting ? "確認中..." : "確認する"}
-        </button>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[10001] p-5">
+      <div className="bg-white rounded-2xl w-full max-w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.25)] px-7 py-8 text-center">
+        <p className="text-lg font-bold text-[#222] mb-2.5">{title}</p>
+        <p className="text-sm text-[#666] leading-relaxed mb-5">{desc}</p>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="000000"
+          autoComplete="one-time-code"
+          className="w-full border-2 border-[#e0e0e0] rounded-[10px] py-3.5 text-3xl font-bold text-center tracking-[12px] outline-none transition-colors focus:border-primary focus:ring-4 focus:ring-primary/15"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        />
+        {showBackup && (
+          <>
+            <p className="text-xs text-gray-500 my-2">または バックアップコードを使用</p>
+            <input
+              type="text"
+              maxLength={16}
+              placeholder="XXXXXXXX"
+              className="w-full border-2 border-[#e0e0e0] rounded-lg px-3 py-2 text-sm outline-none mb-2 focus:border-primary"
+              value={backup}
+              onChange={(e) => setBackup(e.target.value)}
+            />
+          </>
+        )}
+        <p className="text-sm text-[#e74c3c] min-h-[20px] my-2">{error}</p>
+        <div className="flex gap-2.5 mt-1">
+          <button
+            type="button"
+            className="flex-1 py-2.5 rounded-lg border-[1.5px] border-[#ddd] bg-white text-[#555] font-bold text-sm hover:bg-[#f5f5f5]"
+            onClick={onCancel}
+          >
+            キャンセル
+          </button>
+          <button
+            type="button"
+            className="flex-[2] py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary-dark disabled:opacity-60"
+            disabled={submitting}
+            onClick={handleSubmit}
+          >
+            {submitting ? "確認中..." : "確認する"}
+          </button>
+        </div>
       </div>
     </div>
   );
