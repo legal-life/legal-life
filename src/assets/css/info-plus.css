@@ -1,0 +1,306 @@
+/* 詳細ページのメインコンテナ */
+.info-detail-container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* お知らせのタイトル */
+.info-detail-title {
+    font-size: 1.8rem;
+    color: #333;
+    border-left: 5px solid #7ddce8; /* アクセントの左線 */
+    padding-left: 15px;
+    margin-bottom: 10px;
+}
+
+/* 公開日 */
+.info-detail-date {
+    display: block;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* 本文エリア */
+.info-detail-content {
+    line-height: 1.8;
+    color: #444;
+    font-size: 1.05rem;
+}
+
+.info-detail-content p {
+    margin-bottom: 1.5em;
+}
+
+/* 重要な強調テキスト */
+.info-detail-content strong {
+    color: #0076a3;
+    background: linear-gradient(transparent 70%, #b2e2e8 70%); /* 下線風のハイライト */
+}
+
+/* 一覧へ戻るボタン */
+.back-to-list {
+    display: block;
+    width: fit-content;
+    margin: 50px auto 0;
+    padding: 12px 30px;
+    background-color: #f0fbfc;
+    color: #0076a3;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    border: 1px solid #7ddce8;
+    transition: all 0.3s ease;
+}
+
+.back-to-list:hover {
+    background-color: #7ddce8;
+    color: #fff;
+    transform: translateX(-5px); /* 左に少し動くアニメーション */
+}
+
+/* ロゴ比較コンテナ */
+.img-comparison {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+/* 各ロゴの要素 */
+.img-item {
+    text-align: center;
+    flex: 1;
+}
+
+.img-item img {
+    max-width: 150px; /* ロゴのサイズに合わせて調整 */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* 「変更前」「変更後」のラベル */
+.img-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.img-label.new {
+    color: #0076a3; /* 変更後はテーマカラーで強調 */
+}
+
+/* 矢印部分 */
+.img-arrow {
+    font-size: 2rem;
+    color: #7ddce8;
+    font-weight: bold;
+}
+
+/* 情報のテーブル状枠囲み */
+.detail-box {
+    background-color: #fcfcfc;
+    border: 1px solid #eee;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.detail-box h3 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    color: #333;
+    text-align: center;
+}
+
+/* 簡潔な表形式 */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95rem;
+}
+
+.detail-table th, .detail-table td {
+    border: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+}
+
+.detail-table th {
+    background-color: #f0fbfc;
+    width: 30%;
+    color: #0076a3;
+}
+
+/* お問い合わせリンクのスタイル調整 */
+.info-detail-content a {
+    color: #0076a3;
+    text-decoration: underline;
+}
+
+/* 予備用フォームの説明（少し注意を引くスタイル） */
+.safety-note {
+    background-color: #fff9e6; /* 薄い黄色で注意を促す */
+    border-left: 4px solid #ffcc00;
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.update-point h3 {
+    font-size: 1.2rem;
+    color: #0076a3;
+    margin-bottom: 10px;
+}
+
+/* 重要なお知らせ（赤系で強調） */
+.important-notice-box {
+    background-color: #fff5f5;
+    border: 2px solid #ff4d4d;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 10px;
+}
+
+.important-notice-box h3 {
+    color: #d63031;
+    margin-top: 0;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.important-notice-box strong {
+    color: #d63031;
+    background: linear-gradient(transparent 70%, #ffcccc 70%);
+}
+
+.important-notice-box ul li {
+  margin-bottom: 15px;
+}
+
+.important-notice-box ul li:last-child {
+  margin-bottom: 0;
+}
+
+/* 設定手順などのアクションを促すボックス */
+.action-box {
+    background-color: #f0fbfc;
+    border: 1px solid #7ddce8;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.action-box h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #0076a3;
+}
+
+.action-box p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* 有料プラン案内用の追加スタイル */
+.plan-comparison-container {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    min-width: 600px;
+}
+
+.plan-table th, .plan-table td {
+    border: 1px solid #e0e4e8;
+    padding: 12px;
+    text-align: center;
+}
+
+.plan-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.plan-table .feature-name {
+    text-align: left;
+    background-color: #fdfdfd;
+    font-weight: bold;
+    width: 25%;
+}
+
+.plan-highlight-plus {
+    background-color: #fff9db;
+    font-weight: bold;
+    color: #f08c00;
+}
+
+.plan-highlight-pro {
+    background-color: #e7f5ff;
+    font-weight: bold;
+    color: #1c7ed6;
+}
+
+.status-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.plan-note {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+    .info-detail-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    .info-detail-title {
+        font-size: 1.4rem;
+    }
+}
+
+/* スマホ対応（画面が狭い場合） */
+@media (max-width: 480px) {
+    .img-comparison {
+        flex-direction: column; /* 縦並びに変更 */
+        gap: 10px;
+    }
+    
+    .img-arrow {
+        transform: rotate(90deg); /* 矢印を下に向け、中央に配置 */
+        height: 30px;
+        line-height: 30px;
+    }
+
+    .img-item img {
+        max-width: 120px;
+    }
+}

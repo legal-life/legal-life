@@ -1,0 +1,77 @@
+/* 簡易的なスタイリング：サイトのデザインに合わせて調整してください */
+body {
+  overflow-y: hidden;
+}
+.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+.login-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+.input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.8rem;
+  user-select: none;
+}
+button#submit {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button#submit:hover {
+  background-color: #555;
+}
+.back-to-home {
+    margin-top: 20px;
+    text-align: center;
+}
+.back-to-home a {
+    color: #666; /* 目立ちすぎないグレー */
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.3s;
+}
+.back-to-home a:hover {
+    color: #00C8E9; /* ホバー時にサイトのテーマカラーに */
+    text-decoration: underline;
+}
+#backToHome {
+    margin-top: 20px;
+    display: inline-block;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+#backToHome:hover {
+    color: #00C8E9 !important;
+    text-decoration: underline;
+}

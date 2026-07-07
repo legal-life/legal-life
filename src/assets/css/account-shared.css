@@ -1,0 +1,322 @@
+/* =============================================
+   account-shared.css
+   アカウント関連ページ共通スタイル
+   ============================================= */
+
+/* ─── OTPモーダル ─── */
+.otp-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: 20px;
+    animation: otpOverlayIn 0.2s ease;
+}
+@keyframes otpOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.otp-modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: otpBoxIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center;
+}
+@keyframes otpBoxIn {
+    from { opacity: 0; transform: scale(0.88) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.otp-modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 10px;
+}
+
+.otp-modal-desc {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.otp-input {
+    width: 100%;
+    padding: 14px 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1.8rem;
+    text-align: center;
+    letter-spacing: 12px;
+    font-weight: 700;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    outline: none;
+}
+.otp-input:focus {
+    border-color: #00C8E9;
+    box-shadow: 0 0 0 3px rgba(0,200,233,0.15);
+}
+
+.otp-error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    min-height: 20px;
+    margin: 8px 0;
+}
+
+.otp-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.otp-btn-cancel {
+    flex: 1;
+    padding: 11px 0;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #555;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.otp-btn-cancel:hover { background: #f5f5f5; }
+
+.otp-btn-submit {
+    flex: 2;
+    padding: 11px 0;
+    border: none;
+    border-radius: 8px;
+    background: #00C8E9;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.2s;
+}
+.otp-btn-submit:hover:not(:disabled) { background: #00a3bf; }
+.otp-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ─── 共通メッセージ ─── */
+.settings-msg {
+    font-size: 0.88rem;
+    min-height: 20px;
+    margin: 8px 0 0;
+    line-height: 1.4;
+    display: block;
+}
+.settings-msg.success { color: #27ae60; }
+.settings-msg.error   { color: #e74c3c; }
+
+/* ─── ローディング・空状態 ─── */
+.loading-text { color: #aaa; text-align: center; padding: 20px; font-size: 0.9rem; }
+.empty-text   { color: #aaa; text-align: center; padding: 20px; font-size: 0.9rem; }
+.error-text   { color: #e74c3c; text-align: center; padding: 20px; font-size: 0.9rem; }
+
+/* ─── バックアップコード ─── */
+.code-item {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    background: #f8f9fa;
+    border: 1px dashed #ccc;
+}
+.code-item.code-used {
+    opacity: 0.45;
+    text-decoration: line-through;
+    background: #f0f0f0;
+}
+
+/* ─── プロバイダー連携ステータス ─── */
+.provider-status       { font-size: 13px; color: #888; }
+.provider-status.linked { color: #27ae60; font-weight: 700; }
+
+.provider-link-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+}
+.link-btn   { background: #00C8E9; color: #fff; }
+.link-btn:hover { background: #00a3bf; }
+.unlink-btn { background: #fff; color: #e74c3c; border: 1.5px solid #e74c3c; }
+.unlink-btn:hover { background: #fff5f5; }
+.unlink-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── セッション現在端末バッジ ─── */
+.session-badge-current,
+.current-badge {
+    display: inline-block;
+    font-size: 11px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+/* ─── アクティビティリスト ─── */
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.activity-item:last-child { border-bottom: none; }
+
+.activity-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 14px;
+}
+
+.activity-details { flex: 1; }
+
+.activity-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+}
+
+.activity-action {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color, #202124);
+}
+
+.activity-time {
+    font-size: 12px;
+    color: var(--text-secondary, #5f6368);
+    white-space: nowrap;
+}
+
+.activity-info {
+    font-size: 13px;
+    color: var(--text-secondary, #5f6368);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ─── 削除申請ペンディングバナー ─── */
+#deletion-pending-banner {
+    display: none;
+    border: 1.5px solid #e74c3c;
+    background: #fff9f9;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+#deletion-pending-banner p { color: #c0392b; margin: 0 0 10px; font-size: 14px; }
+
+/* ─── メール確認バナー ─── */
+#email-verify-banner {
+    display: none;
+    border: 1.5px solid #ffc107;
+    background: #fffdf0;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+#email-verify-banner p { color: #856404; margin: 0 0 10px; font-size: 14px; }
+
+/* ─── デバイスリスト ─── */
+.device-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color, #dadce0);
+    gap: 14px;
+}
+.device-item:last-child { border-bottom: none; }
+.device-item.current { background: #f8faff; }
+
+.device-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+.device-info { flex: 1; }
+.device-name { font-size: 14px; font-weight: 600; display: flex; align-items: center; }
+.device-meta { font-size: 12px; color: #888; margin: 3px 0 0; }
+
+/* ─── ログアウトボタン (セッション個別) ─── */
+.session-logout-btn {
+    background: none;
+    border: none;
+    color: #00a3bf;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 0.15s;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.session-logout-btn:hover { background: #f0fafc; }
+
+/* ─── ステータスバッジ ─── */
+.status-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+}
+.status-badge.enabled  { background: #e6f4ea; color: #137333; }
+.status-badge.disabled { background: #f1f3f4; color: #5f6368; }
+
+/* ─── 削除チェックリスト ─── */
+.deletion-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0 20px;
+}
+
+.deletion-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #f0e0e0;
+    background: #fafafa;
+    transition: background 0.15s;
+}
+.deletion-check-item:hover { background: #fff5f5; }
+.deletion-check-item input { flex-shrink: 0; margin-top: 2px; accent-color: #e74c3c; cursor: pointer; }
+
+/* ─── モバイル対応 ─── */
+@media (max-width: 600px) {
+    .otp-modal-box { padding: 24px 18px; }
+    .otp-input { font-size: 1.5rem; letter-spacing: 8px; }
+    .activity-main { flex-direction: column; gap: 2px; }
+    .device-item { flex-wrap: wrap; }
+}

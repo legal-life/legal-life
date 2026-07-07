@@ -1,0 +1,134 @@
+/* --- 法令文章ページ専用スタイル --- */
+
+/* 記事全体のコンテナ：読みやすさを考慮して幅を制限し、白背景に */
+article {
+    max-width: 850px;
+    margin: 40px auto;
+    background-color: #ffffff; /* 法令文は白背景が最も読みやすい */
+    padding: 60px 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+/* ページメインタイトル */
+.legal-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 3px solid #00C8E9; /* ヘッダーと合わせたアクセント色 */
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 15px;
+}
+
+/* 更新日 */
+.legal-update-data {
+    text-align: right;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* セクション設定 */
+.legal-section {
+    margin-bottom: 40px;
+}
+/* 目次エリアのスタイル */
+.legal-toc {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 20px;
+    margin-bottom: 40px;
+    border-radius: 5px;
+}
+
+.legal-toc-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.legal-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.legal-toc li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.legal-toc a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.legal-toc a:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+/* スムーススクロール（リンクをクリックした時に滑らかに移動する） */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 第1階層の見出し (h2) */
+.legal-section h2 {
+    font-size: 1.4rem;
+    color: #333;
+    background-color: #f8fbfc;
+    border-left: 5px solid #00C8E9;
+    padding: 10px 15px;
+    margin: 40px 0 20px 0;
+    scroll-margin-top: 20px;
+}
+
+/* 第2階層の見出し (h3) */
+.legal-section h3 {
+    font-size: 1.2rem;
+    color: #444;
+    margin: 30px 0 15px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 第3階層の見出し (h4) */
+.legal-section h4 {
+    font-size: 1.1rem;
+    color: #555;
+    margin: 25px 0 10px 0;
+}
+
+/* 本文テキスト (p) */
+.legal-section p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+/* section内のdiv（箇条書きのグループ化などに使用） */
+.legal-section div {
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+/* レスポンシブ対応：スマホで余白を調整 */
+@media (max-width: 768px) {
+    article {
+        margin: 20px 10px;
+        padding: 30px 20px;
+    }
+    
+    .legal-title {
+        font-size: 1.6rem;
+    }
+}

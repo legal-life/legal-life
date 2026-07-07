@@ -1,0 +1,435 @@
+/* ===================================
+   法令検索ページ専用スタイル
+   =================================== */
+
+/* ========== 検索コンテナ ========== */
+.lawapi-search-container {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* ========== 検索タブ ========== */
+.search-tabs {
+    display: flex;
+    gap: 0;
+}
+
+.search-tab {
+    flex: 1;
+    padding: 14px 20px;
+    background: #b2dfdb;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00695c;
+    transition: background 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.02em;
+}
+
+.search-tab:first-child {
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.search-tab.active {
+    background: #00bcd4;
+    color: #ffffff;
+}
+
+.search-tab:hover:not(.active) {
+    background: #80cbc4;
+    color: #ffffff;
+}
+
+/* ========== フォーム本体 ========== */
+.search-form-body {
+    padding: 20px 24px 24px;
+}
+
+/* ========== フィルター行 ========== */
+.filter-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-item label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #546e7a;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.filter-item select {
+    flex: 1;
+    padding: 8px 32px 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #ffffff;
+    color: #212121;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23607d8b' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    font-weight: 700;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-item select:hover {
+    border-color: #80deea;
+}
+
+.filter-item select:focus {
+    outline: none;
+    border-color: #00bcd4;
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.12);
+}
+
+/* ========== 検索ボタン ========== */
+#searchButton {
+    width: 100%;
+    padding: 13px 0;
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 3px 10px rgba(0, 188, 212, 0.3);
+    letter-spacing: 0.04em;
+}
+
+#searchButton:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(0, 188, 212, 0.38);
+}
+
+#searchButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#searchButton:disabled {
+    background: #b0bec5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ========== メッセージ ========== */
+.lawapi-loading,
+.lawapi-error,
+.lawapi-no-results {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 16px 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.lawapi-loading {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.lawapi-error {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.lawapi-no-results {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* ========== 検索結果リスト ========== */
+.lawapi-results {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ========== 検索結果カード ========== */
+.lawapi-result-item {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    border-left: 5px solid #00bcd4;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.lawapi-result-item:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.11);
+    transform: translateY(-2px);
+}
+
+/* 法令名 */
+.lawapi-law-title {
+    font-size: 1.15rem;
+    color: #00796b;
+    margin-bottom: 10px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* 情報グリッド */
+.lawapi-law-info {
+    background: #f5f5f5;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 10px 0 14px;
+}
+
+.lawapi-law-info-item {
+    font-size: 0.875rem;
+    color: #546e7a;
+    line-height: 1.9;
+    display: flex;
+    gap: 6px;
+}
+
+.lawapi-law-info-label {
+    font-weight: 700;
+    color: #00796b;
+    min-width: 130px;
+    flex-shrink: 0;
+}
+
+.lawapi-law-info-item a {
+    color: #0097a7;
+    text-decoration: none;
+}
+
+.lawapi-law-info-item a:hover {
+    text-decoration: underline;
+    color: #00bcd4;
+}
+
+/* 詳細ボタン */
+.lawapi-view-button {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.lawapi-view-button::before {
+    content: '▼';
+    font-size: 0.75rem;
+    transition: transform 0.25s ease;
+}
+
+.lawapi-view-button.active::before {
+    transform: rotate(180deg);
+}
+
+.lawapi-view-button:hover {
+    opacity: 0.88;
+    box-shadow: 0 3px 10px rgba(0, 151, 167, 0.3);
+}
+
+/* ========== 法令詳細エリア ========== */
+.lawapi-law-detail {
+    margin-top: 14px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 6px;
+    border: 2px solid #b2ebf2;
+}
+
+.lawapi-law-detail hr {
+    border: none;
+    border-top: 2px solid #00bcd4;
+    margin: 0 0 14px;
+}
+
+.lawapi-law-content {
+    line-height: 1.9;
+    color: #37474f;
+}
+
+.lawapi-article {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eceff1;
+}
+
+.lawapi-article:last-child {
+    border-bottom: none;
+}
+
+.lawapi-article-title {
+    font-weight: 700;
+    color: #00796b;
+    margin-bottom: 6px;
+    font-size: 1rem;
+    padding: 4px 0;
+}
+
+.lawapi-article-content {
+    color: #455a64;
+    margin-bottom: 6px;
+    line-height: 2;
+    display: block;
+}
+
+.lawapi-suppl-provision {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.lawapi-suppl-provision-title {
+    font-weight: 700;
+    color: #00796b;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.lawapi-suppl-provision-content {
+    color: #78909c;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    margin-bottom: 6px;
+}
+
+.lawapi-preamble {
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border-left: 3px solid #b0bec5;
+    border-radius: 4px;
+}
+
+.lawapi-preamble-content {
+    color: #78909c;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    margin-bottom: 4px;
+}
+
+.lawapi-law-content mark {
+    background-color: #ffeb3b;
+    color: #000;
+    font-weight: 700;
+    padding: 1px 3px;
+}
+
+/* ========== ページネーション ========== */
+.lawapi-pagination {
+    max-width: 800px;
+    margin: 16px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    flex-wrap: wrap;
+}
+
+.lawapi-pagination button {
+    padding: 9px 18px;
+    background: #00bcd4;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.lawapi-pagination button:hover:not(:disabled) {
+    background: #0097a7;
+    transform: translateY(-1px);
+}
+
+.lawapi-pagination button:disabled {
+    background: #cfd8dc;
+    color: #90a4ae;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.lawapi-pagination span {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #00796b;
+    text-align: center;
+}
+
+/* ========== レスポンシブ ========== */
+@media (max-width: 600px) {
+    .search-tab {
+        font-size: 0.9rem;
+        padding: 12px 10px;
+    }
+
+    .search-form-body {
+        padding: 16px;
+    }
+
+    .filter-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-item {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .lawapi-law-info-item {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .lawapi-law-info-label {
+        min-width: unset;
+    }
+
+    .lawapi-pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .lawapi-pagination button {
+        width: 100%;
+        text-align: center;
+    }
+}
