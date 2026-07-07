@@ -6,9 +6,11 @@ import {
   buildSubject,
   sendMail,
   type ContactMailParams,
-} from "@/lib/mail/resend";
+} from "@/lib/mail/gmail";
 
 // メール送信API。旧 legal-life-mailer (Cloudflare Workers) の api/index.js を統合したもの。
+// 送信はGmail SMTP(Nodemailer)経由。第三者ESP(Resend等)はgmail.com等の共有ドメインを
+// 送信元として認証できないため、独自ドメインなしでGmailアドレスから送るにはこの方式のみ。
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
   try {

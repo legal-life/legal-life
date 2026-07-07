@@ -1,3 +1,24 @@
+import nodemailer from "nodemailer";
+
+let transporter: nodemailer.Transporter | undefined;
+
+// GmailのSMTPを直接使う(サードパーティESPはgmail.com等の共有ドメインを送信元として
+// 認証できないため使えない。自分自身のGmailアカウントとして送るこの方式のみが
+// 独自ドメインなしで実際にGmailアドレスから送信できる)。
+// GMAIL_USER: 送信元Gmailアドレス、GMAIL_APP_PASSWORD: Googleアカウントで発行したアプリパスワード
+function getTransporter() {
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+  }
+  return transporter;
+}
+
 export function esc(s: unknown): string {
   return String(s ?? "").replace(
     /[<>&"']/g,
@@ -112,21 +133,10 @@ export async function sendMail(params: {
   subject: string;
   html: string;
 }) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: `legal&life <${process.env.FROM_EMAIL}>`,
-      to: [params.to],
-      subject: params.subject,
-      html: params.html,
-    }),
+  await getTransporter().sendMail({
+    from: `legal&life <${process.env.GMAIL_USER}>`,
+    to: params.to,
+    subject: params.subject,
+    html: params.html,
   });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(detail || "Mail delivery failed");
-  }
 }
