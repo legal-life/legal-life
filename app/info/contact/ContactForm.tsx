@@ -162,9 +162,10 @@ export default function ContactForm() {
 
   if (success) {
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-        <p className="font-bold text-lg mb-3">送信が完了しました</p>
-        <p className="text-sm text-gray-600 leading-relaxed">
+      <div className="bg-white rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] px-6 sm:px-10 py-12 sm:py-16 text-center">
+        <span className="block text-5xl mb-5">✅</span>
+        <p className="text-2xl font-bold text-[#27ae60] mb-5">送信が完了しました</p>
+        <p className="max-w-[480px] mx-auto text-sm text-[#555] leading-loose whitespace-pre-line mb-8">
           お問い合わせフォームでの入力が正常に送信されました。
           <br />
           メールアドレスを入力された方につきましては、後日担当者から返信がありますので、今しばらくお待ちください。
@@ -176,19 +177,27 @@ export default function ContactForm() {
           <br />
           今後ともlegal&amp;lifeをよろしくお願いいたします。
         </p>
-        <Link href="/" className="inline-block mt-5 text-primary-dark font-semibold text-sm">ホームへ戻る</Link>
+        <Link href="/" className="inline-block bg-primary text-white font-bold rounded-full px-10 py-3.5">
+          ホームへ戻る
+        </Link>
       </div>
     );
   }
 
+  const sectionBadge = (n: number) => (
+    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold shrink-0">
+      {n}
+    </span>
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between">
+    <div className="bg-white rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden">
+      <div className="flex items-center justify-between gap-4 px-6 sm:px-10 py-6 border-b border-[#f0f4f7]">
         <div>
-          <p className="font-bold text-sm">入力内容の一時保存</p>
-          <p className="text-xs text-gray-500">利便性向上のため、入力内容をブラウザに30日間保存できます。</p>
+          <p className="font-bold text-sm text-[#222]">入力内容の一時保存</p>
+          <p className="text-xs text-[#94a3b8] mt-1">利便性向上のため、入力内容をブラウザに30日間保存できます。</p>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+        <label className="relative inline-flex items-center cursor-pointer shrink-0">
           <input
             type="checkbox"
             className="sr-only peer"
@@ -200,44 +209,53 @@ export default function ContactForm() {
         </label>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-        <p className="text-xs font-bold text-gray-400">基本情報</p>
+      <div className="px-6 sm:px-10 py-8 border-b border-[#f0f4f7]">
+        <div className="flex items-center gap-3 mb-7">
+          {sectionBadge(1)}
+          <h3 className="font-bold text-lg text-[#222]">基本情報</h3>
+        </div>
 
-        <div>
-          <label className="block text-xs font-bold text-gray-600 mb-1">
-            お名前<span className="text-red-500 ml-1">＊必須</span>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-[#444] mb-2">
+            お名前<span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
           </label>
           <input
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-[1.5px] border-[#dde3ea] bg-[#fafbfc] rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:bg-white focus:ring-[3px] focus:ring-primary/10"
             placeholder="例: 山田 太郎"
             maxLength={50}
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+          {errors.name && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.name}</p>}
         </div>
 
-        <div>
-          <label className="block text-xs font-bold text-gray-600 mb-1">
-            性別<span className="text-red-500 ml-1">＊必須</span>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-[#444] mb-2">
+            性別<span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
           </label>
-          <div className="flex gap-4 text-sm">
+          <div className="flex flex-wrap gap-3 text-sm">
             {GENDER_OPTIONS.map((g) => (
-              <label key={g} className="flex items-center gap-1">
-                <input type="radio" name="gender" checked={gender === g} onChange={() => setGender(g)} /> {g}
+              <label
+                key={g}
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-[10px] border-[1.5px] transition-all ${
+                  gender === g ? "border-primary bg-[#e6fafd] text-[#007a91] font-bold" : "border-[#dde3ea] bg-[#fafbfc] text-[#333]"
+                }`}
+              >
+                <input type="radio" name="gender" className="accent-primary" checked={gender === g} onChange={() => setGender(g)} />{" "}
+                {g}
               </label>
             ))}
           </div>
-          {errors.gender && <p className="text-xs text-red-600 mt-1">{errors.gender}</p>}
+          {errors.gender && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.gender}</p>}
         </div>
 
-        <div>
-          <label className="block text-xs font-bold text-gray-600 mb-1">
-            年代<span className="text-red-500 ml-1">＊必須</span>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-[#444] mb-2">
+            年代<span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
           </label>
           <select
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-[1.5px] border-[#dde3ea] bg-[#fafbfc] rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:bg-white"
             value={age}
             onChange={(e) => setAge(e.target.value)}
           >
@@ -246,34 +264,40 @@ export default function ContactForm() {
               <option key={a} value={a}>{a}</option>
             ))}
           </select>
-          {errors.age && <p className="text-xs text-red-600 mt-1">{errors.age}</p>}
+          {errors.age && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.age}</p>}
         </div>
 
-        <div>
-          <label className="block text-xs font-bold text-gray-600 mb-1">
-            返信用メールアドレス<span className="text-gray-400 ml-1">(任意)</span>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-[#444] mb-2">
+            返信用メールアドレス<span className="text-[#94a3b8] ml-1 text-xs font-normal">(任意)</span>
           </label>
           <input
             type="email"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-[1.5px] border-[#dde3ea] bg-[#fafbfc] rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:bg-white focus:ring-[3px] focus:ring-primary/10"
             placeholder="example@email.com"
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.email}</p>}
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-gray-600 mb-1">
-            お問い合わせの種類<span className="text-red-500 ml-1">＊必須</span>
+          <label className="block text-sm font-bold text-[#444] mb-2">
+            お問い合わせの種類<span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
           </label>
-          <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-col gap-2.5 text-sm">
             {INQUIRY_TYPES.map((t) => (
-              <label key={t.value} className="flex items-center gap-2">
+              <label
+                key={t.value}
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-[10px] border-[1.5px] transition-all ${
+                  type === t.value ? "border-primary bg-[#e6fafd] text-[#007a91] font-bold" : "border-[#dde3ea] bg-[#fafbfc] text-[#333]"
+                }`}
+              >
                 <input
                   type="radio"
                   name="inquiry_type"
+                  className="accent-primary"
                   checked={type === t.value}
                   onChange={() => {
                     setType(t.value);
@@ -284,30 +308,33 @@ export default function ContactForm() {
               </label>
             ))}
           </div>
-          {errors.type && <p className="text-xs text-red-600 mt-1">{errors.type}</p>}
+          {errors.type && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.type}</p>}
         </div>
       </div>
 
       {type && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-          <p className="text-xs font-bold text-gray-400">
-            {type === "コメント" && "コメント内容"}
-            {type === "質問" && "質問内容"}
-            {type === "バグや不具合の報告" && "バグ・不具合の報告"}
-            {type === "機能のリクエスト" && "新機能のリクエスト"}
-            {type === "その他のお問い合わせ" && "その他のお問い合わせ"}
-          </p>
+        <div className="px-6 sm:px-10 py-8 border-b border-[#f0f4f7] bg-[#f8fdfe]">
+          <div className="flex items-center gap-3 mb-7">
+            {sectionBadge(2)}
+            <h3 className="font-bold text-lg text-[#222]">
+              {type === "コメント" && "コメント内容"}
+              {type === "質問" && "質問内容"}
+              {type === "バグや不具合の報告" && "バグ・不具合の報告"}
+              {type === "機能のリクエスト" && "新機能のリクエスト"}
+              {type === "その他のお問い合わせ" && "その他のお問い合わせ"}
+            </h3>
+          </div>
 
           {needsCategory && (
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1">
+            <div className="mb-5">
+              <label className="block text-sm font-bold text-[#444] mb-2">
                 {type === "質問" && "質問はどの分野が該当しますか?"}
                 {type === "バグや不具合の報告" && "バグや不具合はどの分野が該当しますか?"}
                 {type === "機能のリクエスト" && "新機能のリクエストはどの分野が該当しますか?"}
-                <span className="text-red-500 ml-1">＊必須</span>
+                <span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
               </label>
               <select
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border-[1.5px] border-[#dde3ea] bg-[#fafbfc] rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-primary focus:bg-white"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -316,16 +343,16 @@ export default function ContactForm() {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              {errors.category && <p className="text-xs text-red-600 mt-1">{errors.category}</p>}
+              {errors.category && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.category}</p>}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 mb-1">
-              お問い合わせ内容<span className="text-red-500 ml-1">＊必須</span>
+            <label className="block text-sm font-bold text-[#444] mb-2">
+              お問い合わせ内容<span className="text-[#e74c3c] ml-1 text-xs">＊必須</span>
             </label>
             <textarea
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm min-h-[120px]"
+              className="w-full border-[1.5px] border-[#dde3ea] bg-[#fafbfc] rounded-[10px] px-3.5 py-3 text-sm leading-relaxed outline-none min-h-[140px] resize-y focus:border-primary focus:bg-white focus:ring-[3px] focus:ring-primary/10"
               placeholder={
                 type === "コメント"
                   ? "コメントをご自由にお書きください"
@@ -336,30 +363,32 @@ export default function ContactForm() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
-            <p className="text-xs text-gray-400 mt-1">※ 個人情報(住所・電話番号等)は記入しないでください</p>
-            {errors.content && <p className="text-xs text-red-600 mt-1">{errors.content}</p>}
+            <span className="block text-xs text-[#94a3b8] mt-1.5">※ 個人情報(住所・電話番号等)は記入しないでください</span>
+            {errors.content && <p className="text-xs text-[#e74c3c] mt-1.5">{errors.content}</p>}
           </div>
         </div>
       )}
 
-      {submitError && (
-        <p className="text-sm text-red-600">
-          ⚠️ 送信に失敗しました。{submitError}
-        </p>
-      )}
-
-      <div className="text-center space-y-3">
+      <div className="text-center px-6 sm:px-10 pt-7 pb-9 bg-[#fcfcfd]">
+        {submitError && (
+          <p className="mb-4 px-5 py-3 bg-[#fff0ef] border border-[#fcc] rounded-lg text-sm text-[#c0392b] leading-relaxed">
+            ⚠️ 送信に失敗しました。{submitError}
+          </p>
+        )}
         <button
-          className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 px-14 py-4 rounded-full text-white font-bold tracking-wide shadow-[0_4px_16px_rgba(0,200,233,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,200,233,0.45)] disabled:opacity-70 disabled:hover:translate-y-0"
+          style={{ background: "linear-gradient(135deg, #00C8E9 0%, #00a3bf 100%)" }}
           disabled={submitting}
           onClick={handleSubmit}
         >
           {submitting ? "送信中..." : "送信する"}
         </button>
-        <button className="text-sm text-gray-500 underline" onClick={clearForm}>入力をクリア</button>
-        <p className="text-xs text-gray-400">
-          送信することで <Link href="/law/privacy" className="underline">プライバシーポリシー</Link> および{" "}
-          <Link href="/law/terms" className="underline">利用規約</Link> に同意したものとみなされます。
+        <div className="mt-3">
+          <button className="text-sm text-gray-500 underline" onClick={clearForm}>入力をクリア</button>
+        </div>
+        <p className="text-xs text-[#94a3b8] mt-3.5 leading-relaxed">
+          送信することで <Link href="/law/privacy" className="text-[#00a3bf] underline">プライバシーポリシー</Link> および{" "}
+          <Link href="/law/terms" className="text-[#00a3bf] underline">利用規約</Link> に同意したものとみなされます。
         </p>
       </div>
     </div>
