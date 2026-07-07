@@ -45,20 +45,30 @@ const CATEGORIES: { title: string; links: { href: string | null; label: string }
 
 export default function SitemapPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="px-5 py-8">
       <h1 className="text-2xl font-bold text-center mb-8">サイトマップ</h1>
-      <div className="grid sm:grid-cols-3 gap-6">
+      <div className="max-w-[1100px] mx-auto grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
         {CATEGORIES.map((cat) => (
-          <div key={cat.title}>
-            <h3 className="font-bold text-sm text-gray-500 mb-2">{cat.title}</h3>
-            <div className="flex flex-col gap-1">
+          <div
+            key={cat.title}
+            className="h-full box-border bg-white rounded-xl p-5 shadow-[0_4px_10px_rgba(0,0,0,0.05)] border-t-4 border-primary"
+          >
+            <h3 className="text-lg text-[#333] mb-4 pb-2 border-b-2 border-[#f0faff]">{cat.title}</h3>
+            <div className="flex flex-col gap-1.5">
               {cat.links.map((l) =>
                 l.href ? (
-                  <Link key={l.label} href={l.href} className="text-sm text-primary-dark hover:underline">
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="block text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
+                  >
                     {l.label}
                   </Link>
                 ) : (
-                  <PopupLink key={l.label} className="text-sm text-primary-dark hover:underline">
+                  <PopupLink
+                    key={l.label}
+                    className="block text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
+                  >
                     {l.label}
                   </PopupLink>
                 ),
