@@ -25,10 +25,8 @@ export const metadata: Metadata = {
   title: { default: "legal&life", template: "%s | legal&life" },
   description: "法令の学習・相談・検索ができる legal&life です。",
   verification: {
-    // 旧サイトではページによって異なる値(y9-tMPUhLn1mNcfJEvFTnHLSDs_QGNIKW30sms3Tkvs)が
-    // account系ページにのみ混在していたが、他の大多数のページで使われていたこちらを正としている。
-    // Cd5Qt9qv8B4IZtsMqdvPt8tDfUoGh0ueLpghxhEsTSE はVercelドメイン移行に伴うSearch Console再確認用。
-    google: ["wUVi8GgCi7eXj_gsJcBjjAC8yhbQsEGReAhe_8EBqG8", "Cd5Qt9qv8B4IZtsMqdvPt8tDfUoGh0ueLpghxhEsTSE"],
+    // Vercelドメイン移行に伴うSearch Console再確認用の値のみを使用する。
+    google: "Cd5Qt9qv8B4IZtsMqdvPt8tDfUoGh0ueLpghxhEsTSE",
   },
   icons: {
     icon: "/assets/images/favicon.png",
