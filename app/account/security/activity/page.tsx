@@ -39,7 +39,7 @@ export default function ActivityPage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="w-full max-w-[640px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <Link href="/account/security" className="text-sm text-gray-500">← セキュリティに戻る</Link>
       <h1 className="text-xl font-bold mt-3 mb-1">最近のアクティビティ</h1>
       <p className="text-sm text-gray-500 mb-5">過去1年間のアカウント操作ログ(最大50件)</p>

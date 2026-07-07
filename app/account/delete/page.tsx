@@ -107,7 +107,7 @@ export default function DeletePage() {
 
   if (success) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center">
+      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9 text-center">
         <p className="text-lg font-bold">削除を申請しました</p>
         <p className="text-sm text-gray-500 mt-2 leading-relaxed">
           30日後に完全削除されます。
@@ -121,7 +121,7 @@ export default function DeletePage() {
 
   if (alreadyPending) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16">
+      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
           <p className="font-bold mb-2">削除申請済みです</p>
           <p className="text-sm mb-2">削除予定日: <strong>{scheduledDate || "--"}</strong></p>
@@ -139,7 +139,7 @@ export default function DeletePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <Link href="/account/settings" className="text-sm text-gray-500">← アカウント設定に戻る</Link>
       <h1 className="text-xl font-bold mt-3">アカウントの削除</h1>
       <p className="text-sm text-gray-500 mb-5">削除申請後、30日間はキャンセル可能です</p>

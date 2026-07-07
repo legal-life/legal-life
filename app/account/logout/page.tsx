@@ -29,8 +29,7 @@ export default function LogoutPage() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] px-4 py-10">
-      <div className="w-full max-w-[420px] bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
+    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9 text-center">
         {!done ? (
           <>
             <p className="text-lg font-bold">ログアウト中...</p>
@@ -45,7 +44,6 @@ export default function LogoutPage() {
             </div>
           </>
         )}
-      </div>
     </div>
   );
 }
