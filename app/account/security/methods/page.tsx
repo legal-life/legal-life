@@ -120,16 +120,19 @@ export default function MethodsPage() {
       <h1 className="text-xl font-bold mt-3 mb-1">ログイン方法</h1>
       <p className="text-sm text-gray-500 mb-5">サインインに使用する方法を管理します</p>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-3">
-          <div className="flex-1">
-            <p className="text-sm font-semibold">メール / パスワード</p>
-            <p className={`text-xs ${passLinked ? "text-[#27ae60]" : "text-gray-500"}`}>{passLinked ? "設定済み" : "未設定"}</p>
-            {passLinked && <p className="text-xs text-gray-400">{passData?.email || user.email}</p>}
+      <div className="border-t border-[#dadce0]">
+        <div className="flex items-center gap-3 py-3.5 border-b border-[#dadce0]">
+          <span className="w-[30px] text-center text-xl shrink-0">✉️</span>
+          <div className="flex-1 min-w-0">
+            <span className="block text-sm font-bold">メール / パスワード</span>
+            <span className={`block text-xs mt-0.5 ${passLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
+              {passLinked ? "設定済み" : "未設定"}
+            </span>
+            {passLinked && <span className="block text-xs text-[#5f6368] italic mt-0.5">{passData?.email || user.email}</span>}
           </div>
           {passLinked ? (
             <button
-              className="text-xs border border-gray-300 rounded-lg px-3 py-1.5 font-semibold disabled:opacity-40"
+              className="shrink-0 whitespace-nowrap bg-white text-[#e74c3c] border-[1.5px] border-[#e74c3c] rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-[#fff5f5] disabled:opacity-40"
               disabled={total <= 1}
               title={total <= 1 ? "最後のログイン方法は解除できません" : ""}
               onClick={() => unlinkProvider("password", "パスワード")}
@@ -138,7 +141,7 @@ export default function MethodsPage() {
             </button>
           ) : (
             <button
-              className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 font-semibold disabled:opacity-40"
+              className="shrink-0 bg-primary text-white rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-primary-dark disabled:opacity-40"
               disabled={!user.email}
               onClick={() => setShowPasswordForm(true)}
             >
@@ -147,22 +150,28 @@ export default function MethodsPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-3">
-          <div className="flex-1">
-            <p className="text-sm font-semibold">Google</p>
-            <p className={`text-xs ${googleLinked ? "text-[#27ae60]" : "text-gray-500"}`}>{googleLinked ? "連携済み" : "未連携"}</p>
-            {googleLinked && <p className="text-xs text-gray-400">{googleData?.email}</p>}
+        <div className="flex items-center gap-3 py-3.5">
+          <span className="w-[30px] text-center text-xl shrink-0">🔍</span>
+          <div className="flex-1 min-w-0">
+            <span className="block text-sm font-bold">Google</span>
+            <span className={`block text-xs mt-0.5 ${googleLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
+              {googleLinked ? "連携済み" : "未連携"}
+            </span>
+            {googleLinked && <span className="block text-xs text-[#5f6368] italic mt-0.5">{googleData?.email}</span>}
           </div>
           {googleLinked ? (
             <button
-              className="text-xs border border-gray-300 rounded-lg px-3 py-1.5 font-semibold disabled:opacity-40"
+              className="shrink-0 whitespace-nowrap bg-white text-[#e74c3c] border-[1.5px] border-[#e74c3c] rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-[#fff5f5] disabled:opacity-40"
               disabled={total <= 1}
               onClick={() => unlinkProvider("google.com", "Google")}
             >
               解除する
             </button>
           ) : (
-            <button className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 font-semibold" onClick={linkGoogle}>
+            <button
+              className="shrink-0 bg-primary text-white rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-primary-dark"
+              onClick={linkGoogle}
+            >
               連携する
             </button>
           )}
@@ -191,7 +200,7 @@ export default function MethodsPage() {
       )}
 
       {!user.email && (
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mt-4">
+        <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 mt-4">
           <p className="font-bold text-sm mb-2">メールアドレスを設定する</p>
           <p className="text-xs text-gray-600 mb-3">パスワードログインにはメールアドレスが必要です。</p>
           <input
