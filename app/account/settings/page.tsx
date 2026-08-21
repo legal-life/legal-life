@@ -3,51 +3,47 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
+import { getProfile, setDeletionPending, type Profile } from "@/lib/auth/profile";
 
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [deletionPending, setDeletionPending] = useState(false);
-  const [scheduledDate, setScheduledDate] = useState("");
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
-      const snap = await getDoc(doc(db, "users", u.uid)).catch(() => null);
-      if (snap?.exists() && snap.data().deletionPending) {
-        setDeletionPending(true);
-        const d = snap.data().scheduledDeletion?.toDate?.();
-        if (d) setScheduledDate(d.toLocaleString("ja-JP"));
-      }
+      setProfile(await getProfile(u.id));
     })();
   }, []);
 
   const cancelDeletion = async () => {
     if (!user || !confirm("キャンセルしますか?")) return;
-    const db = getFirebaseDb();
-    await setDoc(doc(db, "users", user.uid), { deletionPending: false, scheduledDeletion: null }, { merge: true });
-    setDeletionPending(false);
+    await setDeletionPending(user.id, false);
+    setProfile((p) => (p ? { ...p, deletion_pending: false, scheduled_deletion: null } : p));
   };
 
   if (!user) return null;
 
-  const lastSignIn = user.metadata?.lastSignInTime
-    ? new Date(user.metadata.lastSignInTime).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+  const lastSignIn = user.last_sign_in_at
+    ? new Date(user.last_sign_in_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
     : "--";
 
   return (
     <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
       <h1 className="text-xl font-bold mb-5">アカウント設定</h1>
 
-      {deletionPending && (
+      {profile?.deletion_pending && (
         <div className="border-[1.5px] border-red-400 bg-[#fff9f9] rounded-[10px] p-5 mb-6">
           <p className="text-[#c0392b] font-bold text-sm mb-2">アカウント削除が予約されています</p>
-          <p className="text-sm mb-3">削除予定日: <strong>{scheduledDate}</strong></p>
+          <p className="text-sm mb-3">
+            削除予定日:{" "}
+            <strong>
+              {profile.scheduled_deletion ? new Date(profile.scheduled_deletion).toLocaleString("ja-JP") : "--"}
+            </strong>
+          </p>
           <button
             className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-bold hover:bg-gray-50"
             onClick={cancelDeletion}
@@ -58,15 +54,15 @@ export default function SettingsPage() {
       )}
 
       <div className="flex items-start gap-4 bg-[#f8f9fa] rounded-lg p-4 mb-6">
-        {user.photoURL ? (
-          <Image src={user.photoURL} alt="avatar" width={64} height={64} className="rounded-full object-cover border-2 border-primary shrink-0" />
+        {profile?.photo_url ? (
+          <Image src={profile.photo_url} alt="avatar" width={64} height={64} className="rounded-full object-cover border-2 border-primary shrink-0" />
         ) : (
           <div className="w-16 h-16 rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl shrink-0">👤</div>
         )}
         <div className="flex-1 min-w-0">
           <div className="mb-1.5">
             <span className="block text-[11px] font-bold text-[#5f6368] uppercase tracking-wide">アカウント名</span>
-            <span className="block text-sm font-bold truncate">{user.displayName || "名前未設定"}</span>
+            <span className="block text-sm font-bold truncate">{profile?.display_name || "名前未設定"}</span>
           </div>
           <div>
             <span className="block text-[11px] font-bold text-[#5f6368] uppercase tracking-wide">メールアドレス</span>

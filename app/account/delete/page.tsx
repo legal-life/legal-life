@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc, Timestamp, serverTimestamp } from "firebase/firestore";
-import { signOut, type User } from "firebase/auth";
-import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { delSession, logAct } from "@/lib/auth/session";
+import { getProfile, setDeletionPending } from "@/lib/auth/profile";
 import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import OtpPanel from "@/components/OtpPanel";
 
@@ -32,41 +32,30 @@ export default function DeletePage() {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
-      const snap = await getDoc(doc(db, "users", u.uid)).catch(() => null);
-      if (snap?.exists() && snap.data().deletionPending) {
+      const profile = await getProfile(u.id);
+      if (profile?.deletion_pending) {
         setAlreadyPending(true);
-        const d = snap.data().scheduledDeletion?.toDate?.();
-        if (d) setScheduledDate(d.toLocaleString("ja-JP"));
+        if (profile.scheduled_deletion) {
+          setScheduledDate(new Date(profile.scheduled_deletion).toLocaleString("ja-JP"));
+        }
       }
     })();
   }, []);
 
   const execDelete = async () => {
     if (!user) return;
-    const db = getFirebaseDb();
-    const auth = getFirebaseAuth();
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-        deletionPending: true,
-        scheduledDeletion: Timestamp.fromMillis(Date.now() + 30 * 86400000),
-        deletionRequestAt: serverTimestamp(),
-      },
-      { merge: true },
-    );
-    await logAct(user.uid, db, "deletion_request", "30日後削除予定");
-    await delSession(user, db);
-    await signOut(auth);
+    await setDeletionPending(user.id, true);
+    await logAct(user.id, "deletion_request", "30日後削除予定");
+    await delSession(user);
+    await supabase.auth.signOut();
     sessionStorage.removeItem("ll_auth_cache");
     setSuccess(true);
   };
 
   const handleCancelPending = async () => {
     if (!user) return;
-    const db = getFirebaseDb();
     try {
-      await setDoc(doc(db, "users", user.uid), { deletionPending: false, scheduledDeletion: null }, { merge: true });
+      await setDeletionPending(user.id, false);
       setCancelMsg("✅ 削除申請をキャンセルしました");
       setTimeout(() => window.location.replace("/account/settings"), 1500);
     } catch (e) {
@@ -77,11 +66,10 @@ export default function DeletePage() {
   const handleExecute = async () => {
     if (!user) return;
     setSubmitting(true);
-    const db = getFirebaseDb();
-    const enabled = await is2FA(user.uid, db);
+    const enabled = await is2FA(user.id);
     if (enabled && user.email) {
       const code = genOTP();
-      await saveOTP(user.uid, db, code, "account_delete");
+      await saveOTP(user.id, code, "account_delete");
       await sendOTP(user, code, "アカウント削除申請");
       setMsg(`📧 ${user.email} に認証コードを送信しました`);
       setShowOtp(true);
@@ -92,13 +80,12 @@ export default function DeletePage() {
 
   const handleOtpVerify = async (input: string) => {
     if (!user) return { ok: false, reason: "ユーザー情報がありません" };
-    const db = getFirebaseDb();
-    const res = await verifyOTP(user.uid, db, input, "account_delete");
+    const res = await verifyOTP(user.id, input, "account_delete");
     if (!res.ok) {
       setSubmitting(false);
       return res;
     }
-    await clearOTP(user.uid, db);
+    await clearOTP(user.id);
     await execDelete();
     return { ok: true };
   };

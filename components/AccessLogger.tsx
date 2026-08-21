@@ -1,19 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { push, ref, remove, set, get } from "firebase/database";
-import { getRtdb } from "@/lib/firebase/database";
+import { supabase } from "@/lib/supabase/client";
 
-// 旧access-log.jsの移植: Firebase Realtime Databaseへの独自アクセスログ収集。
-// analytics/{YYYY-MM-DD}/logs/{pushId} にページビュー・スクロール・滞在時間・クリックを記録し、
-// 90日以上前のデータをクライアント起動時にバックグラウンドで自動削除する。
+// 独自アクセスログ収集。access_logsテーブルにページビュー・スクロール・滞在時間・クリックを記録する。
+// 90日以上前のデータの削除はクライアントには書き込み権限がないため、Supabase側のスケジュールジョブで行う。
 const VISITOR_KEY = "ll_visitor";
 const SESSION_KEY = "ll_session";
-const CLEANUP_KEY = "ll_cleanup";
 const SCROLL_MILESTONES = [25, 50, 75, 100];
-const RETENTION_DAYS = 90;
-
-const toDateKey = (d: Date) => d.toISOString().slice(0, 10);
 
 function getVisitorInfo() {
   const now = Date.now();
@@ -75,51 +69,22 @@ async function fetchLocation() {
   return { country: "不明", region: "不明", city: "不明" };
 }
 
-async function cleanupOldData() {
-  const lastCleanup = localStorage.getItem(CLEANUP_KEY);
-  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  if (lastCleanup && Number(lastCleanup) > weekAgo) return;
-
-  try {
-    localStorage.setItem(CLEANUP_KEY, String(Date.now()));
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - RETENTION_DAYS);
-    const cutoffKey = toDateKey(cutoff);
-
-    const rtdb = getRtdb();
-    const rootRef = ref(rtdb, "analytics");
-    const snap = await get(rootRef);
-    if (!snap.exists()) return;
-
-    const dates = Object.keys(snap.val() || {});
-    const oldDates = dates.filter((d) => d < cutoffKey);
-    for (const d of oldDates) {
-      await remove(ref(rtdb, `analytics/${d}`));
-    }
-  } catch {
-    /* ignore */
-  }
-}
-
 export default function AccessLogger() {
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      const today = toDateKey(new Date());
       const session = getVisitorInfo();
       const ua = parseUA();
       const loc = await fetchLocation();
       if (cancelled) return;
 
-      const rtdb = getRtdb();
-      const logEvent = (type: string, extra: Record<string, unknown> = {}) => {
-        try {
-          const logRef = push(ref(rtdb, `analytics/${today}/logs`));
-          set(logRef, {
-            type,
+      const logEvent = (type: string, extra: Record<string, string | number | boolean | null> = {}) => {
+        supabase
+          .from("access_logs")
+          .insert({
+            event_type: type,
             path: location.pathname,
-            ts: Date.now(),
             browser: ua.browser,
             os: ua.os,
             device: ua.device,
@@ -129,11 +94,9 @@ export default function AccessLogger() {
             country: loc.country,
             region: loc.region,
             city: loc.city,
-            ...extra,
-          });
-        } catch {
-          /* ignore */
-        }
+            extra,
+          })
+          .then(() => {});
       };
 
       logEvent("page_view", {
@@ -194,8 +157,6 @@ export default function AccessLogger() {
         }
       };
       document.addEventListener("click", onClick, { passive: true });
-
-      cleanupOldData().catch(() => {});
 
       return () => {
         window.removeEventListener("scroll", onScroll);

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { EmailAuthProvider, linkWithCredential, reauthenticateWithCredential, updatePassword, type User } from "firebase/auth";
-import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
@@ -23,38 +23,27 @@ export default function PassPage() {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      setHasPassword(u.providerData.some((p) => p.providerId === "password"));
+      setHasPassword((u.identities ?? []).some((i) => i.provider === "email"));
     })();
   }, []);
 
   const execChange = async () => {
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    const cu = auth.currentUser;
-    if (!cu) throw new Error("再ログインが必要です");
+    if (!user?.email) throw new Error("メールアドレスが設定されていません");
     try {
       if (hasPassword) {
-        const cred = EmailAuthProvider.credential(cu.email!, current);
-        await reauthenticateWithCredential(cu, cred);
-        await updatePassword(cu, newPass);
-      } else {
-        const cred = EmailAuthProvider.credential(cu.email!, newPass);
-        await linkWithCredential(cu, cred);
+        const { error: reauthError } = await supabase.auth.signInWithPassword({ email: user.email, password: current });
+        if (reauthError) throw new Error("現在のパスワードが間違っています");
       }
+      const { error } = await supabase.auth.updateUser({ password: newPass });
+      if (error) throw error;
       setCurrent("");
       setNewPass("");
       setConfirm("");
       setMsg({ text: "✅ 変更しました", type: "success" });
-      await logAct(user!.uid, db, "password_change", "");
+      await logAct(user.id, "password_change", "");
       setHasPassword(true);
     } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
-      const M: Record<string, string> = {
-        "auth/wrong-password": "現在のパスワードが間違っています",
-        "auth/invalid-credential": "現在のパスワードが間違っています",
-        "auth/requires-recent-login": "再ログインが必要です",
-      };
-      setMsg({ text: (code && M[code]) || (e instanceof Error ? e.message : String(e)), type: "error" });
+      setMsg({ text: e instanceof Error ? e.message : String(e), type: "error" });
     } finally {
       setSubmitting(false);
     }
@@ -68,11 +57,10 @@ export default function PassPage() {
 
     setSubmitting(true);
     setMsg({ text: "", type: "" });
-    const db = getFirebaseDb();
-    const en = await is2FA(user!.uid, db);
+    const en = await is2FA(user!.id);
     if (en && user!.email) {
       const code = genOTP();
-      await saveOTP(user!.uid, db, code, "password_change");
+      await saveOTP(user!.id, code, "password_change");
       await sendOTP(user!, code, "パスワード変更");
       setMsg({ text: `📧 ${user!.email} に認証コードを送信しました`, type: "success" });
       setShowOtp(true);
@@ -82,13 +70,12 @@ export default function PassPage() {
   };
 
   const handleOtpVerify = async (input: string) => {
-    const db = getFirebaseDb();
-    const res = await verifyOTP(user!.uid, db, input, "password_change");
+    const res = await verifyOTP(user!.id, input, "password_change");
     if (!res.ok) {
       setSubmitting(false);
       return res;
     }
-    await clearOTP(user!.uid, db);
+    await clearOTP(user!.id);
     await execChange();
     return { ok: true };
   };

@@ -1,12 +1,13 @@
-import type { Timestamp } from "firebase/firestore";
-
-type TimestampLike = Timestamp | Date | number | null | undefined;
+type TimestampLike = string | Date | number | null | undefined;
 
 function toDate(ts: TimestampLike): Date | null {
   if (!ts) return null;
   if (ts instanceof Date) return ts;
   if (typeof ts === "number") return new Date(ts);
-  if (typeof (ts as Timestamp).toDate === "function") return (ts as Timestamp).toDate();
+  if (typeof ts === "string") {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
   return null;
 }
 

@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
-import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP, tryBackup } from "@/lib/auth/otp";
+import { is2FA, genOTP, saveOTP, sendOTP, verifyOTP, clearOTP, tryBackup } from "@/lib/auth/otp";
 import OtpPanel from "@/components/OtpPanel";
 
 const PASS_COOKIE = "account-Passage";
@@ -29,17 +27,15 @@ export default function SecurityPage() {
   useEffect(() => {
     (async () => {
       const u = await requireAuth();
-      const db = getFirebaseDb();
-      const tfSnap = await getDoc(doc(db, "users", u.uid, "security", "twoFactor")).catch(() => null);
-      const en = tfSnap?.exists() && (tfSnap.data().enabled ?? false);
-      setEnabled2fa(!!en);
-      setHasPassword(u.providerData.some((p) => p.providerId === "password"));
+      const en = await is2FA(u.id);
+      setEnabled2fa(en);
+      setHasPassword((u.identities ?? []).some((i) => i.provider === "email"));
 
       if (en && u.email && !hasPassage()) {
         setNeedsGate(true);
         try {
           const code = genOTP();
-          await saveOTP(u.uid, db, code, "security_access");
+          await saveOTP(u.id, code, "security_access");
           await sendOTP(u, code, "セキュリティセクションへのアクセス");
           setOtpMsg(`📧 ${u.email} に認証コードを送信しました`);
         } catch (e) {
@@ -53,14 +49,13 @@ export default function SecurityPage() {
 
   const handleOtpVerify = async (input: string, isBackup: boolean) => {
     const u = await requireAuth();
-    const db = getFirebaseDb();
     if (isBackup) {
-      const res = await tryBackup(u.uid, db, input);
+      const res = await tryBackup(u.id, input);
       if (!res.ok) return res;
     } else {
-      const res = await verifyOTP(u.uid, db, input, "security_access");
+      const res = await verifyOTP(u.id, input, "security_access");
       if (!res.ok) return res;
-      await clearOTP(u.uid, db);
+      await clearOTP(u.id);
     }
     setPassage();
     window.location.reload();
@@ -93,8 +88,8 @@ export default function SecurityPage() {
 
   if (!user) return null;
 
-  const lastSignIn = user.metadata?.lastSignInTime
-    ? new Date(user.metadata.lastSignInTime).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+  const lastSignIn = user.last_sign_in_at
+    ? new Date(user.last_sign_in_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
     : "--";
 
   return (

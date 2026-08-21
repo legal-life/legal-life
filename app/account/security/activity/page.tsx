@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { ACT_LABEL, fmtDate, relDate } from "@/lib/auth/format";
 
 type Activity = {
   type: string;
-  detail?: string;
-  browser?: string;
-  os?: string;
-  timestamp: unknown;
+  detail: string | null;
+  browser: string | null;
+  os: string | null;
+  created_at: string;
 };
 
 export default function ActivityPage() {
@@ -25,14 +24,14 @@ export default function ActivityPage() {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
-      try {
-        const q = query(collection(db, "users", u.uid, "activity"), orderBy("timestamp", "desc"), limit(50));
-        const snap = await getDocs(q);
-        setItems(snap.docs.map((d) => d.data() as Activity));
-      } catch (e) {
-        setError(e instanceof Error ? e.message : String(e));
-      }
+      const { data, error } = await supabase
+        .from("activity_log")
+        .select("type, detail, browser, os, created_at")
+        .eq("user_id", u.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) setError(error.message);
+      else setItems(data);
     })();
   }, []);
 
@@ -59,10 +58,10 @@ export default function ActivityPage() {
                     {ACT_LABEL[it.type] || it.type}
                     {it.detail && <span className="text-gray-500 font-normal"> — {it.detail}</span>}
                   </p>
-                  <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">{relDate(it.timestamp as never)}</span>
+                  <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">{relDate(it.created_at)}</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {[it.browser, it.os].filter(Boolean).join(" / ")} · {fmtDate(it.timestamp as never)}
+                  {[it.browser, it.os].filter(Boolean).join(" / ")} · {fmtDate(it.created_at)}
                 </p>
               </div>
             </div>

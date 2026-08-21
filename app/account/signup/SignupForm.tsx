@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  getRedirectResult,
-  onAuthStateChanged,
-  sendEmailVerification,
-  signInWithCredential,
-  signInWithPopup,
-  signInWithRedirect,
-  updateProfile,
-} from "firebase/auth";
-import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import { supabase } from "@/lib/supabase/client";
 import { decR } from "@/lib/auth/utils";
 import { logAct } from "@/lib/auth/session";
 
@@ -38,51 +27,21 @@ export default function SignupForm() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const auth = getFirebaseAuth();
-    const unsub = onAuthStateChanged(auth, (u) => {
-      if (u) afterLoginRedirect(r);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) afterLoginRedirect(r);
     });
-    return unsub;
+    return () => subscription.unsubscribe();
   }, [r]);
 
-  useEffect(() => {
-    if (sessionStorage.getItem("ll_redirect_signup")) {
-      sessionStorage.removeItem("ll_redirect_signup");
-      (async () => {
-        try {
-          const auth = getFirebaseAuth();
-          const db = getFirebaseDb();
-          const res = await getRedirectResult(auth);
-          if (res?.user) {
-            await logAct(res.user.uid, db, "signup", "Google");
-            afterLoginRedirect(r);
-          }
-        } catch {
-          /* ignore */
-        }
-      })();
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const doGoogle = async () => {
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    const p = new GoogleAuthProvider();
-    p.setCustomParameters({ prompt: "consent" });
     localStorage.setItem("ll_last_consent", Date.now().toString());
-    try {
-      const res = await signInWithPopup(auth, p);
-      await logAct(res.user.uid, db, "signup", "Google");
-      afterLoginRedirect(r);
-    } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
-      if (code === "auth/popup-blocked") {
-        sessionStorage.setItem("ll_redirect_signup", "1");
-        await signInWithRedirect(auth, p);
-      } else {
-        setGoogleError(e instanceof Error ? e.message : String(e));
-      }
-    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${location.origin}/account/signup${r ? `?r=${r}` : ""}` },
+    });
+    if (error) setGoogleError(error.message);
   };
 
   useEffect(() => {
@@ -95,12 +54,13 @@ export default function SignupForm() {
         client_id: GOOGLE_CLIENT_ID,
         callback: async (credentialResponse: { credential: string }) => {
           try {
-            const auth = getFirebaseAuth();
-            const db = getFirebaseDb();
-            const credential = GoogleAuthProvider.credential(credentialResponse.credential);
-            const result = await signInWithCredential(auth, credential);
+            const { data, error } = await supabase.auth.signInWithIdToken({
+              provider: "google",
+              token: credentialResponse.credential,
+            });
+            if (error || !data.user) throw error || new Error("登録に失敗しました");
             localStorage.setItem("ll_last_consent", Date.now().toString());
-            await logAct(result.user.uid, db, "signup", "Google OneTap");
+            await logAct(data.user.id, "signup", "Google OneTap");
             afterLoginRedirect(r);
           } catch (e) {
             setGoogleError(e instanceof Error ? e.message : String(e));
@@ -123,20 +83,26 @@ export default function SignupForm() {
 
     setSubmitting(true);
     setMsg({ text: "", type: "" });
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
     try {
-      const c = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(c.user, { displayName: name });
-      await sendEmailVerification(c.user).catch(() => {});
-      await logAct(c.user.uid, db, "signup", "メール");
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name } },
+      });
+      if (error || !data.user) throw error || new Error("登録に失敗しました");
+      await logAct(data.user.id, "signup", "メール");
+      if (!data.session) {
+        setMsg({ text: "✅ 確認メールを送信しました。メール内のリンクから登録を完了してください。", type: "success" });
+        setSubmitting(false);
+        return;
+      }
       afterLoginRedirect(r);
     } catch (e: unknown) {
       const code = (e as { code?: string })?.code;
       const M: Record<string, string> = {
-        "auth/email-already-in-use": "すでに使用済みです",
-        "auth/invalid-email": "形式が正しくありません",
-        "auth/weak-password": "6文字以上にしてください",
+        user_already_exists: "すでに使用済みです",
+        email_address_invalid: "形式が正しくありません",
+        weak_password: "6文字以上にしてください",
       };
       setMsg({ text: (code && M[code]) || (e instanceof Error ? e.message : String(e)), type: "error" });
       setSubmitting(false);

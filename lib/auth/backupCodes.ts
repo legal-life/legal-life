@@ -1,5 +1,4 @@
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import type { Firestore } from "firebase/firestore";
+import { supabase } from "@/lib/supabase/client";
 
 export const BACKUP_CODE_COUNT = 10;
 
@@ -10,17 +9,19 @@ function genCode(): string {
   return Array.from({ length: 8 }, () => c[Math.floor(Math.random() * c.length)]).join("");
 }
 
-export async function genAndSaveCodes(uid: string, db: Firestore): Promise<BackupCode[]> {
+export async function genAndSaveCodes(uid: string): Promise<BackupCode[]> {
+  await supabase.from("backup_codes").delete().eq("user_id", uid);
   const codes: BackupCode[] = Array.from({ length: BACKUP_CODE_COUNT }, () => ({ code: genCode(), used: false }));
-  await setDoc(doc(db, "users", uid, "security", "BackUpCode"), { codes, generatedAt: serverTimestamp() });
+  await supabase.from("backup_codes").insert(codes.map((c) => ({ user_id: uid, code: c.code, used: false })));
   return codes;
 }
 
-export async function loadCodes(uid: string, db: Firestore): Promise<BackupCode[]> {
-  const snap = await getDoc(doc(db, "users", uid, "security", "BackUpCode"));
-  if (snap.exists() && (snap.data().codes?.length ?? 0) > 0) {
-    const raw = snap.data().codes as (string | BackupCode)[];
-    return raw.map((c) => (typeof c === "string" ? { code: c, used: false } : c));
-  }
-  return genAndSaveCodes(uid, db);
+export async function loadCodes(uid: string): Promise<BackupCode[]> {
+  const { data } = await supabase
+    .from("backup_codes")
+    .select("code, used")
+    .eq("user_id", uid)
+    .order("generated_at");
+  if (data && data.length > 0) return data;
+  return genAndSaveCodes(uid);
 }

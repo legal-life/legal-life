@@ -1,6 +1,5 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import type { Firestore } from "firebase/firestore";
-import type { User } from "firebase/auth";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 
 export const OTP_EXPIRE_MIN = 5;
 
@@ -8,50 +7,46 @@ export function genOTP(): string {
   return String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
 }
 
-export async function saveOTP(uid: string, db: Firestore, code: string, purpose: string) {
-  await setDoc(
-    doc(db, "users", uid, "security", "twoFactor"),
-    { otpCode: code, otpExpiryMs: Date.now() + OTP_EXPIRE_MIN * 60000, otpPurpose: purpose },
-    { merge: true },
-  );
+export async function saveOTP(uid: string, code: string, purpose: string) {
+  await supabase.from("security_2fa").upsert({
+    user_id: uid,
+    otp_code: code,
+    otp_expiry: new Date(Date.now() + OTP_EXPIRE_MIN * 60000).toISOString(),
+    otp_purpose: purpose,
+  });
 }
 
-export async function verifyOTP(uid: string, db: Firestore, input: string, purpose: string) {
-  const s = await getDoc(doc(db, "users", uid, "security", "twoFactor"));
-  if (!s.exists()) return { ok: false, reason: "コードが見つかりません" };
-  const { otpCode, otpExpiryMs, otpPurpose } = s.data() as {
-    otpCode?: string;
-    otpExpiryMs?: number;
-    otpPurpose?: string;
-  };
-  if (otpPurpose !== purpose) return { ok: false, reason: "用途が一致しません" };
-  if (!otpExpiryMs || Date.now() > otpExpiryMs) return { ok: false, reason: "有効期限が切れています" };
-  if (otpCode !== input) return { ok: false, reason: "コードが正しくありません" };
+export async function verifyOTP(uid: string, input: string, purpose: string) {
+  const { data } = await supabase
+    .from("security_2fa")
+    .select("otp_code, otp_expiry, otp_purpose")
+    .eq("user_id", uid)
+    .maybeSingle();
+  if (!data) return { ok: false, reason: "コードが見つかりません" };
+  const { otp_code, otp_expiry, otp_purpose } = data;
+  if (otp_purpose !== purpose) return { ok: false, reason: "用途が一致しません" };
+  if (!otp_expiry || Date.now() > new Date(otp_expiry).getTime()) return { ok: false, reason: "有効期限が切れています" };
+  if (otp_code !== input) return { ok: false, reason: "コードが正しくありません" };
   return { ok: true };
 }
 
-export async function clearOTP(uid: string, db: Firestore) {
-  await setDoc(
-    doc(db, "users", uid, "security", "twoFactor"),
-    { otpCode: null, otpExpiryMs: null, otpPurpose: null },
-    { merge: true },
-  );
+export async function clearOTP(uid: string) {
+  await supabase
+    .from("security_2fa")
+    .update({ otp_code: null, otp_expiry: null, otp_purpose: null })
+    .eq("user_id", uid);
 }
 
-export async function is2FA(uid: string, db: Firestore): Promise<boolean> {
+export async function is2FA(uid: string): Promise<boolean> {
   try {
-    const s = await getDoc(doc(db, "users", uid, "security", "twoFactor"));
-    return s.exists() && ((s.data().enabled as boolean) ?? false);
+    const { data } = await supabase.from("security_2fa").select("enabled").eq("user_id", uid).maybeSingle();
+    return data?.enabled ?? false;
   } catch {
     return false;
   }
 }
 
-export async function sendOTP(
-  user: Pick<User, "email" | "displayName">,
-  code: string,
-  purpose: string,
-) {
+export async function sendOTP(user: Pick<User, "email"> & { displayName?: string | null }, code: string, purpose: string) {
   if (!user?.email) throw new Error("メールアドレスが設定されていません");
   const res = await fetch("/api/mail", {
     method: "POST",
@@ -71,16 +66,28 @@ export async function sendOTP(
   }
 }
 
-export async function tryBackup(uid: string, db: Firestore, input: string) {
+export async function tryBackup(uid: string, input: string) {
   if (!input?.trim()) return { ok: false as const };
   try {
-    const s = await getDoc(doc(db, "users", uid, "security", "BackUpCode"));
-    if (!s.exists()) return { ok: false as const, reason: "バックアップコードが設定されていません" };
-    const codes = (s.data().codes || []) as { code: string; used: boolean }[];
-    const idx = codes.findIndex((c) => !c.used && c.code === input.toUpperCase().trim());
-    if (idx === -1) return { ok: false as const, reason: "バックアップコードが正しくありません" };
-    codes[idx].used = true;
-    await setDoc(doc(db, "users", uid, "security", "BackUpCode"), { codes }, { merge: true });
+    const code = input.toUpperCase().trim();
+    const { data } = await supabase
+      .from("backup_codes")
+      .select("id, used")
+      .eq("user_id", uid)
+      .eq("code", code)
+      .maybeSingle();
+    if (!data) {
+      const { count } = await supabase
+        .from("backup_codes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", uid);
+      return {
+        ok: false as const,
+        reason: !count ? "バックアップコードが設定されていません" : "バックアップコードが正しくありません",
+      };
+    }
+    if (data.used) return { ok: false as const, reason: "バックアップコードが正しくありません" };
+    await supabase.from("backup_codes").update({ used: true }).eq("id", data.id);
     return { ok: true as const };
   } catch (e) {
     return { ok: false as const, reason: e instanceof Error ? e.message : String(e) };

@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import FirebaseInit from "@/components/FirebaseInit";
 import AccessLogger from "@/components/AccessLogger";
 import SessionWatcher from "@/components/SessionWatcher";
 import ScrollTopButton from "@/components/ScrollTopButton";
@@ -45,7 +44,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <div id="footer"><Footer /></div>
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
-        <FirebaseInit />
         <AccessLogger />
         <SessionWatcher />
         <ScrollTopButton />

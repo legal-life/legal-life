@@ -51,7 +51,8 @@
 
 | 変数名 | 用途 |
 |---|---|
-| `NEXT_PUBLIC_FIREBASE_CONFIG` | Firebase初期化(JSON文字列) |
+| `NEXT_PUBLIC_SUPABASE_URL` | SupabaseプロジェクトのURL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabaseのpublishable(anon)キー |
 | `GMAIL_USER` / `GMAIL_APP_PASSWORD` | メール送信(Gmail SMTP) |
 | `CONTACT_TO_EMAIL` | お問い合わせ受信先 |
 | `GEMINI_API_KEY` | AIチャット機能 |
@@ -60,11 +61,11 @@
 
 Vercelダッシュボードの Project Settings → Environment Variables、またはCLIの場合:
 ```bash
-npx vercel env add NEXT_PUBLIC_FIREBASE_CONFIG production
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL production
 ```
 のように1つずつ追加できます。
 
 ## 注意点
 
 - 新規プロジェクトを作ると、**既存の`legal-life-site`チーム上の本番サイトとは完全に別物**になります(ドメインも別)。動作確認用であることを明確にしてください。
-- Firebase Authentication・Google OAuth・reCAPTCHA(App Check)は、新しいデプロイ先ドメインを承認済みドメインとして追加しないと正しく動作しません(Firebaseコンソール/Google Cloud Consoleでの追加作業が別途必要です)。
+- Supabase Auth・Google OAuthは、新しいデプロイ先ドメインをリダイレクトURL/承認済みドメインとして追加しないと正しく動作しません(Supabaseダッシュボード → Authentication → URL Configuration、およびGoogle Cloud ConsoleのOAuthクライアント設定での追加作業が別途必要です)。
