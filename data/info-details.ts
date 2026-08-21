@@ -7,6 +7,14 @@ export type InfoDetail = {
   bodyHtml: string;
 };
 
+// dateは"2025/9/17"や"2025/12"(日省略)、""(未設定)など表記揺れがあるため、
+// 一覧の新着順ソート用に緩く数値化する。パース不能な場合は最も古い扱いにする。
+export function parseInfoDate(date: string): number {
+  const [y, m, d] = date.split("/").map((n) => parseInt(n, 10));
+  if (!y) return -Infinity;
+  return new Date(y, (m || 1) - 1, d || 1).getTime();
+}
+
 export const infoDetails: InfoDetail[] = [
   {
     slug: "0001",

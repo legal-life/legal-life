@@ -9,6 +9,7 @@ import AccessLogger from "@/components/AccessLogger";
 import SessionWatcher from "@/components/SessionWatcher";
 import ScrollTopButton from "@/components/ScrollTopButton";
 import MaintenancePopup from "@/components/MaintenancePopup";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 // 元リポジトリの BIZUDGothic-Bold.woff2 は拡張子のみwoff2で実体が壊れたフォントデータのため
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionWatcher />
         <ScrollTopButton />
         <MaintenancePopup />
+        <CookieBanner />
         <Analytics />
         <SpeedInsights />
       </body>

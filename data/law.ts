@@ -8,7 +8,7 @@ export type LawDoc = {
 export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawDoc> = {
   privacy: {
     title: "プライバシーポリシー",
-    dateLabel: `最終更新日:2026年3月8日`,
+    dateLabel: `最終更新日:2026年8月21日`,
     bodyHtml: `<p>このプライバシーポリシーは、個人情報、Cookie、外部サービス利用、AI利用、セキュリティ対策、運営体制に関する包括的な情報開示文書です。</p>
 
                     <h2 id="section1">1. 基本方針</h2>
@@ -77,7 +77,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>IPアドレス（Google Analyticsでは匿名化処理）、リクエスト日時、URL、HTTPヘッダー、リファラー</p>
                                 <p>利用目的: セキュリティ監視、不正アクセス検知</p>
                                 <p>保存期間: 3ヶ月間</p>
-                                <p>保存場所: GitHub Pages、Google Analytics</p>
+                                <p>保存場所: Vercel、Supabase、Google Analytics</p>
                             <h4>Cookie情報</h4>
                                 <p>Cookie同意状態（cookie_consent）、セッションID、Google Analytics Cookie（_ga, _gid等、同意時のみ）。ログイン状態はCookieではなくブラウザのローカルストレージ（Supabase Auth）に保存されます</p>
                                 <p>詳細は<a href="#section8">「8. Cookie利用ポリシー」</a>を参照</p>
@@ -206,7 +206,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     <h2 id="section6">6. AI利用に関する詳細情報開示</h2>
                         <h3>6-1. 使用しているAIシステムの詳細</h3>
                             <h4>AIモデルの基本情報</h4>
-                                <p><strong>モデル名</strong>: Gemini 3 Flash Preview</p>
+                                <p><strong>モデル名</strong>: Gemini 3.5 Flash</p>
                                 <p><strong>提供元</strong>: Google LLC（米国カリフォルニア州）</p>
                                 <p><strong>利用方法</strong>: Google AI Studio API経由</p>
                                 <p><strong>モデルの種類</strong>: 大規模言語モデル（LLM）</p>
@@ -488,6 +488,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     <p><strong>2026年1月30日</strong>: プライバシーポリシーリリース</p>
                     <p><strong>2026年3月5日</strong>: ログイン方法をGoogleだけでなくメール・パスワード・Twitter・LINE連携機能を追加したことを明記。</p>
                     <p><strong>2026年3月6日</strong>: ログイン方法をGoogleおよびメール・パスワードのみに変更（Twitter・LINE連携を廃止）。メール二段階認証機能の追加に伴う記述を更新。表示名変更・UUID表示機能の追加に関する記述を更新。</p>
+                    <p><strong>2026年8月21日</strong>: データベース・認証基盤をFirebaseからSupabaseへ移行したことに伴い、関連する記述(取得・保存されるデータ、データ処理地、セキュリティ対策、AI利用時のデータ保存先等)を更新。実在しなくなったreCAPTCHA Enterprise(Firebase App Check)に関する記述を削除。</p>
                     <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
                     
                     <p><strong>運営者</strong>: LEGAL&LIFE運営チーム</p>
@@ -907,7 +908,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
   },
   cookie: {
     title: "クッキーポリシー",
-    dateLabel: `最終更新日: 2026年3月6日`,
+    dateLabel: `最終更新日: 2026年8月21日`,
     bodyHtml: `<p>このクッキーポリシーは、当サイトにおけるCookieおよび類似技術の使用について詳細に説明するものです。</p>
                     <h2 id="section1">1. Cookieとは</h2>
                         <p>Cookieとは、ウェブサイトがユーザーのコンピュータやスマートフォン等のデバイスに保存する小さなテキストファイルです。Cookieにより、ウェブサイトはユーザーのデバイスを識別し、ユーザーの設定を記憶することができます。</p>
