@@ -2,11 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PopupLink from "./PopupLink";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLUListElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (menuRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [open]);
 
   return (
     <>
@@ -19,38 +32,46 @@ export default function Header() {
         </h1>
         <nav className="flex items-center">
           <button
+            ref={buttonRef}
             className="relative z-[1001] ml-2.5 flex flex-col gap-1.5 p-0"
             aria-expanded={open}
             aria-controls="main-menu"
             aria-label="メニューを開く"
-            onClick={() => setOpen((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen((v) => !v);
+            }}
           >
             <span className="block w-6 h-0.5 bg-black transition-all" />
             <span className="block w-6 h-0.5 bg-black transition-all" />
             <span className="block w-6 h-0.5 bg-black transition-all" />
           </button>
+          {open && (
+            <div className="fixed inset-0 bg-black/30 z-[999] transition-opacity" onClick={() => setOpen(false)} />
+          )}
           <ul
+            ref={menuRef}
             id="main-menu"
             className={`absolute top-0 right-0 w-[220px] max-h-screen p-8 bg-[#d6eaef] z-[1000] list-none transition-transform duration-300 ${
               open ? "translate-x-0 visible" : "translate-x-full invisible"
             }`}
           >
-            <li className="mb-5"><Link href="/" className="text-gray-800 hover:text-primary-dark">ホーム</Link></li>
-            <li className="mb-5"><PopupLink className="text-gray-800 hover:text-primary-dark">法令学習</PopupLink></li>
-            <li className="mb-5"><Link href="/content/chat" className="text-gray-800 hover:text-primary-dark">AIチャット</Link></li>
-            <li className="mb-5"><Link href="/content/search" className="text-gray-800 hover:text-primary-dark">法令検索</Link></li>
-            <li className="mb-5"><PopupLink className="text-gray-800 hover:text-primary-dark">ニュース</PopupLink></li>
+            <li className="mb-5"><Link href="/" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">ホーム</Link></li>
+            <li className="mb-5"><PopupLink onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">法令学習</PopupLink></li>
+            <li className="mb-5"><Link href="/content/chat" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">AIチャット</Link></li>
+            <li className="mb-5"><Link href="/content/search" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">法令検索</Link></li>
+            <li className="mb-5"><PopupLink onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">ニュース</PopupLink></li>
             <li className="mb-5"><hr className="border-t-2 border-black/15" /></li>
             <li className="mb-5 text-xs text-gray-500">
               アカウントはメンテナンス中です。詳しくは
-              <Link href="/info/details/0013" className="text-primary-dark"> こちら</Link>
+              <Link href="/info/details/0013" onClick={() => setOpen(false)} className="text-primary-dark"> こちら</Link>
             </li>
             <li className="mb-5"><hr className="border-t-2 border-black/15" /></li>
-            <li className="mb-5"><Link href="/info/about" className="text-gray-800 hover:text-primary-dark">サイト概要</Link></li>
-            <li className="mb-5"><Link href="/info" className="text-gray-800 hover:text-primary-dark">お知らせ</Link></li>
-            <li className="mb-5"><Link href="/info/faq" className="text-gray-800 hover:text-primary-dark">よくある質問</Link></li>
-            <li className="mb-5"><Link href="/info/contact" className="text-gray-800 hover:text-primary-dark">お問い合わせ</Link></li>
-            <li className="mb-5"><Link href="/info/map" className="text-gray-800 hover:text-primary-dark">サイトマップ</Link></li>
+            <li className="mb-5"><Link href="/info/about" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">サイト概要</Link></li>
+            <li className="mb-5"><Link href="/info" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">お知らせ</Link></li>
+            <li className="mb-5"><Link href="/info/faq" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">よくある質問</Link></li>
+            <li className="mb-5"><Link href="/info/contact" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">お問い合わせ</Link></li>
+            <li className="mb-5"><Link href="/info/map" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">サイトマップ</Link></li>
           </ul>
         </nav>
       </header>
