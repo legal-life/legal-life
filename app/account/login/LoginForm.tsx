@@ -3,17 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithCredential,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { decR } from "@/lib/auth/utils";
 import { genOTP, is2FA, saveOTP, sendOTP, tryBackup, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import { logAct, regSession } from "@/lib/auth/session";
@@ -41,59 +32,27 @@ export default function LoginForm() {
   const [pending, setPending] = useState<{ email: string; pass: string } | null>(null);
 
   useEffect(() => {
-    const auth = getFirebaseAuth();
-    const unsub = onAuthStateChanged(auth, (u) => {
-      if (u) afterLoginRedirect(r);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) afterLoginRedirect(r);
     });
-    return unsub;
+    return () => subscription.unsubscribe();
   }, [r]);
 
-  useEffect(() => {
-    if (sessionStorage.getItem("ll_redirect_login")) {
-      sessionStorage.removeItem("ll_redirect_login");
-      (async () => {
-        try {
-          const auth = getFirebaseAuth();
-          const db = getFirebaseDb();
-          const res = await getRedirectResult(auth);
-          if (res?.user) {
-            localStorage.setItem("ll_last_consent", Date.now().toString());
-            await afterLogin(res.user.uid, "Google", res.user, db);
-          }
-        } catch (e) {
-          setGoogleError(e instanceof Error ? e.message : String(e));
-        }
-      })();
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function afterLogin(uid: string, method: string, user: Parameters<typeof regSession>[0], db: ReturnType<typeof getFirebaseDb>) {
-    await regSession(user, db);
-    await logAct(uid, db, "login", method);
+  async function afterLogin(user: User, method: string) {
+    await regSession(user);
+    await logAct(user.id, "login", method);
     afterLoginRedirect(r);
   }
 
   const doGoogle = async () => {
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    const p = new GoogleAuthProvider();
-    const last = localStorage.getItem("ll_last_consent");
-    p.setCustomParameters({
-      prompt: !last || Date.now() - parseInt(last) > CONSENT_INTERVAL ? "consent" : "select_account",
+    localStorage.setItem("ll_last_consent", Date.now().toString());
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${location.origin}/account/login${r ? `?r=${r}` : ""}` },
     });
-    try {
-      const res = await signInWithPopup(auth, p);
-      localStorage.setItem("ll_last_consent", Date.now().toString());
-      await afterLogin(res.user.uid, "Google", res.user, db);
-    } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
-      if (code === "auth/popup-blocked") {
-        sessionStorage.setItem("ll_redirect_login", "1");
-        await signInWithRedirect(auth, p);
-      } else {
-        setGoogleError(e instanceof Error ? e.message : String(e));
-      }
-    }
+    if (error) setGoogleError(error.message);
   };
 
   useEffect(() => {
@@ -106,12 +65,13 @@ export default function LoginForm() {
         client_id: GOOGLE_CLIENT_ID,
         callback: async (credentialResponse: { credential: string }) => {
           try {
-            const auth = getFirebaseAuth();
-            const db = getFirebaseDb();
-            const credential = GoogleAuthProvider.credential(credentialResponse.credential);
-            const result = await signInWithCredential(auth, credential);
+            const { data, error } = await supabase.auth.signInWithIdToken({
+              provider: "google",
+              token: credentialResponse.credential,
+            });
+            if (error || !data.user) throw error || new Error("ログインに失敗しました");
             localStorage.setItem("ll_last_consent", Date.now().toString());
-            await afterLogin(result.user.uid, "Google OneTap", result.user, db);
+            await afterLogin(data.user, "Google OneTap");
           } catch (e) {
             setGoogleError(e instanceof Error ? e.message : String(e));
           }
@@ -132,30 +92,28 @@ export default function LoginForm() {
     }
     setSubmitting(true);
     setLoginMsg({ text: "", type: "" });
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const enabled = await is2FA(cred.user.uid, db);
-      if (enabled && cred.user.email) {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.user) throw error || new Error("ログインに失敗しました");
+      const enabled = await is2FA(data.user.id);
+      if (enabled && data.user.email) {
         const code = genOTP();
-        await saveOTP(cred.user.uid, db, code, "login_verify");
-        await sendOTP(cred.user, code, "ログイン認証");
-        await auth.signOut();
+        await saveOTP(data.user.id, code, "login_verify");
+        await sendOTP(data.user, code, "ログイン認証");
+        await supabase.auth.signOut();
         setPending({ email, pass: password });
-        setLoginMsg({ text: `📧 ${cred.user.email} に認証コードを送信しました`, type: "success" });
+        setLoginMsg({ text: `📧 ${data.user.email} に認証コードを送信しました`, type: "success" });
         setShow2fa(true);
         setSubmitting(false);
         return;
       }
-      await afterLogin(cred.user.uid, "メール", cred.user, db);
+      await afterLogin(data.user, "メール");
     } catch (e: unknown) {
       const code = (e as { code?: string })?.code;
       const M: Record<string, string> = {
-        "auth/user-not-found": "登録されていません",
-        "auth/wrong-password": "パスワードが間違っています",
-        "auth/invalid-credential": "メールまたはパスワードが間違っています",
-        "auth/too-many-requests": "しばらく後に再試行してください",
+        invalid_credentials: "メールまたはパスワードが間違っています",
+        user_not_found: "登録されていません",
+        over_request_rate_limit: "しばらく後に再試行してください",
       };
       setLoginMsg({ text: (code && M[code]) || (e instanceof Error ? e.message : String(e)), type: "error" });
       setSubmitting(false);
@@ -164,30 +122,30 @@ export default function LoginForm() {
 
   const handle2faVerify = async (input: string, isBackup: boolean) => {
     if (!pending) return { ok: false, reason: "セッションが失われました" };
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    let cred2;
+    let user2: User;
     try {
-      cred2 = await signInWithEmailAndPassword(auth, pending.email, pending.pass);
+      const { data, error } = await supabase.auth.signInWithPassword({ email: pending.email, password: pending.pass });
+      if (error || !data.user) throw error;
+      user2 = data.user;
     } catch {
       return { ok: false, reason: "再認証に失敗しました" };
     }
     if (isBackup) {
-      const res = await tryBackup(cred2.user.uid, db, input);
+      const res = await tryBackup(user2.id, input);
       if (!res.ok) {
-        await auth.signOut();
+        await supabase.auth.signOut();
         return res;
       }
     } else {
-      const res = await verifyOTP(cred2.user.uid, db, input, "login_verify");
+      const res = await verifyOTP(user2.id, input, "login_verify");
       if (!res.ok) {
-        await auth.signOut();
+        await supabase.auth.signOut();
         return res;
       }
-      await clearOTP(cred2.user.uid, db);
+      await clearOTP(user2.id);
     }
     setPending(null);
-    await afterLogin(cred2.user.uid, "メール+2FA", cred2.user, db);
+    await afterLogin(user2, "メール+2FA");
     return { ok: true };
   };
 
@@ -196,15 +154,13 @@ export default function LoginForm() {
       setLoginMsg({ text: "メールアドレスを入力してください", type: "error" });
       return;
     }
-    try {
-      await sendPasswordResetEmail(getFirebaseAuth(), email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/account/security/pass`,
+    });
+    if (error) {
+      setLoginMsg({ text: error.message, type: "error" });
+    } else {
       setLoginMsg({ text: "✅ リセットメールを送信しました。迷惑メールフォルダもご確認ください。", type: "success" });
-    } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
-      setLoginMsg({
-        text: code === "auth/user-not-found" ? "登録されていません" : e instanceof Error ? e.message : String(e),
-        type: "error",
-      });
     }
   };
 

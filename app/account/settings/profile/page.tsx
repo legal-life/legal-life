@@ -3,46 +3,41 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { sendEmailVerification, updateProfile, type User } from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getProfile, updateDisplayName, type Profile } from "@/lib/auth/profile";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [nameMsg, setNameMsg] = useState("");
   const [copied, setCopied] = useState(false);
   const [verifyMsg, setVerifyMsg] = useState("");
   const [verifySending, setVerifySending] = useState(false);
-  const [needsVerify, setNeedsVerify] = useState(false);
 
   useEffect(() => {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      await u.reload().catch(() => {});
-      const fresh = getFirebaseAuth().currentUser;
-      if (fresh) {
-        setUser(fresh);
-        setNeedsVerify(!!fresh.email && !fresh.emailVerified);
-      }
+      setProfile(await getProfile(u.id));
     })();
   }, []);
+
+  const needsVerify = !!user?.email && !user.email_confirmed_at;
 
   const saveName = async () => {
     if (!nameInput.trim()) {
       setNameMsg("名前を入力してください");
       return;
     }
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
     try {
-      await updateProfile(auth.currentUser!, { displayName: nameInput.trim() });
-      await logAct(user!.uid, db, "profile_update", "表示名変更");
-      setUser(auth.currentUser);
+      await updateDisplayName(user!.id, nameInput.trim());
+      await logAct(user!.id, "profile_update", "表示名変更");
+      setProfile((p) => (p ? { ...p, display_name: nameInput.trim() } : p));
       setEditingName(false);
     } catch (e) {
       setNameMsg(e instanceof Error ? e.message : String(e));
@@ -51,20 +46,22 @@ export default function ProfilePage() {
 
   const copyUuid = async () => {
     if (!user) return;
-    await navigator.clipboard.writeText(user.uid).catch(() => {});
+    await navigator.clipboard.writeText(user.id).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const resendVerify = async () => {
+    if (!user?.email) return;
     setVerifySending(true);
     setVerifyMsg("");
     try {
-      await sendEmailVerification(getFirebaseAuth().currentUser!);
+      const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
+      if (error) throw error;
       setVerifyMsg("✅ 確認メールを送信しました");
     } catch (e: unknown) {
       const code = (e as { code?: string })?.code;
-      setVerifyMsg(code === "auth/too-many-requests" ? "しばらく待ってから再試行してください" : e instanceof Error ? e.message : String(e));
+      setVerifyMsg(code === "over_email_send_rate_limit" ? "しばらく待ってから再試行してください" : e instanceof Error ? e.message : String(e));
     } finally {
       setTimeout(() => setVerifySending(false), 60000);
     }
@@ -72,8 +69,8 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const lastLogin = user.metadata?.lastSignInTime
-    ? new Date(user.metadata.lastSignInTime).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+  const lastLogin = user.last_sign_in_at
+    ? new Date(user.last_sign_in_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
     : "--";
 
   return (
@@ -82,8 +79,8 @@ export default function ProfilePage() {
       <h1 className="text-xl font-bold mt-3 mb-5">プロフィール</h1>
 
       <div className="flex justify-center mb-5">
-        {user.photoURL ? (
-          <Image src={user.photoURL} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-primary" />
+        {profile?.photo_url ? (
+          <Image src={profile.photo_url} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-primary" />
         ) : (
           <div className="w-[72px] h-[72px] rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl">👤</div>
         )}
@@ -105,7 +102,7 @@ export default function ProfilePage() {
                 <button className="text-sm text-gray-400" onClick={() => setEditingName(false)}>取消</button>
               </div>
             ) : (
-              <p className="font-semibold text-sm">{user.displayName || "（未設定）"}</p>
+              <p className="font-semibold text-sm">{profile?.display_name || "（未設定）"}</p>
             )}
             {nameMsg && <p className="text-xs text-[#e74c3c]">{nameMsg}</p>}
           </div>
@@ -113,7 +110,7 @@ export default function ProfilePage() {
             <button
               className="text-xs text-primary-dark font-semibold"
               onClick={() => {
-                setNameInput(user.displayName || "");
+                setNameInput(profile?.display_name || "");
                 setEditingName(true);
               }}
             >
@@ -130,7 +127,7 @@ export default function ProfilePage() {
         <li className="flex items-center justify-between px-4 py-3">
           <div>
             <p className="text-xs text-gray-500">UUID</p>
-            <p className="font-mono text-xs">{user.uid}</p>
+            <p className="font-mono text-xs">{user.id}</p>
           </div>
           <button className="text-xs text-primary-dark font-semibold" onClick={copyUuid}>
             {copied ? "✅" : "コピー"}

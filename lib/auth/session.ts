@@ -1,15 +1,14 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import type { Firestore } from "firebase/firestore";
-import type { User } from "firebase/auth";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { fetchLocation, getSid, parseUA, SESSION_KEY } from "./utils";
 
-export async function logAct(uid: string, db: Firestore, type: string, detail = "") {
+export async function logAct(uid: string, type: string, detail = "") {
   const ua = parseUA();
   try {
-    await addDoc(collection(db, "users", uid, "activity"), {
+    await supabase.from("activity_log").insert({
+      user_id: uid,
       type,
       detail,
-      timestamp: serverTimestamp(),
       browser: ua.browser,
       os: ua.os,
       device: ua.device,
@@ -19,37 +18,34 @@ export async function logAct(uid: string, db: Firestore, type: string, detail = 
   }
 }
 
-export async function regSession(user: User, db: Firestore) {
+export async function regSession(user: Pick<User, "id">) {
   const sid = getSid();
-  const ref = doc(db, "users", user.uid, "sessions", sid);
   const ua = parseUA();
   try {
-    const s = await getDoc(ref);
-    if (!s.exists()) {
+    const { data: existing } = await supabase.from("sessions").select("id").eq("id", sid).maybeSingle();
+    if (!existing) {
       const loc = await fetchLocation();
-      await setDoc(ref, {
-        sessionId: sid,
+      await supabase.from("sessions").insert({
+        id: sid,
+        user_id: user.id,
         browser: ua.browser,
         os: ua.os,
         device: ua.device,
         location: loc,
-        loginAt: serverTimestamp(),
-        lastActive: serverTimestamp(),
-        shouldLogout: false,
       });
     } else {
-      await setDoc(ref, { lastActive: serverTimestamp() }, { merge: true });
+      await supabase.from("sessions").update({ last_active: new Date().toISOString() }).eq("id", sid);
     }
   } catch {
     /* ignore */
   }
 }
 
-export async function delSession(user: User, db: Firestore) {
+export async function delSession(user: Pick<User, "id">) {
   try {
     const sid = localStorage.getItem(SESSION_KEY);
     if (sid) {
-      await deleteDoc(doc(db, "users", user.uid, "sessions", sid));
+      await supabase.from("sessions").delete().eq("id", sid).eq("user_id", user.id);
       localStorage.removeItem(SESSION_KEY);
     }
   } catch {

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { is2FA, genOTP, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import { logAct } from "@/lib/auth/session";
@@ -20,11 +19,10 @@ export default function BackupCodePage() {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
-      const en = await is2FA(u.uid, db);
+      const en = await is2FA(u.id);
       setEnabled(en);
       if (en) {
-        setCodes(await loadCodes(u.uid, db));
+        setCodes(await loadCodes(u.id));
       }
       setLoading(false);
     })();
@@ -33,25 +31,24 @@ export default function BackupCodePage() {
   const regenerate = async () => {
     if (!user) return;
     if (!confirm("現在のコードはすべて無効になります。よろしいですか?")) return;
-    const db = getFirebaseDb();
     const doRegen = async () => {
-      const nc = await genAndSaveCodes(user.uid, db);
+      const nc = await genAndSaveCodes(user.id);
       setCodes(nc);
-      await logAct(user.uid, db, "twofa_change", "バックアップコード再生成");
+      await logAct(user.id, "twofa_change", "バックアップコード再生成");
     };
-    const en = await is2FA(user.uid, db);
+    const en = await is2FA(user.id);
     if (en && user.email) {
       const code = genOTP();
-      await saveOTP(user.uid, db, code, "backup_regen");
+      await saveOTP(user.id, code, "backup_regen");
       await sendOTP(user, code, "バックアップコード再生成");
       const answer = window.prompt("メールに送信された6桁の認証コードを入力してください:");
       if (!answer) return;
-      const res = await verifyOTP(user.uid, db, answer.trim(), "backup_regen");
+      const res = await verifyOTP(user.id, answer.trim(), "backup_regen");
       if (!res.ok) {
         alert(res.reason || "コードが正しくありません");
         return;
       }
-      await clearOTP(user.uid, db);
+      await clearOTP(user.id);
     }
     await doRegen();
   };

@@ -58,8 +58,8 @@ lrgal&lifeというサイトを作成しています。
 
 - **フレームワーク**: Next.js 15 (App Router) + TypeScript
 - **スタイル**: Tailwind CSS(`next/font/local`でBIZUDGothicフォントを自己ホスト化。旧woff2ファイルは実体が壊れたフォントデータだったため削除・修正済み)
-- **認証**: Firebase Authentication(Google / メール・パスワード、2FA、セッション管理)
-- **データベース**: Firebase Firestore
+- **認証**: Supabase Auth(Google / メール・パスワード、2FA、セッション管理)
+- **データベース**: Supabase(PostgreSQL)
 - **メール送信**: Gmail SMTP(Nodemailer)。旧legal-life-mailerリポジトリのCloudflare Workers実装を`/api/mail`としてこのリポジトリに統合(legal-life-mailerリポジトリはアーカイブ予定)。第三者ESP(Resend/Brevo等)はgmail.com等の共有ドメインを送信元として認証できないため、独自ドメインなしでGmailアドレスから送るにはこの方式を採用
 - **通知配信リスト管理**: Resend Segments(実際のメール送信は行わず、`/api/mail/audience`でお知らせ配信対象リストの管理のみに使用。ドメイン未認証でも利用可能)
 - **AIチャット**: Gemini API(APIキーはサーバー側`/api/chat`経由のみで使用し、クライアントに露出しない構成)
@@ -69,8 +69,8 @@ lrgal&lifeというサイトを作成しています。
 ### 必要な環境変数
 | 変数名 | 用途 |
 | --- | --- |
-| `NEXT_PUBLIC_FIREBASE_CONFIG` | Firebase設定(JSON文字列) |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Firebase App Check用reCAPTCHA v3サイトキー |
+| `NEXT_PUBLIC_SUPABASE_URL` | SupabaseプロジェクトのURL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabaseのpublishable(anon)キー |
 | `NEXT_PUBLIC_SITE_URL` | サイトの本番URL(メタデータ・サイトマップ生成に使用) |
 | `GEMINI_API_KEY` | Gemini API(サーバー専用、`/api/chat`のみで参照) |
 | `GMAIL_USER` | メール送信元のGmailアドレス(例: `xxxx@gmail.com`) |

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
-import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import { supabase } from "@/lib/supabase/client";
 import { delSession, logAct } from "@/lib/auth/session";
 
 export default function LogoutPage() {
@@ -11,14 +10,14 @@ export default function LogoutPage() {
 
   useEffect(() => {
     (async () => {
-      const auth = getFirebaseAuth();
-      const db = getFirebaseDb();
       try {
-        const u = auth.currentUser;
+        const {
+          data: { user: u },
+        } = await supabase.auth.getUser();
         if (u) {
-          await Promise.allSettled([logAct(u.uid, db, "logout", ""), delSession(u, db)]);
+          await Promise.allSettled([logAct(u.id, "logout", ""), delSession(u)]);
         }
-        await signOut(auth);
+        await supabase.auth.signOut();
         sessionStorage.removeItem("ll_auth_cache");
         setDone(true);
         setTimeout(() => window.location.replace("/"), 3000);

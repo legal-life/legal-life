@@ -2,20 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import {
-  EmailAuthProvider,
-  GoogleAuthProvider,
-  linkWithCredential,
-  linkWithPopup,
-  unlink,
-  updateEmail,
-  sendEmailVerification,
-  type User,
-} from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
-import { getFirebaseDb } from "@/lib/firebase/client";
 
 export default function MethodsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -34,84 +24,74 @@ export default function MethodsPage() {
     })();
   }, []);
 
-  const refresh = () => setUser(getFirebaseAuth().currentUser);
+  const refresh = async () => {
+    const { data } = await supabase.auth.getUser();
+    setUser(data.user);
+  };
 
   if (!user) return null;
 
-  const ids = user.providerData.map((p) => p.providerId);
-  const total = ids.length;
-  const passLinked = ids.includes("password");
-  const passData = user.providerData.find((p) => p.providerId === "password");
-  const googleLinked = ids.includes("google.com");
-  const googleData = user.providerData.find((p) => p.providerId === "google.com");
+  const identities = user.identities ?? [];
+  const total = identities.length;
+  const passIdentity = identities.find((i) => i.provider === "email");
+  const passLinked = !!passIdentity;
+  const googleIdentity = identities.find((i) => i.provider === "google");
+  const googleLinked = !!googleIdentity;
 
-  const unlinkProvider = async (providerId: "password" | "google.com", label: string) => {
+  const unlinkProvider = async (identity: NonNullable<typeof passIdentity>, label: string) => {
     if (!confirm("解除しますか?")) return;
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    try {
-      await unlink(auth.currentUser!, providerId);
-      await logAct(user.uid, db, "method_change", `${label}解除`);
-      setMsg("✅解除しました");
-      refresh();
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : String(e));
+    const { error } = await supabase.auth.unlinkIdentity(identity);
+    if (error) {
+      setMsg(error.message);
+      return;
     }
+    await logAct(user.id, "method_change", `${label}解除`);
+    setMsg("✅解除しました");
+    await refresh();
   };
 
   const linkGoogle = async () => {
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    try {
-      await linkWithPopup(auth.currentUser!, new GoogleAuthProvider());
-      setMsg("✅連携しました");
-      await logAct(user.uid, db, "method_change", "Google連携");
-      refresh();
-    } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
-      setMsg(code === "auth/credential-already-in-use" ? "このGoogleアカウントは別のユーザーと連携済みです" : e instanceof Error ? e.message : String(e));
+    const { error } = await supabase.auth.linkIdentity({
+      provider: "google",
+      options: { redirectTo: `${location.origin}/account/security/methods` },
+    });
+    if (error) {
+      setMsg(error.message.includes("already") ? "このGoogleアカウントは別のユーザーと連携済みです" : error.message);
     }
   };
 
   const setPassword = async () => {
     if (!pw1 || pw1.length < 6) return setPwMsg("6文字以上にしてください");
     if (pw1 !== pw2) return setPwMsg("一致しません");
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    try {
-      await linkWithCredential(auth.currentUser!, EmailAuthProvider.credential(auth.currentUser!.email!, pw1));
-      await logAct(user.uid, db, "method_change", "パスワード設定");
-      setShowPasswordForm(false);
-      setPw1("");
-      setPw2("");
-      setMsg("✅パスワードを設定しました");
-      refresh();
-    } catch (e) {
-      setPwMsg(e instanceof Error ? e.message : String(e));
+    const { error } = await supabase.auth.updateUser({ password: pw1 });
+    if (error) {
+      setPwMsg(error.message);
+      return;
     }
+    await logAct(user.id, "method_change", "パスワード設定");
+    setShowPasswordForm(false);
+    setPw1("");
+    setPw2("");
+    setMsg("✅パスワードを設定しました");
+    await refresh();
   };
 
   const setEmail = async () => {
     if (!emailInput || !emailInput.includes("@")) return setEmailMsg("正しいメールアドレスを入力してください");
     setEmailSubmitting(true);
-    const auth = getFirebaseAuth();
-    const db = getFirebaseDb();
-    try {
-      await updateEmail(auth.currentUser!, emailInput);
-      await sendEmailVerification(auth.currentUser!).catch(() => {});
-      setEmailMsg("✅設定しました");
-      await logAct(user.uid, db, "email_change", "");
-      refresh();
-    } catch (e: unknown) {
-      const code = (e as { code?: string })?.code;
+    const { error } = await supabase.auth.updateUser({ email: emailInput });
+    if (error) {
       const M: Record<string, string> = {
-        "auth/email-already-in-use": "すでに使用済み",
-        "auth/requires-recent-login": "再ログインが必要です",
+        email_exists: "すでに使用済み",
       };
-      setEmailMsg((code && M[code]) || (e instanceof Error ? e.message : String(e)));
-    } finally {
+      setEmailMsg((error.code && M[error.code]) || error.message);
       setEmailSubmitting(false);
+      return;
     }
+    setEmailMsg("✅確認メールを送信しました。リンクから設定を完了してください");
+    await logAct(user.id, "email_change", "");
+    setEmailSubmitting(false);
+    await refresh();
   };
 
   return (
@@ -128,14 +108,14 @@ export default function MethodsPage() {
             <span className={`block text-xs mt-0.5 ${passLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
               {passLinked ? "設定済み" : "未設定"}
             </span>
-            {passLinked && <span className="block text-xs text-[#5f6368] italic mt-0.5">{passData?.email || user.email}</span>}
+            {passLinked && <span className="block text-xs text-[#5f6368] italic mt-0.5">{user.email}</span>}
           </div>
           {passLinked ? (
             <button
               className="shrink-0 whitespace-nowrap bg-white text-[#e74c3c] border-[1.5px] border-[#e74c3c] rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-[#fff5f5] disabled:opacity-40"
               disabled={total <= 1}
               title={total <= 1 ? "最後のログイン方法は解除できません" : ""}
-              onClick={() => unlinkProvider("password", "パスワード")}
+              onClick={() => unlinkProvider(passIdentity!, "パスワード")}
             >
               解除する
             </button>
@@ -157,13 +137,17 @@ export default function MethodsPage() {
             <span className={`block text-xs mt-0.5 ${googleLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
               {googleLinked ? "連携済み" : "未連携"}
             </span>
-            {googleLinked && <span className="block text-xs text-[#5f6368] italic mt-0.5">{googleData?.email}</span>}
+            {googleLinked && (
+              <span className="block text-xs text-[#5f6368] italic mt-0.5">
+                {(googleIdentity!.identity_data as { email?: string })?.email}
+              </span>
+            )}
           </div>
           {googleLinked ? (
             <button
               className="shrink-0 whitespace-nowrap bg-white text-[#e74c3c] border-[1.5px] border-[#e74c3c] rounded-md px-3.5 py-1.5 text-sm font-bold hover:bg-[#fff5f5] disabled:opacity-40"
               disabled={total <= 1}
-              onClick={() => unlinkProvider("google.com", "Google")}
+              onClick={() => unlinkProvider(googleIdentity!, "Google")}
             >
               解除する
             </button>

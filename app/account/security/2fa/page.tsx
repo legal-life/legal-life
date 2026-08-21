@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import { logAct } from "@/lib/auth/session";
@@ -23,8 +22,7 @@ export default function TwoFaPage() {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
-      setEnabled(await is2FA(u.uid, db));
+      setEnabled(await is2FA(u.id));
     })();
   }, []);
 
@@ -35,11 +33,10 @@ export default function TwoFaPage() {
     }
     setToggling(true);
     setMsg("認証コードを送信中...");
-    const db = getFirebaseDb();
     const purpose = checked ? "2fa_enable" : "2fa_disable";
     try {
       const code = genOTP();
-      await saveOTP(user.uid, db, code, purpose);
+      await saveOTP(user.id, code, purpose);
       await sendOTP(user, code, checked ? "二段階認証の有効化" : "二段階認証の無効化");
       setMsg(`📧 ${user.email} に認証コードを送信しました`);
       setPendingState(checked);
@@ -52,21 +49,20 @@ export default function TwoFaPage() {
 
   const handleOtpVerify = async (input: string) => {
     if (!user || pendingState === null) return { ok: false, reason: "状態が失われました" };
-    const db = getFirebaseDb();
     const purpose = pendingState ? "2fa_enable" : "2fa_disable";
-    const res = await verifyOTP(user.uid, db, input, purpose);
+    const res = await verifyOTP(user.id, input, purpose);
     if (!res.ok) {
       setToggling(false);
       return res;
     }
-    await clearOTP(user.uid, db);
-    await setDoc(doc(db, "users", user.uid, "security", "twoFactor"), { enabled: pendingState }, { merge: true });
+    await clearOTP(user.id);
+    await supabase.from("security_2fa").upsert({ user_id: user.id, enabled: pendingState });
     if (!pendingState) {
-      await deleteDoc(doc(db, "users", user.uid, "security", "BackUpCode")).catch(() => {});
+      await supabase.from("backup_codes").delete().eq("user_id", user.id);
     }
     setEnabled(pendingState);
     setMsg(`✅ 二段階認証を${pendingState ? "有効" : "無効"}にしました`);
-    await logAct(user.uid, db, "twofa_change", pendingState ? "有効化" : "無効化");
+    await logAct(user.id, "twofa_change", pendingState ? "有効化" : "無効化");
     setToggling(false);
     setShowOtp(false);
     if (pendingState) setRecommend(true);

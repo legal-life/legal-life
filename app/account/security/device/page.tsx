@@ -2,43 +2,42 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, doc, getDocs, limit, orderBy, query, setDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { regSession } from "@/lib/auth/session";
 import { getSid } from "@/lib/auth/utils";
 import { relDate } from "@/lib/auth/format";
 
-type SessionDoc = {
-  sessionId: string;
-  browser?: string;
-  os?: string;
-  device?: string;
-  location?: string;
-  lastActive?: unknown;
-  shouldLogout?: boolean;
+type SessionRow = {
+  id: string;
+  browser: string | null;
+  os: string | null;
+  device: string | null;
+  location: string | null;
+  last_active: string;
+  should_logout: boolean;
 };
 
 export default function DevicePage() {
   const [user, setUser] = useState<User | null>(null);
-  const [sessions, setSessions] = useState<SessionDoc[] | null>(null);
+  const [sessions, setSessions] = useState<SessionRow[] | null>(null);
   const [error, setError] = useState("");
   const currentSid = typeof window !== "undefined" ? getSid() : "";
 
   const load = async (u: User) => {
-    const db = getFirebaseDb();
-    await regSession(u, db);
-    try {
-      const q = query(collection(db, "users", u.uid, "sessions"), orderBy("lastActive", "desc"), limit(10));
-      const snap = await getDocs(q);
-      const active = snap.docs
-        .map((d) => d.data() as SessionDoc)
-        .filter((d) => !d.shouldLogout || d.sessionId === currentSid);
-      setSessions(active);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+    await regSession(u);
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("id, browser, os, device, location, last_active, should_logout")
+      .eq("user_id", u.id)
+      .order("last_active", { ascending: false })
+      .limit(10);
+    if (error) {
+      setError(error.message);
+      return;
     }
+    setSessions((data ?? []).filter((s) => !s.should_logout || s.id === currentSid));
   };
 
   useEffect(() => {
@@ -51,26 +50,26 @@ export default function DevicePage() {
 
   const logoutSession = async (sid: string) => {
     if (!user || !confirm("この端末からログアウトしますか?")) return;
-    const db = getFirebaseDb();
-    await setDoc(doc(db, "users", user.uid, "sessions", sid), { shouldLogout: true }, { merge: true });
-    setSessions((prev) => prev?.filter((s) => s.sessionId !== sid) ?? null);
+    await supabase.from("sessions").update({ should_logout: true }).eq("id", sid).eq("user_id", user.id);
+    setSessions((prev) => prev?.filter((s) => s.id !== sid) ?? null);
   };
 
   const logoutAllOthers = async () => {
     if (!user || !sessions) return;
-    const others = sessions.filter((s) => s.sessionId !== currentSid);
+    const others = sessions.filter((s) => s.id !== currentSid);
     if (!others.length) return alert("他にアクティブな端末はありません");
     if (!confirm(`${others.length}台の端末からログアウトしますか?`)) return;
-    const db = getFirebaseDb();
-    await Promise.allSettled(
-      others.map((s) => setDoc(doc(db, "users", user.uid, "sessions", s.sessionId), { shouldLogout: true }, { merge: true })),
-    );
-    setSessions(sessions.filter((s) => s.sessionId === currentSid));
+    await supabase
+      .from("sessions")
+      .update({ should_logout: true })
+      .in("id", others.map((s) => s.id))
+      .eq("user_id", user.id);
+    setSessions(sessions.filter((s) => s.id === currentSid));
   };
 
   if (!user) return null;
 
-  const hasOthers = !!sessions?.some((s) => s.sessionId !== currentSid);
+  const hasOthers = !!sessions?.some((s) => s.id !== currentSid);
 
   return (
     <div className="w-full max-w-[640px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
@@ -85,10 +84,10 @@ export default function DevicePage() {
       {!!sessions?.length && (
         <div className="border-t border-[#dadce0]">
           {sessions.map((s) => {
-            const isCur = s.sessionId === currentSid;
+            const isCur = s.id === currentSid;
             return (
               <div
-                key={s.sessionId}
+                key={s.id}
                 className={`flex items-center gap-3.5 py-4 border-b border-[#dadce0] flex-wrap ${isCur ? "bg-[#f8faff] -mx-9 px-9" : ""}`}
               >
                 <span className="text-2xl shrink-0">💻</span>
@@ -102,13 +101,13 @@ export default function DevicePage() {
                     )}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {s.location || "不明"} · {s.lastActive ? relDate(s.lastActive as never) : "不明"}
+                    {s.location || "不明"} · {s.last_active ? relDate(s.last_active) : "不明"}
                   </p>
                 </div>
                 {!isCur && (
                   <button
                     className="shrink-0 whitespace-nowrap text-[13px] font-bold text-primary-dark rounded-md px-2.5 py-1.5 hover:bg-[#f0fafc]"
-                    onClick={() => logoutSession(s.sessionId)}
+                    onClick={() => logoutSession(s.id)}
                   >
                     ログアウト
                   </button>

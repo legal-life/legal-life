@@ -2,25 +2,21 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
-import { NOTIFS, syncAudience, type NotifKey } from "@/lib/auth/notifications";
+import { NOTIFS, loadNotificationPrefs, saveNotificationPref, syncAudience, type NotifKey } from "@/lib/auth/notifications";
 
 export default function PrivacyPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [prefs, setPrefs] = useState<Record<string, boolean>>({});
+  const [prefs, setPrefs] = useState<Partial<Record<NotifKey, boolean>>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       const u = await requireAuth();
       setUser(u);
-      const db = getFirebaseDb();
       try {
-        const s = await getDoc(doc(db, "users", u.uid, "settings", "notifications"));
-        if (s.exists()) setPrefs(s.data() as Record<string, boolean>);
+        setPrefs(await loadNotificationPrefs(u.id));
       } finally {
         setLoading(false);
       }
@@ -30,18 +26,19 @@ export default function PrivacyPage() {
   const toggle = async (key: NotifKey, checked: boolean) => {
     if (!user) return;
     setPrefs((p) => ({ ...p, [key]: checked }));
-    const db = getFirebaseDb();
     try {
-      await setDoc(doc(db, "users", user.uid, "settings", "notifications"), { [key]: checked }, { merge: true });
+      await saveNotificationPref(user.id, key, checked);
     } catch {
       /* ignore */
     }
     if (user.email) {
-      await syncAudience({ key, enabled: checked, email: user.email, name: user.displayName || undefined });
+      await syncAudience({ key, enabled: checked, email: user.email, name: user.user_metadata?.full_name });
     }
   };
 
   if (!user) return null;
+
+  const emailVerified = !!user.email_confirmed_at;
 
   return (
     <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
@@ -64,7 +61,7 @@ export default function PrivacyPage() {
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  disabled={!user.emailVerified}
+                  disabled={!emailVerified}
                   checked={prefs[key] !== false}
                   onChange={(e) => toggle(key, e.target.checked)}
                 />
@@ -75,7 +72,7 @@ export default function PrivacyPage() {
           ))}
         </div>
       )}
-      {!user.emailVerified && (
+      {!emailVerified && (
         <p className="text-xs text-[#e74c3c] mt-3">⚠️ メールアドレス未確認のため通知は届きません。</p>
       )}
 

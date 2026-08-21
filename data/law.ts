@@ -58,11 +58,11 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・カテゴリ（自動判定）</p>
                                 <p>・チャット実行日時</p>
 
-                                <p>取得方法: Firebase Authentication、Firebase Firestore</p>
+                                <p>取得方法: Supabase Auth、Supabase Database</p>
                                 <p>利用目的: チャット履歴の保存・管理、サービス提供</p>
-                                <p>保存場所: Firebase Firestore（東京リージョン）</p>
+                                <p>保存場所: Supabase Database（東京リージョン）</p>
                                 <p>保存期間: ユーザーが削除するまで、または最終アクセスから2年間</p>
-                                <p>第三者提供: なし（Google LLCは委託先であり、第三者提供には該当しません）</p>
+                                <p>第三者提供: なし（Supabase, Inc.は委託先であり、第三者提供には該当しません）</p>
                             </div>
                         <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
                             <h4 style="color: #856404; margin-top: 0;">⚠️ 入力禁止情報</h4>
@@ -79,7 +79,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>保存期間: 3ヶ月間</p>
                                 <p>保存場所: GitHub Pages、Google Analytics</p>
                             <h4>Cookie情報</h4>
-                                <p>Cookie同意状態（cookie_consent）、セッションID、Google Analytics Cookie（_ga, _gid等、同意時のみ）、Firebase Authentication Cookie</p>
+                                <p>Cookie同意状態（cookie_consent）、セッションID、Google Analytics Cookie（_ga, _gid等、同意時のみ）。ログイン状態はCookieではなくブラウザのローカルストレージ（Supabase Auth）に保存されます</p>
                                 <p>詳細は<a href="#section8">「8. Cookie利用ポリシー」</a>を参照</p>
                             <h4>デバイス・ブラウザ情報</h4>
                                 <p>ブラウザ種類・バージョン、OS、画面解像度、言語設定、タイムゾーン</p>
@@ -134,31 +134,30 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p><strong>セキュリティ対策</strong>: HTTPS通信、日本政府の情報セキュリティポリシーに準拠</p>
                                 <p><strong>プライバシーポリシー</strong>: <a href="https://elaws.e-gov.go.jp/" target="_blank" rel="noopener">e-Gov法令検索</a></p>
                                 <p><strong>オプトアウト</strong>: 法令検索機能を利用しないことで、データ送信を回避可能</p>
-                        <h3>5-3. Firebase（Firestore Database, Authentication）</h3>
+                        <h3>5-3. Supabase（PostgreSQL Database, Authentication）</h3>
                             <h4>5-3-1. 基本情報</h4>
-                                <p><strong>サービス名</strong>: Firebase</p>
-                                <p><strong>提供者</strong>: Google LLC（米国）</p>
+                                <p><strong>サービス名</strong>: Supabase</p>
+                                <p><strong>提供者</strong>: Supabase, Inc.（米国）</p>
                                 <p><strong>利用目的</strong>: チャット履歴保存、ログイン認証（Google・メールアドレスとパスワード）、アカウント連携、二段階認証、システム基盤</p>
-                            <h4>5-3-2. Firebase Authentication（認証）</h4>
+                            <h4>5-3-2. Supabase Auth（認証）</h4>
                                 <p>取得情報:</p>
-                                <p>・<strong>Google</strong>: UID、メールアドレス、表示名、プロフィール写真URL</p>
+                                <p>・<strong>Google</strong>: ユーザーID、メールアドレス、表示名、プロフィール写真URL</p>
                                 <p>・<strong>メール・パスワード</strong>: メールアドレス、表示名（ハッシュ化されたパスワード）</p>
-                                <p>データ処理地: asia-northeast1（東京）、米国（バックアップ）</p>
+                                <p>データ処理地: 東京リージョン</p>
                                 <p>保持期間: ユーザーがログアウトまたはアカウント削除するまで</p>
-                            <h4>5-3-3. Firebase Firestore（データベース）</h4>
+                            <h4>5-3-3. Supabase Database（PostgreSQL）</h4>
                                 <p><strong>保存情報</strong>:</p>
-                                <p>・ユーザーID（UID）</p>
+                                <p>・ユーザーID</p>
                                 <p>・チャット内容（テキスト）</p>
                                 <p>・AI生成回答</p>
                                 <p>・タイムスタンプ</p>
                                 <p>・二段階認証設定（有効/無効フラグ、OTPコード、有効期限※認証完了後即削除）</p>
                             <h4>5-3-4. その他の情報</h4>
-                                <p><strong>データ処理地</strong>: asia-northeast1（東京）</p>
-                                <p><strong>バックアップ</strong>: asia-northeast2（大阪）、us-central1（アイオワ）</p>
+                                <p><strong>データ処理地</strong>: 東京リージョン</p>
                                 <p><strong>保持期間</strong>: ユーザーが削除するまで、または最終アクセスから2年間</p>
                                 <p><strong>暗号化</strong>: AES-256（保存時・転送時）</p>
-                                <p><strong>セキュリティ対策</strong>: Firebase Security Rulesによるアクセス制御、認証されたユーザーのみが自分のデータにアクセス可能、定期的な自動バックアップ</p>
-                                <p><strong>プライバシーポリシー</strong>: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase Privacy and Security</a></p>
+                                <p><strong>セキュリティ対策</strong>: Row Level Security（RLS）によるアクセス制御、認証されたユーザーのみが自分のデータにアクセス可能、定期的な自動バックアップ</p>
+                                <p><strong>プライバシーポリシー</strong>: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase Privacy Policy</a></p>
                                 <p><strong>オプトアウト</strong>: Googleログインを利用しないことで、データ保存を回避可能</p>
                         <h3>5-4. Google Analytics</h3>
                             <h4>5-4-1. 基本情報</h4>
@@ -204,22 +203,6 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p><strong>セキュリティ対策</strong>: HTTPS通信、Googleアカウントによるアクセス制限</p>
                                 <p><strong>プライバシーポリシー</strong>: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></p>
                                 <p><strong>オプトアウト</strong>: お問い合わせフォームを利用しないことで回避可能</p>
-                        <h3>5-7. reCAPTCHA Enterprise</h3>
-                            <h4>5-7-1. 基本情報</h4>
-                                <p><strong>サービス名</strong>: reCAPTCHA Enterprise</p>
-                                <p><strong>提供者</strong>: Google LLC（米国）</p>
-                                <p><strong>利用目的</strong>: 不正アクセス・ボット対策、Firebase App Checkによるセキュリティ保護</p>
-                            <h4>5-7-2. 取得・送信される情報</h4>
-                                <p>・IPアドレス</p>
-                                <p>・ブラウザ情報（ユーザーエージェント）</p>
-                                <p>・ユーザーの操作パターン（マウス動作等）</p>
-                                <p>・Cookieおよびローカルストレージデータ</p>
-                            <h4>5-7-3. その他の情報</h4>
-                                <p><strong>データ処理地</strong>: 米国およびGoogleのグローバルインフラ</p>
-                                <p><strong>データ保持期間</strong>: Googleのポリシーに準拠</p>
-                                <p><strong>プライバシーポリシー</strong>: <a href="https://cloud.google.com/recaptcha-enterprise/docs/learn-about-recaptcha-enterprise" target="_blank" rel="noopener">reCAPTCHA Enterprise</a></p>
-                                <p><strong>オプトアウト</strong>: 本サービスはセキュリティ上必須のため、オプトアウトはできません</p>
-
                     <h2 id="section6">6. AI利用に関する詳細情報開示</h2>
                         <h3>6-1. 使用しているAIシステムの詳細</h3>
                             <h4>AIモデルの基本情報</h4>
@@ -231,7 +214,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>1. ユーザーが入力した質問文をテキストデータとしてGoogle AI Studio APIに送信</p>
                                 <p>2. AIモデルが訓練データに基づいて確率的に応答を生成</p>
                                 <p>3. 生成された回答をユーザーに表示</p>
-                                <p>4. ログイン時のみ、質問と回答をFirebase Firestoreに保存（Googleまたはメールアドレスとパスワードでのログインが必要）</p>
+                                <p>4. ログイン時のみ、質問と回答をSupabase Databaseに保存（Googleまたはメールアドレスとパスワードでのログインが必要）</p>
                         <h3>6-2. AIができること・できないこと</h3>
                             <h4>できること</h4>
                                 <p>・日本国の法令条文の検索・参照（e-Gov法令API連携）</p>
@@ -273,7 +256,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・送信されないデータ: 氏名、メールアドレス、IPアドレス、過去履歴</p>
                                 <p>・保持期間: 最大30日間（Googleのモデル改善のため）</p>
                                 <p>・ユーザー同意がある場合のみ訓練データに使用される可能性</p>
-                            <h4>Firebase Firestoreへのデータ保存（アカウントログイン時のみ）</h4>
+                            <h4>Supabase Databaseへのデータ保存（アカウントログイン時のみ）</h4>
                                 <p>・保存データ: ユーザーID、質問文、AI回答、カテゴリ、タイムスタンプ</p>
                                 <p>・保存場所: asia-northeast1（東京）</p>
                                 <p>・保持期間: ユーザー削除まで、または最終アクセスから2年間</p>
@@ -324,10 +307,6 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・法的枠組み: EU-US Data Privacy Framework</p>
                                 <p>・リスク: 米国愛国者法、CLOUD法による政府アクセス可能性</p>
                                 <p>・対策: Googleは適切な契約的保護措置を実施</p>
-                            <h4>シンガポール</h4>
-                                <p>・移転データ: Firebaseバックアップデータ</p>
-                                <p>・法的枠組み: APEC CBPR</p>
-                                <p>・データ保護法: Personal Data Protection Act (PDPA)</p>
                                 <h4>その他</h4>
                                 <p>・Googleのグローバルインフラに応じて、欧州、オーストラリア等にも移転される可能性</p>
                         <h3>7-2. 十分性認定と安全管理措置</h3>
@@ -347,9 +326,8 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・_ga: ユーザー識別（2年間、Google LLC）</p>
                                 <p>・_gid: ユーザー識別（24時間、Google LLC）</p>
                                 <p>・_gat: リクエスト制限（1分間、Google LLC）</p>
-                            <h4>認証Cookie（同意必要、ログイン時のみ）</h4>
-                                <p>・firebase:authUser: ログイン状態管理（ログアウトまで、Google LLC）</p>
-                                <p>・firebase:host: ホスト情報（セッション終了まで、Google LLC）</p>
+                            <h4>ログイン状態の保存（ログイン時のみ）</h4>
+                                <p>・sb-&lt;project-ref&gt;-auth-token: ログイン状態管理。Cookieではなくブラウザのローカルストレージに保存されます（ログアウトまたはブラウザのデータ削除まで、Supabase, Inc.）</p>
                                 <p>詳細は「<a href="/law/cookie">クッキーポリシー</a>」をご確認ください。</p>
 
                     <h2 id="section9">9. セキュリティ対策</h2>
@@ -365,13 +343,13 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>・秘密保持契約の締結</p>
                             <p>・アクセス権限の個人別付与</p>
                         <h3>9-4. 物理的安全管理措置</h3>
-                            <p>・クラウドサービス（Firebase、Google Cloud）の利用</p>
+                            <p>・クラウドサービス（Supabase、Google Cloud）の利用</p>
                             <p>・データセンターの物理的セキュリティ（Google管理）</p>
                             <p>・バックアップデータの暗号化保存</p>
                         <h3>9-5. 技術的安全管理措置</h3>
                             <p><strong>HTTPS通信</strong>: SSL/TLS暗号化（TLS 1.2以上、256-bit AES）</p>
-                            <p><strong>Firebase Security Rules</strong>: アクセス制御</p>
-                            <p><strong>不正アクセス検知</strong>: Google Cloud Armor、reCAPTCHA Enterprise（Firebase App Check）による不正リクエスト遮断 等</p>
+                            <p><strong>Row Level Security（RLS）</strong>: Supabase上でのアクセス制御</p>
+                            <p><strong>不正アクセス検知</strong>: Google Cloud Armor等による不正リクエスト遮断</p>
                             <p><strong>定期的なセキュリティアップデート</strong></p>
                             <p><strong>パスワード等の機密情報のハッシュ化</strong></p>
                         <h3>9-6. 外部委託先の監督</h3>
@@ -622,7 +600,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>1. システムの保守、点検、修理、アップデート等を行う場合</p>
                             <p>2. 火災、停電、天災地変等の不可抗力により本サイトの運営ができなくなった場合</p>
                             <p>3. サーバー、通信回線等の障害が発生した場合</p>
-                            <p>4. 外部サービス（Google AI Studio、Firebase等）の障害が発生した場合</p>
+                            <p>4. 外部サービス（Google AI Studio、Supabase等）の障害が発生した場合</p>
                             <p>5. セキュリティインシデントが発生した場合</p>
                             <p>6. 法令または規制当局の命令がある場合</p>
                             <p>7. その他、当方が停止を必要と判断した場合</p>
@@ -870,7 +848,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                         <h3>6-2. システム障害</h3>
                             <p>サーバー障害、ネットワーク障害、不正アクセス等により、本サイトが利用できない場合や、データの損失等が発生した場合についても、<strong>当サイトおよび運営者は一切の責任を負いません。</strong></p>
                         <h3>6-3. 外部サービスの障害</h3>
-                            <p>Google AI Studio、Firebase、Google Analytics等の外部サービスの障害により本サイトが利用できない場合でも、当方は責任を負いません。</p>
+                            <p>Google AI Studio、Supabase、Google Analytics等の外部サービスの障害により本サイトが利用できない場合でも、当方は責任を負いません。</p>
                         <h3>6-4. 有志運営の限界</h3>
                             <p>当サイトは有志による非営利運営であり、専門的なシステム運用体制には限界があることをご理解ください。</p>
 
@@ -1017,33 +995,27 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 </table>
                             </div>
                             <p><strong>詳細</strong>: <a href="https://support.google.com/analytics/answer/6004245" target="_blank" rel="noopener">Google Analyticsのデータ使用</a></p>
-                            <h4>Firebase Authentication</h4>
+                            <h4>Supabase Auth（ログイン状態の保存）</h4>
+                            <p>ログイン状態はCookieではなく、ブラウザのローカルストレージ（localStorage）に保存されます。</p>
                             <div style="overflow-x: auto;">
                                 <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                                     <tr style="background: #f8fbfc; border-bottom: 2px solid #00C8E9;">
-                                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Cookie名</th>
+                                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">保存キー名</th>
                                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">目的</th>
                                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">提供者</th>
                                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">有効期限</th>
                                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">同意</th>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">firebase:authUser</td>
+                                        <td style="padding: 12px; border: 1px solid #ddd;">sb-&lt;project-ref&gt;-auth-token</td>
                                         <td style="padding: 12px; border: 1px solid #ddd;">ログイン状態管理</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">Google LLC</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">ログアウトまで</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">必要</td>
-                                    </tr>
-                                    <tr style="background: #f9f9f9;">
-                                        <td style="padding: 12px; border: 1px solid #ddd;">firebase:host</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">ホスト情報</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">Google LLC</td>
-                                        <td style="padding: 12px; border: 1px solid #ddd;">セッション終了まで</td>
+                                        <td style="padding: 12px; border: 1px solid #ddd;">Supabase, Inc.</td>
+                                        <td style="padding: 12px; border: 1px solid #ddd;">ログアウトまたはブラウザのデータ削除まで</td>
                                         <td style="padding: 12px; border: 1px solid #ddd;">必要</td>
                                     </tr>
                                 </table>
                             </div>
-                            <p><strong>詳細</strong>: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebaseのプライバシーとセキュリティ</a></p>
+                            <p><strong>詳細</strong>: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabaseのプライバシーポリシー</a></p>
 
                     <h2 id="section4">4. Cookieの管理方法</h2>
                         <h3>4-1. ブラウザ設定によるCookie管理</h3>
