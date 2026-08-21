@@ -72,7 +72,7 @@ export default function SecurityPage() {
       <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
         <h1 className="text-xl font-bold mb-1">セキュリティ</h1>
         <p className="text-sm text-gray-500 mb-4">アクセスするには本人確認が必要です</p>
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-2">
+        <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 mb-2">
           <p className="font-bold text-sm mb-1">二段階認証が有効です</p>
           <p className="text-xs text-gray-600">セキュリティ設定を表示するには認証コードが必要です。</p>
         </div>
@@ -115,7 +115,7 @@ export default function SecurityPage() {
         <Link href="/account/security/2fa" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
           <div className="flex-1">
             <p className="font-semibold text-sm">二段階認証</p>
-            <p className={`text-xs ${enabled2fa ? "text-green-600" : "text-gray-500"}`}>{enabled2fa ? "有効" : "無効"}</p>
+            <p className={`text-xs ${enabled2fa ? "text-[#27ae60]" : "text-gray-500"}`}>{enabled2fa ? "有効" : "無効"}</p>
           </div>
           <span className="text-gray-300">›</span>
         </Link>

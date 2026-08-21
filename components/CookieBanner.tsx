@@ -35,6 +35,7 @@ export default function CookieBanner() {
         </p>
         <div className="flex gap-2.5 flex-wrap items-center">
           <button
+            id="cookie-accept"
             className="bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-md px-6 py-3"
             onClick={() => {
               acceptCookies();
@@ -44,6 +45,7 @@ export default function CookieBanner() {
             同意する
           </button>
           <button
+            id="cookie-reject"
             className="bg-gray-500 hover:bg-gray-600 text-white font-bold text-sm rounded-md px-6 py-3"
             onClick={() => {
               rejectCookies();

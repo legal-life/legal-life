@@ -3,7 +3,15 @@
 import { showMaintenancePopup } from "./MaintenancePopup";
 
 // 遷移せずメンテナンス中ポップアップを表示するリンク(旧 js-popup-show クラス相当)
-export default function PopupLink({ className, children }: { className?: string; children: React.ReactNode }) {
+export default function PopupLink({
+  className,
+  children,
+  onClick,
+}: {
+  className?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}) {
   return (
     <a
       href="#"
@@ -11,6 +19,7 @@ export default function PopupLink({ className, children }: { className?: string;
       onClick={(e) => {
         e.preventDefault();
         showMaintenancePopup();
+        onClick?.();
       }}
     >
       {children}

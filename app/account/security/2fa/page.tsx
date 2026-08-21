@@ -84,7 +84,7 @@ export default function TwoFaPage() {
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4 mb-4">
         <div>
           <p className="font-bold text-sm">二段階認証</p>
-          <p className={`text-xs mt-1 ${enabled ? "text-green-600" : "text-gray-500"}`}>{enabled ? "有効" : "無効"}</p>
+          <p className={`text-xs mt-1 ${enabled ? "text-[#27ae60]" : "text-gray-500"}`}>{enabled ? "有効" : "無効"}</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -119,7 +119,7 @@ export default function TwoFaPage() {
       )}
 
       {recommend && (
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 my-4">
+        <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 my-4">
           <p className="font-bold text-sm mb-1">✅ 二段階認証を有効にしました!</p>
           <p className="text-xs text-gray-600 mb-3">さらにセキュリティを強化するために以下の設定もお勧めします。</p>
           <div className="flex flex-col gap-2">

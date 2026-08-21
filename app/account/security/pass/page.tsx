@@ -141,7 +141,7 @@ export default function PassPage() {
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
-          {msg.text && <p className={`text-sm mb-2 ${msg.type === "error" ? "text-red-600" : "text-green-600"}`}>{msg.text}</p>}
+          {msg.text && <p className={`text-sm mb-2 ${msg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>{msg.text}</p>}
           <button
             className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm disabled:opacity-60"
             disabled={submitting}

@@ -103,8 +103,49 @@ export type ContactMailParams = {
   inquiry_type: string;
   category?: string;
   content: string;
-  device_info?: Record<string, string>;
+  // 端末診断情報(lib/deviceInfo.tsのcollectDeviceInfo()がフラットなdevice_*キーとして送信する)
+  device_browser?: string;
+  device_os?: string;
+  device_type?: string;
+  device_ua?: string;
+  device_screen?: string;
+  device_viewport?: string;
+  device_theme?: string;
+  device_language?: string;
+  device_timezone?: string;
+  device_network?: string;
+  device_country?: string;
+  device_region?: string;
+  device_city?: string;
+  device_ip?: string;
+  device_storage?: string;
+  device_memory?: string;
+  page_url?: string;
+  page_referrer?: string;
+  sent_at?: string;
 };
+
+const DEVICE_INFO_LABELS: [keyof ContactMailParams, string][] = [
+  ["device_browser", "ブラウザ"],
+  ["device_os", "OS"],
+  ["device_type", "端末種別"],
+  ["device_screen", "画面サイズ"],
+  ["device_viewport", "表示領域"],
+  ["device_theme", "テーマ"],
+  ["device_language", "言語"],
+  ["device_timezone", "タイムゾーン"],
+  ["device_network", "ネットワーク"],
+  ["device_country", "国"],
+  ["device_region", "地域"],
+  ["device_city", "市区町村"],
+  ["device_ip", "IPアドレス"],
+  ["device_storage", "localStorage使用量"],
+  ["device_memory", "メモリ使用量"],
+  ["page_url", "送信元URL"],
+  ["page_referrer", "リファラー"],
+  ["sent_at", "送信日時"],
+  ["device_ua", "User-Agent"],
+];
 
 export function buildContactHTML(params: ContactMailParams): string {
   const rows: [string, string | undefined][] = [
@@ -121,11 +162,25 @@ export function buildContactHTML(params: ContactMailParams): string {
         `<tr><td style="padding:4px 8px;color:#64748b;font-size:13px;">${esc(label)}</td><td style="padding:4px 8px;font-size:13px;">${esc(value || "（なし）")}</td></tr>`,
     )
     .join("");
+
+  const deviceRowsHtml = DEVICE_INFO_LABELS.filter(([key]) => params[key])
+    .map(
+      ([key, label]) =>
+        `<tr><td style="padding:3px 8px;color:#94a3b8;font-size:12px;white-space:nowrap;">${esc(label)}</td><td style="padding:3px 8px;font-size:12px;word-break:break-all;">${esc(params[key])}</td></tr>`,
+    )
+    .join("");
+
   return layout(`
 <p style="margin:0 0 16px;color:#334155;font-size:15px;font-weight:700;">新しいお問い合わせ</p>
 <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">${rowsHtml}</table>
 <p style="margin:0 0 8px;color:#334155;font-size:13px;font-weight:700;">内容</p>
-<p style="white-space:pre-wrap;color:#334155;font-size:14px;line-height:1.7;margin:0 0 16px;">${esc(params.content)}</p>`);
+<p style="white-space:pre-wrap;color:#334155;font-size:14px;line-height:1.7;margin:0 0 16px;">${esc(params.content)}</p>
+${
+  deviceRowsHtml
+    ? `<p style="margin:0 0 8px;color:#94a3b8;font-size:12px;font-weight:700;">端末情報</p>
+<table style="width:100%;border-collapse:collapse;">${deviceRowsHtml}</table>`
+    : ""
+}`);
 }
 
 export async function sendMail(params: {

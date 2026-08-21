@@ -57,16 +57,22 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-start gap-4 bg-[#f8f9fa] rounded-lg p-4 mb-6">
         {user.photoURL ? (
-          <Image src={user.photoURL} alt="avatar" width={56} height={56} className="rounded-full object-cover" />
+          <Image src={user.photoURL} alt="avatar" width={64} height={64} className="rounded-full object-cover border-2 border-primary shrink-0" />
         ) : (
-          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">👤</div>
+          <div className="w-16 h-16 rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl shrink-0">👤</div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="font-bold truncate">{user.displayName || "名前未設定"}</p>
-          <p className="text-sm text-[#5f6368] truncate">{user.email || "（未設定）"}</p>
-          <p className="text-xs text-gray-400 mt-1">最終ログイン: {lastSignIn}</p>
+          <div className="mb-1.5">
+            <span className="block text-[11px] font-bold text-[#5f6368] uppercase tracking-wide">アカウント名</span>
+            <span className="block text-sm font-bold truncate">{user.displayName || "名前未設定"}</span>
+          </div>
+          <div>
+            <span className="block text-[11px] font-bold text-[#5f6368] uppercase tracking-wide">メールアドレス</span>
+            <span className="block text-sm font-bold truncate">{user.email || "（未設定）"}</span>
+          </div>
+          <p className="text-xs text-[#5f6368] mt-2">最終ログイン: {lastSignIn}</p>
         </div>
       </div>
 

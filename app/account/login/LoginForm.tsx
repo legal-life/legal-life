@@ -214,6 +214,7 @@ export default function LoginForm() {
         <p className="text-center text-sm text-gray-500 mb-6">legal&life アカウントにログイン</p>
 
         <button
+          id="auth-google-btn"
           type="button"
           className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition"
           onClick={doGoogle}
@@ -226,7 +227,7 @@ export default function LoginForm() {
           </svg>
           Googleでログイン
         </button>
-        {googleError && <p className="text-red-600 text-sm mt-2">{googleError}</p>}
+        {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
 
         <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
           <span className="flex-1 h-px bg-gray-200" />
@@ -262,11 +263,12 @@ export default function LoginForm() {
               />
             </div>
             {loginMsg.text && (
-              <p className={`text-sm mb-2 ${loginMsg.type === "error" ? "text-red-600" : "text-green-600"}`}>
+              <p className={`text-sm mb-2 ${loginMsg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>
                 {loginMsg.text}
               </p>
             )}
             <button
+              id="auth-submit-btn"
               type="button"
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
               disabled={submitting}

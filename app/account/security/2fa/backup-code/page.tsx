@@ -71,9 +71,9 @@ export default function BackupCodePage() {
       <h1 className="text-xl font-bold mt-3 mb-1">バックアップコード</h1>
       <p className="text-sm text-gray-500 mb-5">2FAが使えない場合の緊急ログイン用コードです</p>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+      <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-4 mb-4">
         <p className="font-bold text-sm mb-1">⚠️ 安全な場所に保管してください</p>
-        <p className="text-xs text-amber-700">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
+        <p className="text-xs text-[#856404]">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
       </div>
 
       {!enabled ? (

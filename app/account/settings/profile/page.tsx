@@ -83,13 +83,13 @@ export default function ProfilePage() {
 
       <div className="flex justify-center mb-5">
         {user.photoURL ? (
-          <Image src={user.photoURL} alt="avatar" width={72} height={72} className="rounded-full object-cover" />
+          <Image src={user.photoURL} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-primary" />
         ) : (
-          <div className="w-[72px] h-[72px] rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-2xl">👤</div>
+          <div className="w-[72px] h-[72px] rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl">👤</div>
         )}
       </div>
 
-      <ul className="divide-y border rounded-xl bg-white mb-5">
+      <ul className="divide-y border border-[#dadce0] rounded-xl bg-white mb-5">
         <li className="flex items-center justify-between px-4 py-3">
           <div>
             <p className="text-xs text-gray-500">ユーザー名</p>
@@ -107,7 +107,7 @@ export default function ProfilePage() {
             ) : (
               <p className="font-semibold text-sm">{user.displayName || "（未設定）"}</p>
             )}
-            {nameMsg && <p className="text-xs text-red-600">{nameMsg}</p>}
+            {nameMsg && <p className="text-xs text-[#e74c3c]">{nameMsg}</p>}
           </div>
           {!editingName && (
             <button
@@ -143,9 +143,9 @@ export default function ProfilePage() {
       </ul>
 
       {needsVerify && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
+        <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-4 mb-5">
           <p className="font-bold text-sm mb-1">メールアドレスが未確認です</p>
-          <p className="text-xs text-amber-700 mb-3">一部のセキュリティ機能はメール確認後に利用できます。</p>
+          <p className="text-xs text-[#856404] mb-3">一部のセキュリティ機能はメール確認後に利用できます。</p>
           <button
             className="bg-primary text-white text-sm font-bold rounded-lg px-4 py-2 disabled:opacity-60"
             disabled={verifySending}
@@ -160,7 +160,7 @@ export default function ProfilePage() {
       <p className="text-xs font-bold text-gray-500 mb-2">危険な操作</p>
       <Link
         href="/account/delete"
-        className="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg py-2.5 text-sm"
+        className="block w-full text-center bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm"
       >
         アカウントを削除する
       </Link>

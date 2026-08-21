@@ -161,7 +161,7 @@ export default function SignupForm() {
           </svg>
           Googleで登録
         </button>
-        {googleError && <p className="text-red-600 text-sm mt-2">{googleError}</p>}
+        {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
 
         <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
           <span className="flex-1 h-px bg-gray-200" />
@@ -223,7 +223,7 @@ export default function SignupForm() {
           <Link href="/law/privacy" className="text-primary-dark">プライバシーポリシー</Link> に同意したものとみなされます。
         </p>
         {msg.text && (
-          <p className={`text-sm mb-2 ${msg.type === "error" ? "text-red-600" : "text-green-600"}`}>{msg.text}</p>
+          <p className={`text-sm mb-2 ${msg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>{msg.text}</p>
         )}
         <button
           type="button"

@@ -122,10 +122,10 @@ export default function DeletePage() {
   if (alreadyPending) {
     return (
       <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
+        <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-5 text-center">
           <p className="font-bold mb-2">削除申請済みです</p>
           <p className="text-sm mb-2">削除予定日: <strong>{scheduledDate || "--"}</strong></p>
-          <p className="text-xs text-amber-700 mb-4">予定日まで、アカウントの利用は一部制限されます。</p>
+          <p className="text-xs text-[#856404] mb-4">予定日まで、アカウントの利用は一部制限されます。</p>
           <button
             className="bg-primary text-white font-bold rounded-lg py-2.5 px-6 text-sm"
             onClick={handleCancelPending}
@@ -144,9 +144,9 @@ export default function DeletePage() {
       <h1 className="text-xl font-bold mt-3">アカウントの削除</h1>
       <p className="text-sm text-gray-500 mb-5">削除申請後、30日間はキャンセル可能です</p>
 
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+      <div className="bg-[#fff9f9] border border-[#e74c3c]/60 rounded-xl p-4 mb-4">
         <p className="font-bold text-sm mb-1">削除前に必ずご確認ください</p>
-        <p className="text-xs text-red-700">削除申請から30日後にすべてのデータが完全削除されます。この操作は取り消せません。</p>
+        <p className="text-xs text-[#c0392b]">削除申請から30日後にすべてのデータが完全削除されます。この操作は取り消せません。</p>
       </div>
 
       <div className="space-y-3 mb-4">
@@ -180,7 +180,7 @@ export default function DeletePage() {
         />
       ) : (
         <button
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg py-2.5 text-sm disabled:opacity-50"
+          className="w-full bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm disabled:opacity-50"
           disabled={!checked.every(Boolean) || submitting}
           onClick={handleExecute}
         >

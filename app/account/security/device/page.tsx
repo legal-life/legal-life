@@ -78,28 +78,36 @@ export default function DevicePage() {
       <h1 className="text-xl font-bold mt-3 mb-1">ログイン中のデバイス</h1>
       <p className="text-sm text-gray-500 mb-5">現在アクティブなセッション一覧</p>
 
-      {error && <p className="text-sm text-red-600">読み込みに失敗しました</p>}
+      {error && <p className="text-sm text-[#e74c3c]">読み込みに失敗しました</p>}
       {!error && sessions === null && <p className="text-sm text-gray-400">読み込み中...</p>}
       {!error && sessions?.length === 0 && <p className="text-sm text-gray-400">セッション情報がありません</p>}
 
       {!!sessions?.length && (
-        <div className="space-y-2">
+        <div className="border-t border-[#dadce0]">
           {sessions.map((s) => {
             const isCur = s.sessionId === currentSid;
             return (
-              <div key={s.sessionId} className={`flex items-center gap-3 border rounded-xl px-4 py-3 ${isCur ? "border-primary" : "border-gray-200"}`}>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold">
+              <div
+                key={s.sessionId}
+                className={`flex items-center gap-3.5 py-4 border-b border-[#dadce0] flex-wrap ${isCur ? "bg-[#f8faff] -mx-9 px-9" : ""}`}
+              >
+                <span className="text-2xl shrink-0">💻</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold flex items-center">
                     {s.browser || "不明"} / {s.os || "不明"}
-                    {isCur && <span className="ml-2 text-xs text-primary-dark">現在の端末</span>}
+                    {isCur && (
+                      <span className="ml-1.5 inline-block text-[11px] font-bold bg-[#e8f5e9] text-[#2e7d32] rounded-full px-2 py-0.5">
+                        現在の端末
+                      </span>
+                    )}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 mt-0.5">
                     {s.location || "不明"} · {s.lastActive ? relDate(s.lastActive as never) : "不明"}
                   </p>
                 </div>
                 {!isCur && (
                   <button
-                    className="text-xs border border-gray-300 rounded-lg px-3 py-1.5 font-semibold"
+                    className="shrink-0 whitespace-nowrap text-[13px] font-bold text-primary-dark rounded-md px-2.5 py-1.5 hover:bg-[#f0fafc]"
                     onClick={() => logoutSession(s.sessionId)}
                   >
                     ログアウト
@@ -113,7 +121,7 @@ export default function DevicePage() {
 
       {hasOthers && (
         <button
-          className="w-full mt-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg py-2.5 text-sm"
+          className="w-full mt-5 bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm"
           onClick={logoutAllOthers}
         >
           他のすべての端末をログアウト
