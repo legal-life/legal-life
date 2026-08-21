@@ -49,25 +49,28 @@ export default function ActivityPage() {
       {!error && items?.length === 0 && <p className="text-sm text-gray-400">アクティビティ履歴はありません</p>}
 
       {!!items?.length && (
-        <div className="divide-y border rounded-xl bg-white">
+        <div>
           {items.map((it, i) => (
-            <div key={i} className="px-4 py-3 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-semibold">
-                  {ACT_LABEL[it.type] || it.type}
-                  {it.detail && <span className="text-gray-500 font-normal"> — {it.detail}</span>}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
+            <div key={i} className="flex items-start gap-3.5 py-3.5 border-b border-[#f1f3f4] last:border-b-0">
+              <span className="w-9 h-9 rounded-full bg-[#f8f9fa] flex items-center justify-center shrink-0 text-base">📋</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-baseline gap-2">
+                  <p className="text-sm font-semibold">
+                    {ACT_LABEL[it.type] || it.type}
+                    {it.detail && <span className="text-gray-500 font-normal"> — {it.detail}</span>}
+                  </p>
+                  <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">{relDate(it.timestamp as never)}</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5">
                   {[it.browser, it.os].filter(Boolean).join(" / ")} · {fmtDate(it.timestamp as never)}
                 </p>
               </div>
-              <span className="text-xs text-gray-400 shrink-0 ml-2">{relDate(it.timestamp as never)}</span>
             </div>
           ))}
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-6">
+      <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-4 mt-6">
         <p className="font-bold text-sm mb-1">身に覚えのない操作がある場合</p>
         <p className="text-xs text-[#856404] mb-3 leading-relaxed">
           不審なアクセスを発見した場合は、すぐにパスワードを変更し、二段階認証を有効にしてください。
@@ -76,7 +79,7 @@ export default function ActivityPage() {
           <Link href="/account/security/pass" className="flex-1 text-center bg-primary text-white text-sm font-bold rounded-lg py-2">
             パスワードを変更
           </Link>
-          <Link href="/account/security/2fa" className="flex-1 text-center border border-gray-300 text-sm font-semibold rounded-lg py-2">
+          <Link href="/account/security/2fa" className="flex-1 text-center border border-[#dadce0] text-sm font-semibold rounded-lg py-2">
             二段階認証を確認
           </Link>
         </div>
