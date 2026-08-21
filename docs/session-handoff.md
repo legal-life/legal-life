@@ -37,7 +37,7 @@
    - `docs/vercel-new-project-guide.md`に手動での作成手順ガイドを作成済み(GitHub連携を先に正しく設定する方法と、Vercel CLIで`vercel login`→`vercel link`→`vercel --prod`する方法の両方を記載)
    - ユーザーが独自にVercelダッシュボードから`legal-life.vercel.app`としてプロジェクトを作成したが、`NEXT_PUBLIC_FIREBASE_CONFIG`環境変数が未設定のため`auth/invalid-api-key`エラーが発生中。**対処法(環境変数設定+Firebase承認済みドメイン追加+再デプロイ)は伝達済みだが、実行完了は未確認**
 
-3. **Supabaseへの全面移行の計画を開始**したが、Supabase MCPツールが接続できず未着手:
+3. **Supabaseへの全面移行の計画を開始**したが、Supabase MCPツールが接続できず未着手だった(前セッション終了時点):
    - ユーザーの意向: **認証(Firebase Auth)・Firestore・RTDBも含めて完全にSupabase一本化**したい
    - 加えて管理画面(admin)で以下をSupabase駆動にしたいという要望あり:
      - お知らせの新規作成・編集・削除
@@ -46,6 +46,31 @@
      - 沿革の記述
    - `ListConnectors`で確認したところ、Supabaseコネクタは組織レベルでは`connected: true`だが、このセッションでは`enabledInChat: false`のまま変わらず、`ToolSearch`でSupabase系MCPツール(`mcp__Supabase__*`)を検出できなかった
    - ユーザーは「このチャット内では常に有効」と主張しており、食い違いが解消しなかったため、新しいセッションに切り替えることになった
+
+## 直近やったこと(このセッション: 2026-08-21)
+
+1. **新しいセッションでSupabase MCPツールが使えることを確認**(前セッションの問題は解消)。組織`deskside31`配下に新規Supabaseプロジェクト`legal-life`(project_id: `hsghtqqfhrxutpogqpys`, リージョン: `ap-northeast-1`, 無料枠)を作成した。
+2. **フェーズ1(スキーマ設計)を完了**。Firebaseのデータモデルを実コード(`lib/auth/*`, `components/SessionWatcher.tsx`, `components/AccessLogger.tsx`, `app/api/mail/route.ts`等)から精査した上で、以下11テーブルを設計・適用済み(RLS有効化・ポリシー設定済み):
+   - `profiles`(`auth.users`と1:1、`role`列で管理者判定。`auth.users` INSERT時に自動作成するトリガー`on_auth_user_created`あり)
+   - `sessions`(デバイス一覧・強制ログアウト用。`supabase_realtime`パブリケーションに追加済み、`SessionWatcher`の`onSnapshot`をRealtimeの`postgres_changes`で置き換える想定)
+   - `security_2fa`, `backup_codes`(1コードにつき1行で正規化)
+   - `activity_log`, `notification_settings`
+   - `access_logs`(匿名アクセス解析。旧RTDB `analytics/{date}/logs` の置き換え。90日パージは未実装、`pg_cron`等で対応予定)
+   - `announcements`(ヘッダーバナー+`/info/details/[slug]`ページ両方を統合したモデル)
+   - `contact_inquiries`(新規。お問い合わせは今まで永続化されておらずメール送信のみだった)
+   - `history`(沿革。現状ハードコードされている`TIMELINE`の移行先)
+   - `contents`(news/study共通。両方とも現状プレースホルダーUIのみで実データなし、これから設計するCMSモデル)
+   - 管理者判定用ヘルパー関数`public.is_admin()`(RLSポリシー内で使用。`anon`/`authenticated`から実行可能な状態は意図的)
+   - マイグレーションSQLは`supabase/migrations/`配下に3ファイルで保存済み(`20260821000001_phase1_schema.sql`, `20260821000002_phase1_rls.sql`, `20260821000003_phase1_security_fixes.sql`)。`get_advisors`のセキュリティ警告(`search_path`未固定、`handle_new_user`の意図しない公開実行)は修正済み。`is_admin()`が`anon`/`authenticated`から実行可能という警告のみ残存(RLSポリシーの正常動作に必須のため意図的に許容)。
+3. **VercelプロジェクトとSupabaseの連携を試みたが未完了**:
+   - `saka2931`チームでVercel MCPの`list_projects`は空を返す一方、`create_git_project`で同名プロジェクト作成を試みると409(既存)エラーになる、`get_project`は404になるという食い違いが発生。おそらく`legal-life`という名前のVercelプロジェクトは`saka2931`とは別スコープ(個人アカウント等)に存在しており、このセッションのVercel MCP接続からは操作できない。
+   - ユーザーに確認したところ、「既存の`legal-life.vercel.app`を使う(ユーザー側で作業)」を選択。そのため以下の作業はユーザーに委ねる形になった:
+     - Vercelダッシュボード → `legal-life`プロジェクト → Settings → Environment Variables に以下を追加
+       - `NEXT_PUBLIC_SUPABASE_URL` = `https://hsghtqqfhrxutpogqpys.supabase.co`
+       - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = `sb_publishable_PVBSAR21qht8JIyY5HCnEA_dQLEa1dW`
+     - Settings → Git → Connect Git Repository で`sho29saka31/legal-life`を接続(未接続の場合)
+     - Supabase側のGitHub連携(PRごとのDBブランチ機能)は、Supabaseダッシュボード → Settings → Integrations → GitHub からユーザー自身がOAuth操作で設定する必要がある(MCPツールでは実行不可)
+   - 上記の環境変数追加・Git連携・Supabase GitHub連携の完了確認、および前セッションから持ち越しの`auth/invalid-api-key`エラー対応状況の確認が**次セッションでの要確認事項**
 
 ## Supabase移行の合意済み計画(未着手)
 
@@ -77,10 +102,15 @@
 
 ## 次にやるべきこと
 
-1. 新しいセッションでSupabase MCPツール(`mcp__Supabase__*`)が使えるか`ToolSearch`で確認
-2. 使えれば、フェーズ1(スキーマ設計・プロジェクト作成)から着手。各フェーズごとにビルド確認・コミットする方針を継続
-3. 使えなければ、ユーザーにSupabaseプロジェクトを自身で作成してもらい、Project URLとAPIキーを共有してもらう代替手段に切り替える
-4. 並行して、新規Vercelプロジェクト(`legal-life.vercel.app`, `saka2931`チーム)の環境変数設定が完了しているか確認する
+1. ユーザーに、Vercel環境変数(`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`)の追加・Git連携・Supabase側GitHub連携が完了したか確認する。あわせて前セッションから持ち越しの`auth/invalid-api-key`エラーの対応状況も確認する
+2. **フェーズ2(認証基盤の切り替え)に着手**:
+   - `@supabase/supabase-js`(および必要なら`@supabase/ssr`)を依存関係に追加
+   - `lib/supabase/client.ts`のようなクライアント初期化ヘルパーを作成
+   - `lib/auth/*`配下(`session.ts`, `requireAuth.ts`, `utils.ts`)をFirebase AuthからSupabase Authに全面書き換え
+   - 既存Firebase Authユーザーの移行方法を検討(パスワードハッシュは移行不可のため、パスワードリセットフローへの誘導等が必要)
+   - Google OAuthの設定をSupabase Auth側(Google Cloud Console + Supabaseダッシュボード)で行う
+3. フェーズ3以降(Realtime移行・CMS構築・検証)は`docs/session-handoff.md`の「Supabase移行の合意済み計画」セクション参照。各フェーズごとにビルド確認・コミットする方針を継続
+4. `mcp__Supabase__generate_typescript_types`でスキーマの型を生成し、`lib/supabase/types.ts`等に保存しておくとフェーズ2の実装がスムーズ
 
 ## 開発時の注意点
 
