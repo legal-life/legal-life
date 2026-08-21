@@ -44,7 +44,7 @@ export default function ActivityPage() {
       <h1 className="text-xl font-bold mt-3 mb-1">最近のアクティビティ</h1>
       <p className="text-sm text-gray-500 mb-5">過去1年間のアカウント操作ログ(最大50件)</p>
 
-      {error && <p className="text-sm text-red-600">読み込みに失敗しました: {error}</p>}
+      {error && <p className="text-sm text-[#e74c3c]">読み込みに失敗しました: {error}</p>}
       {!error && items === null && <p className="text-sm text-gray-400">読み込み中...</p>}
       {!error && items?.length === 0 && <p className="text-sm text-gray-400">アクティビティ履歴はありません</p>}
 
@@ -69,7 +69,7 @@ export default function ActivityPage() {
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-6">
         <p className="font-bold text-sm mb-1">身に覚えのない操作がある場合</p>
-        <p className="text-xs text-amber-700 mb-3 leading-relaxed">
+        <p className="text-xs text-[#856404] mb-3 leading-relaxed">
           不審なアクセスを発見した場合は、すぐにパスワードを変更し、二段階認証を有効にしてください。
         </p>
         <div className="flex gap-2">

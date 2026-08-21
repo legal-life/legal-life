@@ -53,25 +53,30 @@ export default function PrivacyPage() {
       {loading ? (
         <p className="text-sm text-gray-400">読み込み中...</p>
       ) : (
-        <div className="divide-y border rounded-xl bg-white">
+        <div className="divide-y border border-[#dadce0] rounded-xl bg-white">
           {NOTIFS.map(({ key, label, desc }) => (
-            <div key={key} className="flex items-center justify-between px-4 py-3">
+            <div key={key} className="flex items-center justify-between gap-4 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold">{label}</p>
                 <p className="text-xs text-gray-500">{desc}</p>
               </div>
-              <input
-                type="checkbox"
-                disabled={!user.emailVerified}
-                checked={prefs[key] !== false}
-                onChange={(e) => toggle(key, e.target.checked)}
-              />
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  disabled={!user.emailVerified}
+                  checked={prefs[key] !== false}
+                  onChange={(e) => toggle(key, e.target.checked)}
+                />
+                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-primary peer-disabled:opacity-50 transition-colors" />
+                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5" />
+              </label>
             </div>
           ))}
         </div>
       )}
       {!user.emailVerified && (
-        <p className="text-xs text-red-500 mt-3">⚠️ メールアドレス未確認のため通知は届きません。</p>
+        <p className="text-xs text-[#e74c3c] mt-3">⚠️ メールアドレス未確認のため通知は届きません。</p>
       )}
 
       <div className="text-center mt-6">

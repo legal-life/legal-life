@@ -115,7 +115,7 @@ export default function SecurityPage() {
         <Link href="/account/security/2fa" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
           <div className="flex-1">
             <p className="font-semibold text-sm">二段階認証</p>
-            <p className={`text-xs ${enabled2fa ? "text-green-600" : "text-gray-500"}`}>{enabled2fa ? "有効" : "無効"}</p>
+            <p className={`text-xs ${enabled2fa ? "text-[#27ae60]" : "text-gray-500"}`}>{enabled2fa ? "有効" : "無効"}</p>
           </div>
           <span className="text-gray-300">›</span>
         </Link>

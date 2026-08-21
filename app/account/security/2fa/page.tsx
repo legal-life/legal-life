@@ -84,7 +84,7 @@ export default function TwoFaPage() {
       <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4 mb-4">
         <div>
           <p className="font-bold text-sm">二段階認証</p>
-          <p className={`text-xs mt-1 ${enabled ? "text-green-600" : "text-gray-500"}`}>{enabled ? "有効" : "無効"}</p>
+          <p className={`text-xs mt-1 ${enabled ? "text-[#27ae60]" : "text-gray-500"}`}>{enabled ? "有効" : "無効"}</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input

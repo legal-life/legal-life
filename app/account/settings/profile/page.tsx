@@ -107,7 +107,7 @@ export default function ProfilePage() {
             ) : (
               <p className="font-semibold text-sm">{user.displayName || "（未設定）"}</p>
             )}
-            {nameMsg && <p className="text-xs text-red-600">{nameMsg}</p>}
+            {nameMsg && <p className="text-xs text-[#e74c3c]">{nameMsg}</p>}
           </div>
           {!editingName && (
             <button
@@ -145,7 +145,7 @@ export default function ProfilePage() {
       {needsVerify && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
           <p className="font-bold text-sm mb-1">メールアドレスが未確認です</p>
-          <p className="text-xs text-amber-700 mb-3">一部のセキュリティ機能はメール確認後に利用できます。</p>
+          <p className="text-xs text-[#856404] mb-3">一部のセキュリティ機能はメール確認後に利用できます。</p>
           <button
             className="bg-primary text-white text-sm font-bold rounded-lg px-4 py-2 disabled:opacity-60"
             disabled={verifySending}
@@ -160,7 +160,7 @@ export default function ProfilePage() {
       <p className="text-xs font-bold text-gray-500 mb-2">危険な操作</p>
       <Link
         href="/account/delete"
-        className="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg py-2.5 text-sm"
+        className="block w-full text-center bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm"
       >
         アカウントを削除する
       </Link>

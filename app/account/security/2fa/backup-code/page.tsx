@@ -73,7 +73,7 @@ export default function BackupCodePage() {
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
         <p className="font-bold text-sm mb-1">⚠️ 安全な場所に保管してください</p>
-        <p className="text-xs text-amber-700">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
+        <p className="text-xs text-[#856404]">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
       </div>
 
       {!enabled ? (

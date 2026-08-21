@@ -78,7 +78,7 @@ export default function DevicePage() {
       <h1 className="text-xl font-bold mt-3 mb-1">ログイン中のデバイス</h1>
       <p className="text-sm text-gray-500 mb-5">現在アクティブなセッション一覧</p>
 
-      {error && <p className="text-sm text-red-600">読み込みに失敗しました</p>}
+      {error && <p className="text-sm text-[#e74c3c]">読み込みに失敗しました</p>}
       {!error && sessions === null && <p className="text-sm text-gray-400">読み込み中...</p>}
       {!error && sessions?.length === 0 && <p className="text-sm text-gray-400">セッション情報がありません</p>}
 
@@ -113,7 +113,7 @@ export default function DevicePage() {
 
       {hasOthers && (
         <button
-          className="w-full mt-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg py-2.5 text-sm"
+          className="w-full mt-5 bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm"
           onClick={logoutAllOthers}
         >
           他のすべての端末をログアウト

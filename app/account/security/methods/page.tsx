@@ -124,7 +124,7 @@ export default function MethodsPage() {
         <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-3">
           <div className="flex-1">
             <p className="text-sm font-semibold">メール / パスワード</p>
-            <p className={`text-xs ${passLinked ? "text-green-600" : "text-gray-500"}`}>{passLinked ? "設定済み" : "未設定"}</p>
+            <p className={`text-xs ${passLinked ? "text-[#27ae60]" : "text-gray-500"}`}>{passLinked ? "設定済み" : "未設定"}</p>
             {passLinked && <p className="text-xs text-gray-400">{passData?.email || user.email}</p>}
           </div>
           {passLinked ? (
@@ -150,7 +150,7 @@ export default function MethodsPage() {
         <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-3">
           <div className="flex-1">
             <p className="text-sm font-semibold">Google</p>
-            <p className={`text-xs ${googleLinked ? "text-green-600" : "text-gray-500"}`}>{googleLinked ? "連携済み" : "未連携"}</p>
+            <p className={`text-xs ${googleLinked ? "text-[#27ae60]" : "text-gray-500"}`}>{googleLinked ? "連携済み" : "未連携"}</p>
             {googleLinked && <p className="text-xs text-gray-400">{googleData?.email}</p>}
           </div>
           {googleLinked ? (
@@ -182,7 +182,7 @@ export default function MethodsPage() {
             <label className="block text-xs font-bold text-gray-600 mb-1">確認</label>
             <input type="password" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={pw2} onChange={(e) => setPw2(e.target.value)} />
           </div>
-          {pwMsg && <p className="text-sm text-red-600 mb-2">{pwMsg}</p>}
+          {pwMsg && <p className="text-sm text-[#e74c3c] mb-2">{pwMsg}</p>}
           <div className="flex gap-2 justify-end">
             <button className="text-sm px-4 py-2 rounded-lg border border-gray-300" onClick={() => setShowPasswordForm(false)}>キャンセル</button>
             <button className="text-sm px-4 py-2 rounded-lg bg-primary text-white font-semibold" onClick={setPassword}>設定する</button>
