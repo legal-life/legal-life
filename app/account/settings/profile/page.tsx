@@ -143,7 +143,7 @@ export default function ProfilePage() {
       </ul>
 
       {needsVerify && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
+        <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-4 mb-5">
           <p className="font-bold text-sm mb-1">メールアドレスが未確認です</p>
           <p className="text-xs text-[#856404] mb-3">一部のセキュリティ機能はメール確認後に利用できます。</p>
           <button

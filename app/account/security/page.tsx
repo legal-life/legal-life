@@ -72,7 +72,7 @@ export default function SecurityPage() {
       <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
         <h1 className="text-xl font-bold mb-1">セキュリティ</h1>
         <p className="text-sm text-gray-500 mb-4">アクセスするには本人確認が必要です</p>
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-2">
+        <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 mb-2">
           <p className="font-bold text-sm mb-1">二段階認証が有効です</p>
           <p className="text-xs text-gray-600">セキュリティ設定を表示するには認証コードが必要です。</p>
         </div>
