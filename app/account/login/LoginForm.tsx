@@ -214,6 +214,7 @@ export default function LoginForm() {
         <p className="text-center text-sm text-gray-500 mb-6">legal&life アカウントにログイン</p>
 
         <button
+          id="auth-google-btn"
           type="button"
           className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition"
           onClick={doGoogle}
@@ -267,6 +268,7 @@ export default function LoginForm() {
               </p>
             )}
             <button
+              id="auth-submit-btn"
               type="button"
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
               disabled={submitting}

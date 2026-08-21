@@ -138,7 +138,7 @@ export default function ChatApp() {
             <div key={item.id}>
               <div className="flex items-center gap-3 justify-end mb-3 group">
                 <button
-                  className="chat-send-btn order-first text-[#cbd5e1] hover:text-[#ef4444] hover:scale-110 transition-all"
+                  className="chat-delete-btn order-first text-[#cbd5e1] hover:text-[#ef4444] hover:scale-110 transition-all"
                   onClick={() => deleteItem(item.id)}
                 >
                   🗑️

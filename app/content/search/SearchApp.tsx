@@ -225,7 +225,7 @@ export default function SearchApp() {
                     <p>法令種別: {typeJa}</p>
                   </div>
                   <button
-                    className="text-sm border border-gray-300 rounded-lg px-4 py-2 font-semibold"
+                    className="lawapi-view-button text-sm border border-gray-300 rounded-lg px-4 py-2 font-semibold"
                     onClick={() => toggleDetail(lawId)}
                   >
                     {openDetailId === lawId ? "閉じる" : "詳細を見る"}

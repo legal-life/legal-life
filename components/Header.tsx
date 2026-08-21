@@ -33,7 +33,7 @@ export default function Header() {
         <nav className="flex items-center">
           <button
             ref={buttonRef}
-            className="relative z-[1001] ml-2.5 flex flex-col gap-1.5 p-0"
+            className="hamberger-btn relative z-[1001] ml-2.5 flex flex-col gap-1.5 p-0"
             aria-expanded={open}
             aria-controls="main-menu"
             aria-label="メニューを開く"
