@@ -83,13 +83,13 @@ export default function ProfilePage() {
 
       <div className="flex justify-center mb-5">
         {user.photoURL ? (
-          <Image src={user.photoURL} alt="avatar" width={72} height={72} className="rounded-full object-cover" />
+          <Image src={user.photoURL} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-primary" />
         ) : (
-          <div className="w-[72px] h-[72px] rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-2xl">👤</div>
+          <div className="w-[72px] h-[72px] rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl">👤</div>
         )}
       </div>
 
-      <ul className="divide-y border rounded-xl bg-white mb-5">
+      <ul className="divide-y border border-[#dadce0] rounded-xl bg-white mb-5">
         <li className="flex items-center justify-between px-4 py-3">
           <div>
             <p className="text-xs text-gray-500">ユーザー名</p>
