@@ -121,9 +121,11 @@
 ## 次にやるべきこと
 
 1. **Supabaseダッシュボードでの認証設定**(コード側は実装済みだが、これらはダッシュボードでの設定が別途必要):
-   - Authentication → Providers → Google を有効化し、Google Cloud ConsoleのOAuthクライアントID/シークレットを登録
-   - Authentication → URL Configuration → Redirect URLsに`https://legal-life.vercel.app/account/login`、`https://legal-life.vercel.app/account/signup`等(実際のデプロイ先ドメイン)を追加
+   - **本番ドメインは`https://legal-life-saka2931.vercel.app`**(`legal-life.vercel.app`ではない。2026-08-28に`auth_logs`の`referer`フィールドから実測で確認済み)
+   - Authentication → Providers → Google を有効化し、Google Cloud ConsoleのOAuthクライアントID/シークレットを登録。**2026-08-28時点、`query_logs`(source=auth_logs)で直近まで`error_code: provider_disabled`("Provider (issuer \"https://accounts.google.com\") is not enabled")が継続して記録されており、未対応であることを実測で確認済み**
+   - Authentication → URL Configuration → Site URL/Redirect URLsに`https://legal-life-saka2931.vercel.app/**`(実際のデプロイ先ドメイン)を追加
    - Authentication → Emails の確認メール要否設定を確認(現状のサインアップ処理は確認要・不要どちらでも動作するようにしてある)
+   - **メール確認リンクについて**: `auth_logs`を調査した結果、1回目のクリックでは`/verify`が303で成功し(`user_signedup`イベント発火、`legal-life-saka2931.vercel.app`へ正しくリダイレクト)、実装自体は機能している。ユーザーが「開けない」と感じたのは、同じリンクを再度開いた際に出る`One-time token not found`(ワンタイムトークンの仕様上、使用済みリンクの再アクセスで発生)である可能性が高く、コード側の不具合ではないと判断した
 2. ユーザーに、Vercel環境変数(`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`)の追加が完了したか確認する。Vercel↔GitHub連携自体は既に生きていることを確認済み(Vercel botのPRプレビューデプロイで確認)
 3. 実機でのログイン/サインアップ/2FA/デバイス管理/アカウント削除等の動作確認(コードは書き換え済みだが未検証)。特にGoogle OAuthのリダイレクトフロー、One Tap、identity linking/unlinkingは要注意
 4. **フェーズ4(CMS機能の新規構築)に着手**: 管理画面(お知らせ・学習・ニュース・沿革のCRUD、お問い合わせ一覧)、管理者認証(`profiles.role='admin'`ベース)、ヘッダー告知バナーのDB駆動化。詳細は「Supabase移行の合意済み計画」フェーズ4参照
