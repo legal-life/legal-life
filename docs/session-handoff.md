@@ -15,7 +15,7 @@
 - **フロントエンド**: Next.js 15 App Router, TypeScript, Tailwind CSS(CSS変数ではなくTailwindユーティリティで元サイトの配色・レイアウトを再現)
 - **フォント**: `next/font/local`で`public/assets/fonts/BIZUDGothic-Bold.ttf`を自己ホスト
 - **認証・データ**: Supabase(Auth, PostgreSQL Database, Realtime)。2026-08-21セッションでFirebaseから全面移行済み
-- **メール送信**: Gmail SMTP経由(Nodemailer)。`GMAIL_USER`/`GMAIL_APP_PASSWORD`。Resend等のESPはgmail.comドメインを送信元として認証できないためこの方式のみ採用
+- **メール送信**: Gmail SMTP経由(Nodemailer)。`GMAIL_USER`/`GMAIL_APP_PASSWORD`。Resend等のESPはgmail.comドメインを送信元として認証できないためこの方式のみ採用。**ただし2026-08-28時点、本番環境では実際には送信できていない(構築途中で断念/未設定)。** 実際に有効なGmailアプリパスワードをVercelの環境変数に設定するか、別のメール配信手段への切替が必要。これにより2FA・パスワードリセット等のOTPコード配信、アカウント通知メールは現状本番で機能しない可能性が高い。お問い合わせフォームのみ、`app/api/mail/route.ts`でSupabase `contact_inquiries` への保存をメール送信の成否から独立させたため、送信に失敗しても問い合わせ内容自体は失われず`/admin/inquiries`から確認できる
 - **配信リスト管理**: Resend Segments API(実送信はしない、リスト管理のみ)
 - **AIチャット**: Gemini API(`gemini-3.5-flash`)、サーバー側`/api/chat`経由でキーを秘匿
 - **法令検索**: e-Gov法令API Version2を直接クライアントから呼び出し(公開APIのため問題なし)
@@ -121,8 +121,10 @@
 ## 次にやるべきこと
 
 1. **Supabaseダッシュボードでの認証設定**(コード側は実装済みだが、これらはダッシュボードでの設定が別途必要):
-   - Authentication → Providers → Google を有効化し、Google Cloud ConsoleのOAuthクライアントID/シークレットを登録
-   - Authentication → URL Configuration → Redirect URLsに`https://legal-life.vercel.app/account/login`、`https://legal-life.vercel.app/account/signup`等(実際のデプロイ先ドメイン)を追加
+   - **正式な本番ドメインは`https://legal-life.vercel.app`(ユーザー確認済み)**。前回2026-08-28に`auth_logs`の`referer`から`legal-life-saka2931.vercel.app`を「本番ドメイン」と誤って断定して記載していたが誤り。訂正する。`legal-life-saka2931.vercel.app`はVercelがプロジェクトに自動付与するチームスラッグ付きの別名ドメインで、Supabase側のSite URL設定が現状こちらを向いているため、確認メールのリンクが`legal-life.vercel.app`ではなくこちらにリダイレクトされてしまっている、というのが実態(ユーザー2026-08-28報告で確認)。**Supabaseダッシュボードの Authentication → URL Configuration → Site URL を `https://legal-life.vercel.app` に修正する必要がある**(これがそもそもの「確認リンクを押しても正常に開かない」という最初の不具合報告の直接原因と考えられる)
+   - `legal-life.vercel.app`と`legal-life-saka2931.vercel.app`が同一デプロイのエイリアスなのか別物なのかは、Vercel MCP側の権限不足(該当プロジェクトへのアクセスが404)により未確認。ユーザー側でVercelダッシュボードのDomainsタブを確認してもらう必要あり
+   - Authentication → Providers → Google を有効化し、Google Cloud ConsoleのOAuthクライアントID/シークレットを登録。**2026-08-28時点、`query_logs`(source=auth_logs)で直近まで`error_code: provider_disabled`("Provider (issuer \"https://accounts.google.com\") is not enabled")が継続して記録されており、未対応であることを実測で確認済み**
+   - Authentication → URL Configuration → Redirect URLsに`https://legal-life.vercel.app/**`(正式な本番ドメイン)を追加。`legal-life-saka2931.vercel.app`宛のURLも当面残しておくと、Site URL切替後の移行期間中に事故が起きにくい
    - Authentication → Emails の確認メール要否設定を確認(現状のサインアップ処理は確認要・不要どちらでも動作するようにしてある)
 2. ユーザーに、Vercel環境変数(`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`)の追加が完了したか確認する。Vercel↔GitHub連携自体は既に生きていることを確認済み(Vercel botのPRプレビューデプロイで確認)
 3. 実機でのログイン/サインアップ/2FA/デバイス管理/アカウント削除等の動作確認(コードは書き換え済みだが未検証)。特にGoogle OAuthのリダイレクトフロー、One Tap、identity linking/unlinkingは要注意

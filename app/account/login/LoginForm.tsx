@@ -102,7 +102,7 @@ export default function LoginForm() {
         await sendOTP(data.user, code, "ログイン認証");
         await supabase.auth.signOut();
         setPending({ email, pass: password });
-        setLoginMsg({ text: `📧 ${data.user.email} に認証コードを送信しました`, type: "success" });
+        setLoginMsg({ text: `${data.user.email} に認証コードを送信しました`, type: "success" });
         setShow2fa(true);
         setSubmitting(false);
         return;
@@ -160,7 +160,7 @@ export default function LoginForm() {
     if (error) {
       setLoginMsg({ text: error.message, type: "error" });
     } else {
-      setLoginMsg({ text: "✅ リセットメールを送信しました。迷惑メールフォルダもご確認ください。", type: "success" });
+      setLoginMsg({ text: "リセットメールを送信しました。迷惑メールフォルダもご確認ください。", type: "success" });
     }
   };
 

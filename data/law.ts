@@ -8,7 +8,7 @@ export type LawDoc = {
 export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawDoc> = {
   privacy: {
     title: "プライバシーポリシー",
-    dateLabel: `最終更新日:2026年3月8日`,
+    dateLabel: `最終更新日:2026年8月28日`,
     bodyHtml: `<p>このプライバシーポリシーは、個人情報、Cookie、外部サービス利用、AI利用、セキュリティ対策、運営体制に関する包括的な情報開示文書です。</p>
 
                     <h2 id="section1">1. 基本方針</h2>
@@ -35,16 +35,18 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
 
                     <h2 id="section3">3. 取得する個人情報</h2>
                         <h3>3-1. ユーザーが能動的に提供する情報</h3>
-                            <h4>お問い合わせフォーム（Google Forms）</h4>
+                            <h4>お問い合わせフォーム</h4>
                             <div>
-                                <p>氏名（任意）</p>
-                                <p>メールアドレス（必須）</p>
+                                <p>氏名（任意）、性別、年代</p>
+                                <p>返信先メールアドレス（任意）</p>
+                                <p>お問い合わせ種別、分野</p>
                                 <p>お問い合わせ内容（必須）</p>
-                                <p>取得方法: Google Formsを通じて収集</p>
+                                <p>デバイス診断情報（ブラウザ・OS・画面サイズ・IPアドレス等、不具合調査用）</p>
+                                <p>取得方法: 当サイト独自のお問い合わせフォームから収集</p>
                                 <p>利用目的: お問い合わせ対応</p>
-                                <p>保存場所: Google Drive（米国）</p>
-                                <p>保存期間: 対応完了後1年間</p>
-                                <p>第三者提供: なし</p>
+                                <p>保存場所: Gmail（メール本文として、米国）、Supabase Database（東京リージョン、管理者専用ページでの一覧管理用）</p>
+                                <p>保存期間: 当方が対応完了を確認した上で削除（現時点で自動削除の仕組みはありません）</p>
+                                <p>第三者提供: なし（Google LLC・Supabase, Inc.は委託先であり、第三者提供には該当しません）</p>
                             </div>
                             <h4>チャット機能</h4>
                             <div>
@@ -52,20 +54,20 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・<strong>メール・パスワード</strong>: メールアドレス、表示名（登録時に入力した名前）</p>
                                 <p>・<strong>Google</strong>: UID、メールアドレス、表示名、プロフィール写真URL</p>
 
-                                <p><strong>チャット内容</strong>:</p>
+                                <p><strong>チャット内容</strong>（ログイン時のみSupabaseに保存。未ログイン時はブラウザ内にのみ保存されます）:</p>
                                 <p>・ユーザーが入力したテキスト</p>
                                 <p>・AI生成回答</p>
-                                <p>・カテゴリ（自動判定）</p>
+                                <p>・法令分野のカテゴリ（統計目的でAIが自動付与。回答内容には影響しません）</p>
                                 <p>・チャット実行日時</p>
 
                                 <p>取得方法: Supabase Auth、Supabase Database</p>
-                                <p>利用目的: チャット履歴の保存・管理、サービス提供</p>
+                                <p>利用目的: チャット履歴の保存・管理、サービス提供、法令分野別の利用統計作成</p>
                                 <p>保存場所: Supabase Database（東京リージョン）</p>
-                                <p>保存期間: ユーザーが削除するまで、または最終アクセスから2年間</p>
+                                <p>保存期間: ユーザーが削除するまで、または作成から6ヶ月間</p>
                                 <p>第三者提供: なし（Supabase, Inc.は委託先であり、第三者提供には該当しません）</p>
                             </div>
                         <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
-                            <h4 style="color: #856404; margin-top: 0;">⚠️ 入力禁止情報</h4>
+                            <h4 style="color: #856404; margin-top: 0;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>入力禁止情報</h4>
                                 <p style="color: #856404; margin-bottom: 10px;">以下の情報は絶対に入力しないでください。入力された場合、当方は一切の責任を負いません。</p>
                                 <p style="color: #856404; margin-bottom: 5px;"><strong>個人情報</strong>: 住所、電話番号、マイナンバー、クレジットカード番号、健康情報等</p>
                                 <p style="color: #856404; margin-bottom: 5px;"><strong>機密情報</strong>: 企業の営業秘密、訴訟係属中の詳細、インサイダー情報等</p>
@@ -77,7 +79,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>IPアドレス（Google Analyticsでは匿名化処理）、リクエスト日時、URL、HTTPヘッダー、リファラー</p>
                                 <p>利用目的: セキュリティ監視、不正アクセス検知</p>
                                 <p>保存期間: 3ヶ月間</p>
-                                <p>保存場所: GitHub Pages、Google Analytics</p>
+                                <p>保存場所: Vercel、Supabase、Google Analytics</p>
                             <h4>Cookie情報</h4>
                                 <p>Cookie同意状態（cookie_consent）、セッションID、Google Analytics Cookie（_ga, _gid等、同意時のみ）。ログイン状態はCookieではなくブラウザのローカルストレージ（Supabase Auth）に保存されます</p>
                                 <p>詳細は<a href="#section8">「8. Cookie利用ポリシー」</a>を参照</p>
@@ -148,13 +150,12 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <h4>5-3-3. Supabase Database（PostgreSQL）</h4>
                                 <p><strong>保存情報</strong>:</p>
                                 <p>・ユーザーID</p>
-                                <p>・チャット内容（テキスト）</p>
-                                <p>・AI生成回答</p>
-                                <p>・タイムスタンプ</p>
+                                <p>・チャット内容（テキスト）、AI生成回答、法令分野のカテゴリ、タイムスタンプ（ログイン時のみ）</p>
+                                <p>・お問い合わせ内容、デバイス診断情報</p>
                                 <p>・二段階認証設定（有効/無効フラグ、OTPコード、有効期限※認証完了後即削除）</p>
                             <h4>5-3-4. その他の情報</h4>
                                 <p><strong>データ処理地</strong>: 東京リージョン</p>
-                                <p><strong>保持期間</strong>: ユーザーが削除するまで、または最終アクセスから2年間</p>
+                                <p><strong>保持期間</strong>: チャット履歴はユーザーが削除するまで、または作成から6ヶ月間。お問い合わせ内容は対応完了確認まで（自動削除の仕組みはありません）。その他のアカウント関連情報はアカウント削除まで</p>
                                 <p><strong>暗号化</strong>: AES-256（保存時・転送時）</p>
                                 <p><strong>セキュリティ対策</strong>: Row Level Security（RLS）によるアクセス制御、認証されたユーザーのみが自分のデータにアクセス可能、定期的な自動バックアップ</p>
                                 <p><strong>プライバシーポリシー</strong>: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase Privacy Policy</a></p>
@@ -191,22 +192,22 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p><strong>データ保持期間</strong>: 16ヶ月間</p>
                                 <p><strong>プライバシーポリシー</strong>: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></p>
                                 <p><strong>オプトアウト</strong>: サイト運営者側のツールのため、ユーザー側での操作は不要</p>
-                        <h3>5-6. Google Forms</h3>
+                        <h3>5-6. Gmail SMTP</h3>
                             <h4>5-6-1. 基本情報</h4>
-                                <p><strong>サービス名</strong>: Google Forms</p>
+                                <p><strong>サービス名</strong>: Gmail（SMTP経由でのメール送信）</p>
                                 <p><strong>提供者</strong>: Google LLC</p>
-                                <p><strong>利用目的</strong>: お問い合わせ、アンケート受付</p>
+                                <p><strong>利用目的</strong>: お問い合わせフォームの内容を運営者宛にメール送信</p>
                             <h4>5-6-2. その他の情報</h4>
-                                <p><strong>取得・送信される情報</strong>: フォーム入力内容（氏名、メールアドレス、問い合わせ内容）、フォーム送信日時、IPアドレス（Google側で記録される可能性）</p>
+                                <p><strong>取得・送信される情報</strong>: フォーム入力内容（氏名、性別、年代、メールアドレス、問い合わせ内容）、デバイス診断情報、送信日時</p>
                                 <p><strong>データ処理地</strong>: 米国およびGoogleのグローバルインフラ</p>
-                                <p><strong>データ保持期間</strong>: 当方が手動で削除するまで（対応完了後1年を目安）</p>
-                                <p><strong>セキュリティ対策</strong>: HTTPS通信、Googleアカウントによるアクセス制限</p>
+                                <p><strong>データ保持期間</strong>: 運営者のGmailメールボックスに保存（当方が対応完了を確認した上で手動削除）</p>
+                                <p><strong>セキュリティ対策</strong>: TLSによる通信の暗号化、Googleアカウントによるアクセス制限</p>
                                 <p><strong>プライバシーポリシー</strong>: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></p>
                                 <p><strong>オプトアウト</strong>: お問い合わせフォームを利用しないことで回避可能</p>
                     <h2 id="section6">6. AI利用に関する詳細情報開示</h2>
                         <h3>6-1. 使用しているAIシステムの詳細</h3>
                             <h4>AIモデルの基本情報</h4>
-                                <p><strong>モデル名</strong>: Gemini 3 Flash Preview</p>
+                                <p><strong>モデル名</strong>: Gemini 3.5 Flash</p>
                                 <p><strong>提供元</strong>: Google LLC（米国カリフォルニア州）</p>
                                 <p><strong>利用方法</strong>: Google AI Studio API経由</p>
                                 <p><strong>モデルの種類</strong>: 大規模言語モデル（LLM）</p>
@@ -248,7 +249,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・専門的回答: 50-70%</p>
                                 <p>・最新情報: 新モデル誕生などにより知識が古くなる場合があるため、新モデルが安定した際にモデル更新を致します。</p>
                                 <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
-                                    <p style="color: #856404; font-weight: bold; margin: 0;">⚠️ すべてのAI回答について、専門家による検証を推奨します。</p>
+                                    <p style="color: #856404; font-weight: bold; margin: 0;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>すべてのAI回答について、専門家による検証を推奨します。</p>
                                 </div>
                         <h3>6-4. AIデータ処理の詳細</h3>
                             <h4>Google AI Studioへのデータ送信</h4>
@@ -259,8 +260,9 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <h4>Supabase Databaseへのデータ保存（アカウントログイン時のみ）</h4>
                                 <p>・保存データ: ユーザーID、質問文、AI回答、カテゴリ、タイムスタンプ</p>
                                 <p>・保存場所: asia-northeast1（東京）</p>
-                                <p>・保持期間: ユーザー削除まで、または最終アクセスから2年間</p>
+                                <p>・保持期間: ユーザー削除まで、または作成から6ヶ月間</p>
                                 <p>・ユーザーはいつでも削除可能</p>
+                                <p>・ユーザーはチャットページからいつでも自身のチャット履歴をJSON形式でエクスポート可能</p>
                         <h3>6-5. AI利用における禁止事項</h3>
                             <h4>入力禁止情報（再掲）</h4>
                                 <p><strong>個人情報</strong>: 氏名、住所、電話番号、マイナンバー、クレジットカード番号、健康情報</p>
@@ -379,13 +381,13 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 </tr>
                                 <tr>
                                     <td style="padding: 12px; border: 1px solid #ddd;">チャット履歴</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd;">ユーザー削除まで、または最終アクセスから2年</td>
+                                    <td style="padding: 12px; border: 1px solid #ddd;">ログイン時のみ、ユーザー削除まで、または作成から6ヶ月（未ログイン時はブラウザ内にのみ保存）</td>
                                     <td style="padding: 12px; border: 1px solid #ddd;">ユーザーが画面から削除可能</td>
                                 </tr>
                                 <tr style="background: #f9f9f9;">
                                     <td style="padding: 12px; border: 1px solid #ddd;">お問い合わせ</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd;">対応完了後1年間</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd;">自動削除</td>
+                                    <td style="padding: 12px; border: 1px solid #ddd;">対応完了確認まで（自動削除なし）</td>
+                                    <td style="padding: 12px; border: 1px solid #ddd;">運営者が手動削除</td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 12px; border: 1px solid #ddd;">アクセスログ</td>
@@ -426,11 +428,8 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                         <h3>11-4. 第三者提供の停止請求権</h3>
                             <p>個人情報が本人の同意なく第三者提供されている場合、停止を請求できます。</p>
                         <h3>11-5. データポータビリティ（データ移行権）</h3>
-                            <p>ユーザーは、以下のデータのエクスポートを請求できます。</p>
-                            <p>・チャット履歴（JSON形式）</p>
-                            <p>・お問い合わせ内容（テキスト形式）</p>
-                            <p><strong>請求方法</strong>: <a href="/info/contact">お問い合わせページ</a>から申請</p>
-                            <p><strong>提供期間</strong>: 請求受付後1ヶ月以内</p>
+                            <p>・<strong>チャット履歴</strong>: ログイン中であれば、チャットページの「エクスポート」ボタンからJSON形式でその場でダウンロードできます。請求手続きは不要です。</p>
+                            <p>・<strong>お問い合わせ内容その他のデータ</strong>: <a href="/info/contact">お問い合わせページ</a>から請求してください。<strong>提供期間</strong>: 請求受付後1ヶ月以内</p>
                         <h3>11-6. 権利行使の方法</h3>
                             <p><a href="/info/contact">お問い合わせページ</a>から、以下の情報を含めて請求してください。</p>
                             <p>・氏名（登録名）</p>
@@ -488,6 +487,8 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     <p><strong>2026年1月30日</strong>: プライバシーポリシーリリース</p>
                     <p><strong>2026年3月5日</strong>: ログイン方法をGoogleだけでなくメール・パスワード・Twitter・LINE連携機能を追加したことを明記。</p>
                     <p><strong>2026年3月6日</strong>: ログイン方法をGoogleおよびメール・パスワードのみに変更（Twitter・LINE連携を廃止）。メール二段階認証機能の追加に伴う記述を更新。表示名変更・UUID表示機能の追加に関する記述を更新。</p>
+                    <p><strong>2026年8月21日</strong>: データベース・認証基盤をFirebaseからSupabaseへ移行したことに伴い、関連する記述(取得・保存されるデータ、データ処理地、セキュリティ対策、AI利用時のデータ保存先等)を更新。実在しなくなったreCAPTCHA Enterprise(Firebase App Check)に関する記述を削除。</p>
+                    <p><strong>2026年8月28日</strong>: チャット機能をログイン時のみSupabaseに保存する仕様に変更(保存期間は作成から6ヶ月)し、関連する記述を実装に合わせて更新。お問い合わせフォームの実装をGoogle Forms相当の記述からSupabase保存+Gmail SMTP送信の実態に合わせて修正。チャット履歴のセルフサービスエクスポート機能、法令分野カテゴリの統計利用に関する記述を追加。</p>
                     <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
                     
                     <p><strong>運営者</strong>: LEGAL&LIFE運営チーム</p>
@@ -495,7 +496,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
   },
   terms: {
     title: "利用規約",
-    dateLabel: `最終更新日: 2026年3月6日`,
+    dateLabel: `最終更新日: 2026年8月28日`,
     bodyHtml: `<p>この利用規約（以下「本規約」）は、著作権・引用ルール、紛争解決、アクセシビリティ方針を含む、サイト利用に関する包括的な契約書です。</p>
 
                     <h2 id="section1">第1条（適用範囲）</h2>
@@ -506,7 +507,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
 
                     <h2 id="section2">第2条（定義）</h2>
                         <p>本規約において使用する用語の定義は、以下の通りです。</p>
-                        <p>1. <strong>本サイト</strong>: 当方が運営するLEGAL&LIFE<br>（LEGAL&LIFE、URL: https://legal-life.pages.dev/）</p>
+                        <p>1. <strong>本サイト</strong>: 当方が運営するLEGAL&LIFE<br>（LEGAL&LIFE、URL: https://legal-life.vercel.app/）</p>
                         <p>2. <strong>ユーザー</strong>: 本サイトを利用するすべての個人</p>
                         <p>3. <strong>コンテンツ</strong>: 本サイト上で提供される文章、画像、動画、プログラム、データベース等の情報</p>
                         <p>4. <strong>チャット機能</strong>: AIを活用した法令チャットサービス</p>
@@ -537,9 +538,8 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>5. パスワードの設定・変更はアカウント設定ページから行うことができます。</p>
                         <h3>4-3. アカウントの削除</h3>
                             <p>1. ユーザーは、いつでもチャット履歴を削除できます。</p>
-                            <p>2. アカウントの削除はアカウント設定ページから行うことができます。削除すると、すべてのデータが完全に失われ、この操作は取り消すことができません。</p>
+                            <p>2. アカウントの削除はアカウント設定ページから申請できます。申請後30日間は猶予期間となり、この間はいつでも削除をキャンセルできます。30日経過後、すべてのデータが完全に削除され、この操作は取り消すことができません。</p>
                             <p>3. Googleとのログイン連携の解除はアカウント設定ページから行うことができます。</p>
-                            <p>4. アカウント削除後も、バックアップデータは最大30日間保持される場合があります。</p>
                         <h3>4-4. ログイン連携に関する制限</h3>
                             <p>1. Googleアカウントとメールアドレスとパスワードによるログインはアカウント設定ページから連携・管理できます。</p>
                             <p>2. 1つのGoogleアカウントは、1つの当サイトアカウントにのみ連携できます。すでに別の当サイトアカウントにGoogleアカウントが連携されている場合、新たに別のアカウントへ連携することはできません。</p>
@@ -638,7 +638,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>本サイトのコンテンツを引用する場合は、著作権法第32条に基づく適法な引用の要件を満たし、必ず出典（サイト名「LEGAL&LIFE」、URL、記事タイトル等）を明記してください。</p>
                                 <p><strong>引用例</strong>:</p>
                                 <p style="background: #f5f5f5; padding: 10px; border-left: 3px solid #00C8E9;">
-                                引用: LEGAL&LIFE (https://legal-life.pages.dev/***)「***」← ” *** ” 部分は出典時に書き換えてください。「」内はページ名を記載すること。
+                                引用: LEGAL&LIFE (https://legal-life.vercel.app/***)「***」← ” *** ” 部分は出典時に書き換えてください。「」内はページ名を記載すること。
                                 </p>
                             <h4>禁止事項</h4>
                                 <p>・本サイトのコンテンツの無断転載、複製、再配布</p>
@@ -651,7 +651,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>3. AI生成コンテンツを第三者に提供する場合、商業目的で利用する場合は、事前に当方に<a href="/info/contact">お問い合わせページ</a>からよりご相談ください。</p>
                             <p>4. AI生成コンテンツには誤りが含まれる可能性があるため、引用・転載する際は必ず以下を明記してください。</p>
                             <p style="background: #f5f5f5; padding: 10px; border-left: 3px solid #00C8E9;">
-                            引用：LEGAL&LIFE-チャット機能（AIにより自動生成された文章です。）本情報は参考情報であり、法的助言ではありません。詳しくは、<a href="https://legal-life.pages.dev/law/terms#section8-5">こちら</a>をご確認ください。</p>
+                            引用：LEGAL&LIFE-チャット機能（AIにより自動生成された文章です。）本情報は参考情報であり、法的助言ではありません。詳しくは、<a href="https://legal-life.vercel.app/law/terms#section8-5">こちら</a>をご確認ください。</p>
                         <h3>8-6. ユーザー投稿コンテンツ</h3>
                             <p>1. ユーザーが本サイトに投稿したコンテンツ（質問、コメント、フィードバック等）の著作権はユーザーに帰属します。</p>
                             <p>2. ただし、ユーザーは当方に対し、投稿コンテンツを本サイトの運営、改善、プロモーション等の目的で、無償で使用する権利（複製、改変、公衆送信等を含む）を許諾するものとします。</p>
@@ -705,7 +705,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>・リンクテキストの明確化</p>
                         <h3>10-4. 対応が困難なコンテンツ</h3>
                             <p>以下のコンテンツについては、アクセシビリティ対応が困難な場合があります。</p>
-                            <p>・外部サービス（Google Forms、Google Analytics等）が提供するコンテンツ</p>
+                            <p>・外部サービス（Google Analytics等）が提供するコンテンツ</p>
                             <p>・過去に作成された一部のコンテンツ</p>
                             <p>・外部サイトから引用された画像・図表</p>
                             <p>・PDF等のファイル形式のコンテンツ</p>
@@ -727,7 +727,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
 
                     <h2 id="section13">第13条（秘密保持）</h2>
                         <h3>13-1. 秘密情報の取扱い</h3>
-                            <p>ユーザーが本サイトの相談機能等で開示した情報について、当方は秘密保持に努めますが、以下の点をご理解ください。</p>
+                            <p>ユーザーが本サイトのチャット機能等で開示した情報について、当方は秘密保持に努めますが、以下の点をご理解ください。</p>
                             <p>1. インターネットの性質上、完全な秘密保持を保証するものではありません。</p>
                             <p>2. 機密性の高い情報、個人を特定できる情報、訴訟係属中の詳細情報の投稿は絶対に避けてください。</p>
                             <p>3. 当方と弁護士との間のような守秘義務関係は存在しません。</p>
@@ -759,7 +759,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     
                     <p><strong>運営者</strong>: LEGAL&LIFE運営チーム</p>
                     <p><strong>制定日</strong>: 2026年1月30日</p>
-                    <p><strong>最終更新日</strong>: 2026年3月6日</p>`,
+                    <p><strong>最終更新日</strong>: 2026年8月28日</p>`,
   },
   disclaimer: {
     title: "免責事項",
@@ -907,7 +907,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
   },
   cookie: {
     title: "クッキーポリシー",
-    dateLabel: `最終更新日: 2026年3月6日`,
+    dateLabel: `最終更新日: 2026年8月28日`,
     bodyHtml: `<p>このクッキーポリシーは、当サイトにおけるCookieおよび類似技術の使用について詳細に説明するものです。</p>
                     <h2 id="section1">1. Cookieとは</h2>
                         <p>Cookieとは、ウェブサイトがユーザーのコンピュータやスマートフォン等のデバイスに保存する小さなテキストファイルです。Cookieにより、ウェブサイトはユーザーのデバイスを識別し、ユーザーの設定を記憶することができます。</p>
@@ -917,7 +917,6 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                         <h3>2-1. 必須Cookie</h3>
                             <p>本サイトの基本機能を提供するために必要なCookieです。</p>
                             <p>・Cookie同意バナーの表示制御</p>
-                            <p>・ログイン状態の保持</p>
                             <p>・セキュリティ機能の提供</p>
                             <p>・セッション管理</p>
                         <h3>2-2. 分析Cookie</h3>
@@ -925,10 +924,10 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>・アクセス解析（Google Analytics）</p>
                             <p>・ページビュー、滞在時間の測定</p>
                             <p>・ユーザーの行動分析</p>
-                            <p>・検索パフォーマンスの測定（Google Search Console）</p>
-                        <h3>2-3. 機能性Cookie</h3>
-                            <p>ユーザーの利便性を向上させるためのCookieです。</p>
-                            <p>・相談履歴の一時保存（ブラウザ終了まで）</p>
+                        <h3>2-3. 機能性ローカルストレージ（Cookieではありません）</h3>
+                            <p>ユーザーの利便性を向上させるため、Cookieとは別にブラウザのローカルストレージも使用しています。</p>
+                            <p>・ログイン状態の保持（Supabase Auth、ログアウトまたはデータ削除まで）</p>
+                            <p>・チャット履歴の保存（未ログイン時。手動で削除するまで保持され、ブラウザを閉じても消えません）</p>
                             <p>・表示設定の保存</p>
 
                     <h2 id="section3">3. 使用しているCookieの詳細</h2>
@@ -1053,24 +1052,22 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p><a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics オプトアウト アドオン</a></p>
                         <h3>4-3. Cookie同意の撤回</h3>
                             <p>Cookie同意バナーで一度同意した後でも、以下の方法で同意を撤回できます。</p>
-                            <p>1. <strong>ブラウザのCookieを削除する</strong>（上記「3-4-1」参照）</p>
+                            <p>1. <strong>ブラウザのCookieを削除する</strong>（上記「4-1」参照）</p>
                             <p>2. 次回サイト訪問時に、Cookie同意バナーが再表示されます</p>
                             <p>3. または、<a href="/info/contact">お問い合わせページ</a>より同意撤回の申請が可能です</p>
 
                     <h2 id="section5">5. Cookieを無効にした場合の影響</h2>
                         <p>Cookieを無効にした場合、以下の機能が制限される場合があります。</p>
-                        <p>・Googleログインおよびメールアドレスとパスワードによるログイン機能が利用できない</p>
-                        <p>・相談履歴の保存ができない</p>
-                        <p>・サイトの表示設定が保存されない</p>
                         <p>・アクセス解析によるサービス改善ができない</p>
-                        <p>ただし、必須Cookie以外を無効にしても、本サイトの基本的な閲覧は可能です。</p>
+                        <p>なお、ログイン状態の保持やチャット履歴の保存はCookieではなくブラウザのローカルストレージを使用しているため、Cookieを無効にしてもこれらの機能には影響しません。ローカルストレージやサイトデータそのものを無効化・削除した場合は、ログイン状態の保持・チャット履歴の保存・表示設定の保存ができなくなります。</p>
+                        <p>必須Cookie以外を無効にしても、本サイトの基本的な閲覧は可能です。</p>
 
                     <h2 id="section6">6. その他のトラッキング技術</h2>
                         <p>本サイトでは、Cookie以外に以下のトラッキング技術を使用する場合があります。</p>
                         <h3>6-1. ウェブビーコン（Webビーコン）</h3>
                             <p>Google Analyticsにより、小さな透明画像（1x1ピクセル）を使用して、ページビューやメール開封を追跡する場合があります。</p>
                         <h3>6-2. ローカルストレージ</h3>
-                            <p><strong>現時点では使用していません。</strong>将来的に使用する場合は、本ポリシーを更新します。</p>
+                            <p>ログイン状態の保持（Supabase Auth）、および未ログイン時のチャット履歴の保存に使用しています。詳細は「2-3. 機能性ローカルストレージ」をご確認ください。</p>
                         <h3>6-3. セッションストレージ</h3>
                             <p>一時的なデータ保存のみに使用しています（ブラウザ終了時に自動削除）。</p>
 

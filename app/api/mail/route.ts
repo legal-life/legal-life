@@ -7,6 +7,7 @@ import {
   sendMail,
   type ContactMailParams,
 } from "@/lib/mail/gmail";
+import { supabase } from "@/lib/supabase/client";
 
 // メール送信API。旧 legal-life-mailer (Cloudflare Workers) の api/index.js を統合したもの。
 // 送信はGmail SMTP(Nodemailer)経由。第三者ESP(Resend等)はgmail.com等の共有ドメインを
@@ -24,17 +25,45 @@ export async function POST(req: NextRequest) {
 
   try {
     if (type === "contact") {
-      const contactTo = process.env.CONTACT_TO_EMAIL;
-      if (!contactTo) throw new Error("CONTACT_TO_EMAIL is not configured");
       const params = body as unknown as ContactMailParams;
       if (!params.from_name || !params.inquiry_type || !params.content) {
         return NextResponse.json({ error: "Missing fields" }, { status: 400 });
       }
-      await sendMail({
-        to: contactTo,
-        subject: buildSubject("contact", params.inquiry_type),
-        html: buildContactHTML(params),
+
+      // お問い合わせの保存を主経路とする。メール送信(Gmail SMTP)は現状不安定なため、
+      // 送信に失敗してもSupabaseへの保存が成功していれば管理画面から確認できるようにする。
+      const { from_name, gender, age_group, reply_email, inquiry_type, category, content, ...deviceInfo } = params;
+      const { error: insertError } = await supabase.from("contact_inquiries").insert({
+        from_name,
+        gender,
+        age_group,
+        reply_email,
+        inquiry_type,
+        category,
+        content,
+        device_info: deviceInfo,
       });
+      if (insertError) {
+        console.error("Failed to save contact inquiry to Supabase:", insertError);
+        return NextResponse.json(
+          { error: "Failed to save inquiry", detail: insertError.message },
+          { status: 500 },
+        );
+      }
+
+      const contactTo = process.env.CONTACT_TO_EMAIL;
+      if (contactTo) {
+        try {
+          await sendMail({
+            to: contactTo,
+            subject: buildSubject("contact", params.inquiry_type),
+            html: buildContactHTML(params),
+          });
+        } catch (mailErr) {
+          console.error("Contact notification mail failed (inquiry was saved):", mailErr);
+        }
+      }
+
       return NextResponse.json({ ok: true });
     }
 

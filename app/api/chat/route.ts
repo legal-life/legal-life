@@ -18,6 +18,10 @@ function buildPrompt(q: string): string {
 以下の形式でプレーンテキストで回答してください。
 例外として法令に関係のないことの質問は以下のプレーンテキストを生成しない。また、「関係のない質問には回答できません」と明記する。
 
+回答の一番最初の行に、必ず次の形式で質問が最も関係する法令分野を1つだけ出力すること(利用統計の集計にのみ使用し、ユーザーには表示しない):
+CATEGORY: <法分野名。例: 民法/刑法/商法/会社法/労働法/行政法/憲法/消費者法/知的財産法/その他>
+そのすぐ次の行は空行にし、その後に通常の回答本文を続けること。
+
 【1. 結論・ポイント(一般論)】
 質問に関連する法分野について、一般的な考え方を2-3文で簡潔に説明する。
 ※ 個別具体的な判断・結論・違法性判断は行わない。
@@ -111,13 +115,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ignored: true });
     }
 
+    const categoryMatch = answer.match(/^CATEGORY:\s*(.+?)\s*$/m);
+    const category = categoryMatch?.[1]?.trim() || null;
+    const answerBody = categoryMatch
+      ? answer.slice(categoryMatch.index! + categoryMatch[0].length).replace(/^\s*\n/, "")
+      : answer;
+
     const fullAnswer =
-      answer +
+      answerBody +
       "\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-      "⚠️免責事項 : 本回答はAIによる一般的な法令情報です。\n" +
+      "免責事項 : 本回答はAIによる一般的な法令情報です。\n" +
       "個別の法的判断が必要な場合は、必ず弁護士等の専門家にご相談ください。";
 
-    return NextResponse.json({ answer: fullAnswer });
+    return NextResponse.json({ answer: fullAnswer, category });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }

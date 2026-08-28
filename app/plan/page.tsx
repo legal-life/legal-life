@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { IconCross, IconCheck } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "料金プラン",
@@ -40,12 +42,15 @@ const PLANS = [
   },
 ];
 
-const COMPARISON_ROWS = [
-  { name: "チャット利用回数", values: ["✖", "5回 / 日", "15回 / 日", "◎ 無制限"] },
-  { name: "チャット履歴保存", values: ["✖", "最大10件", "最大50件", "◎ 無制限"] },
-  { name: "学習コンテンツ", values: ["デモのみ", "一部可能", "○ 制限あり", "◎ 無制限"] },
-  { name: "ニュース閲覧", values: ["6時間遅れ", "6時間遅れ", "3時間遅れ", "◎ 即時"] },
-  { name: "新機能先行体験", values: ["✖", "✖", "✖", "◎ 利用可能"] },
+const CROSS = <IconCross className="inline w-3.5 h-3.5 text-gray-400" />;
+const CHECK = <IconCheck className="inline w-3.5 h-3.5 text-primary-dark mr-1" />;
+
+const COMPARISON_ROWS: { name: string; values: ReactNode[] }[] = [
+  { name: "チャット利用回数", values: [CROSS, "5回 / 日", "15回 / 日", <>{CHECK}無制限</>] },
+  { name: "チャット履歴保存", values: [CROSS, "最大10件", "最大50件", <>{CHECK}無制限</>] },
+  { name: "学習コンテンツ", values: ["デモのみ", "一部可能", <>{CHECK}制限あり</>, <>{CHECK}無制限</>] },
+  { name: "ニュース閲覧", values: ["6時間遅れ", "6時間遅れ", "3時間遅れ", <>{CHECK}即時</>] },
+  { name: "新機能先行体験", values: [CROSS, CROSS, CROSS, <>{CHECK}利用可能</>] },
 ];
 
 export default function PlanPage() {

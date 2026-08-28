@@ -3,29 +3,83 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { IconWarning, IconTrash, IconBulb } from "@/components/icons";
 
 const STORAGE_KEY = "legalChatHistory";
 const MAX_INPUT_LEN = 1000;
 
-type ChatItem = { id: string; question: string; answer: string };
+type ChatItem = { id: string; question: string; answer: string; category?: string | null };
 
 export default function ChatApp() {
   const [history, setHistory] = useState<ChatItem[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const areaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // ログイン中はSupabase(chat_history)に読み書きし、未ログイン時はブラウザのlocalStorageに保存する。
+  // 未ログインで貯まった履歴は、ログインした瞬間にSupabaseへ移行してlocalStorageから消す。
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setHistory(JSON.parse(saved));
-  }, []);
+    const loadFromLocal = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      setHistory(saved ? JSON.parse(saved) : []);
+    };
 
-  const persist = (next: ChatItem[]) => {
-    setHistory(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
+    const loadFromSupabase = async (uid: string) => {
+      const { data } = await supabase
+        .from("chat_history")
+        .select("id, question, answer, category")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: true });
+      setHistory(data ?? []);
+    };
+
+    const migrateLocalToSupabase = async (uid: string) => {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const local: ChatItem[] = JSON.parse(raw);
+      if (local.length > 0) {
+        await supabase.from("chat_history").insert(
+          local.map((item) => ({
+            user_id: uid,
+            question: item.question,
+            answer: item.answer,
+            category: item.category ?? null,
+          })),
+        );
+      }
+      localStorage.removeItem(STORAGE_KEY);
+    };
+
+    const initForUser = async (uid: string | null) => {
+      setUserId(uid);
+      if (uid) {
+        await migrateLocalToSupabase(uid);
+        await loadFromSupabase(uid);
+      } else {
+        loadFromLocal();
+      }
+    };
+
+    let subscription: { unsubscribe: () => void } | undefined;
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      await initForUser(user?.id ?? null);
+      const {
+        data: { subscription: sub },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        initForUser(session?.user?.id ?? null);
+      });
+      subscription = sub;
+    })();
+
+    return () => subscription?.unsubscribe();
+  }, []);
 
   const handleSend = async () => {
     const question = input.trim();
@@ -51,8 +105,21 @@ export default function ChatApp() {
         setError("法令に関する質問ではないため、回答・保存をスキップしました。");
         return;
       }
-      const item: ChatItem = { id: Date.now().toString(), question, answer: data.answer };
-      persist([...history, item]);
+
+      if (userId) {
+        const { data: inserted, error: insertError } = await supabase
+          .from("chat_history")
+          .insert({ user_id: userId, question, answer: data.answer, category: data.category ?? null })
+          .select("id, question, answer, category")
+          .single();
+        if (!insertError && inserted) setHistory((h) => [...h, inserted]);
+      } else {
+        const item: ChatItem = { id: Date.now().toString(), question, answer: data.answer, category: data.category ?? null };
+        const next = [...history, item];
+        setHistory(next);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      }
+
       setTimeout(() => {
         areaRef.current?.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 50);
@@ -70,11 +137,29 @@ export default function ChatApp() {
     if (history.length === 0) return;
     setConfirmTarget({ type: "all" });
   };
-  const runConfirm = () => {
+  const runConfirm = async () => {
     if (!confirmTarget) return;
-    if (confirmTarget.type === "one") persist(history.filter((i) => i.id !== confirmTarget.id));
-    else persist([]);
+    if (confirmTarget.type === "one") {
+      if (userId) await supabase.from("chat_history").delete().eq("id", confirmTarget.id).eq("user_id", userId);
+      const next = history.filter((i) => i.id !== confirmTarget.id);
+      setHistory(next);
+      if (!userId) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } else {
+      if (userId) await supabase.from("chat_history").delete().eq("user_id", userId);
+      setHistory([]);
+      if (!userId) localStorage.removeItem(STORAGE_KEY);
+    }
     setConfirmTarget(null);
+  };
+
+  const exportHistory = () => {
+    const blob = new Blob([JSON.stringify(history, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `legal-life-chat-history-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -89,7 +174,9 @@ export default function ChatApp() {
       </div>
 
       <div className="bg-[#fff9db] border border-[#ffe066] border-l-[6px] border-l-[#fcc419] rounded-xl px-6 py-4 mb-5 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <p className="font-bold text-[#856404] text-lg mb-2">⚠️ 重要な注意事項</p>
+        <p className="font-bold text-[#856404] text-lg mb-2 flex items-center gap-1.5">
+          <IconWarning className="w-5 h-5 shrink-0" /> 重要な注意事項
+        </p>
         <ul className="text-sm text-[#856404] leading-relaxed list-disc pl-5 mb-2">
           <li>個人情報(氏名、住所、電話番号等)は絶対に入力しないでください</li>
           <li>本サービスは法的助言ではありません</li>
@@ -105,8 +192,8 @@ export default function ChatApp() {
         </p>
       </div>
 
-      <div className="bg-[#f0faff] border border-[#e0f2f7] rounded-xl px-6 py-3 mb-5 text-center text-sm text-[#444]">
-        💡 わからない法令名は{" "}
+      <div className="bg-[#f0faff] border border-[#e0f2f7] rounded-xl px-6 py-3 mb-5 text-center text-sm text-[#444] flex items-center justify-center gap-1.5 flex-wrap">
+        <IconBulb className="w-4 h-4 shrink-0" /> わからない法令名は{" "}
         <Link href="/content/search" className="text-[#008fa6] font-bold border-b-[1.5px] border-primary hover:text-primary">
           法令検索
         </Link>{" "}
@@ -121,13 +208,22 @@ export default function ChatApp() {
               テスト中の機能
             </span>
           </span>
-          <button
-            id="clearAllButton"
-            className="px-6 py-2 bg-[#ef4444] hover:bg-[#dc2626] text-white text-sm font-bold rounded-xl transition-all hover:scale-[1.02]"
-            onClick={clearAll}
-          >
-            全削除
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="px-4 py-2 border border-[#cbd5e1] text-[#334155] text-sm font-bold rounded-xl transition-all hover:bg-[#f1f5f9] disabled:opacity-40"
+              disabled={history.length === 0}
+              onClick={exportHistory}
+            >
+              エクスポート
+            </button>
+            <button
+              id="clearAllButton"
+              className="px-6 py-2 bg-[#ef4444] hover:bg-[#dc2626] text-white text-sm font-bold rounded-xl transition-all hover:scale-[1.02]"
+              onClick={clearAll}
+            >
+              全削除
+            </button>
+          </div>
         </div>
 
         <div ref={areaRef} className="flex-1 overflow-y-auto p-8 flex flex-col gap-5 bg-[#fcfcfd]">
@@ -141,7 +237,7 @@ export default function ChatApp() {
                   className="chat-delete-btn order-first text-[#cbd5e1] hover:text-[#ef4444] hover:scale-110 transition-all"
                   onClick={() => deleteItem(item.id)}
                 >
-                  🗑️
+                  <IconTrash className="w-4 h-4" />
                 </button>
                 <div className="bg-[#0f172a] text-white rounded-[18px] rounded-br-[4px] px-5 py-3.5 max-w-[80%] text-sm whitespace-pre-wrap">
                   {item.question}
@@ -151,7 +247,11 @@ export default function ChatApp() {
             </div>
           ))}
           {sending && <span className="text-[#64748b] font-bold animate-pulse">考え中...</span>}
-          {error && <p className="text-sm text-red-600">⚠️ {error}</p>}
+          {error && (
+            <p className="text-sm text-red-600 flex items-center gap-1">
+              <IconWarning className="w-4 h-4 shrink-0" /> {error}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-4 items-end px-6 py-5 border-t border-[#f1f5f9]">
@@ -186,7 +286,7 @@ export default function ChatApp() {
       {confirmTarget && (
         <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-[9999] p-5">
           <div className="bg-white rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.25)] px-6 py-7 text-center">
-            <p className="text-2xl mb-2.5">🗑️</p>
+            <IconTrash className="w-8 h-8 mb-2.5 mx-auto text-[#ef4444]" />
             <p className="text-[#1e293b] font-medium leading-relaxed mb-5">
               {confirmTarget.type === "all" ? `${history.length}件の履歴をすべて削除しますか?` : "このメッセージを削除しますか?"}
             </p>

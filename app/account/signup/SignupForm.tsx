@@ -87,12 +87,15 @@ export default function SignupForm() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name } },
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: `${location.origin}/welcome`,
+        },
       });
       if (error || !data.user) throw error || new Error("登録に失敗しました");
       await logAct(data.user.id, "signup", "メール");
       if (!data.session) {
-        setMsg({ text: "✅ 確認メールを送信しました。メール内のリンクから登録を完了してください。", type: "success" });
+        setMsg({ text: "確認メールを送信しました。メール内のリンクから登録を完了してください。", type: "success" });
         setSubmitting(false);
         return;
       }

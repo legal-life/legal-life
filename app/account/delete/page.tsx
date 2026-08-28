@@ -56,7 +56,7 @@ export default function DeletePage() {
     if (!user) return;
     try {
       await setDeletionPending(user.id, false);
-      setCancelMsg("✅ 削除申請をキャンセルしました");
+      setCancelMsg("削除申請をキャンセルしました");
       setTimeout(() => window.location.replace("/account/settings"), 1500);
     } catch (e) {
       setCancelMsg(e instanceof Error ? e.message : String(e));
@@ -71,7 +71,7 @@ export default function DeletePage() {
       const code = genOTP();
       await saveOTP(user.id, code, "account_delete");
       await sendOTP(user, code, "アカウント削除申請");
-      setMsg(`📧 ${user.email} に認証コードを送信しました`);
+      setMsg(`${user.email} に認証コードを送信しました`);
       setShowOtp(true);
       return;
     }

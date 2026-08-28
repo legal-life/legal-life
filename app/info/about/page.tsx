@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { IconCheck } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "サイト概要",
@@ -43,7 +44,7 @@ export default function AboutPage() {
               "法律についてもっと詳しく知りたい一般の方",
             ].map((t) => (
               <li key={t} className="relative pl-7 mb-3">
-                <span className="absolute left-[5px] font-bold text-[#333]">✓</span>
+                <IconCheck className="absolute left-[5px] top-1 w-3.5 h-3.5 text-[#333]" />
                 {t}
               </li>
             ))}
@@ -56,19 +57,19 @@ export default function AboutPage() {
         <div className="inline-block w-full max-w-[750px] text-left leading-loose bg-[#D6F5FA] rounded p-6 sm:p-7">
           <ul className="list-none p-0 m-0">
             <li className="relative pl-7 mb-3">
-              <span className="absolute left-[5px] font-bold text-[#333]">✓</span>
+              <IconCheck className="absolute left-[5px] top-1 w-3.5 h-3.5 text-[#333]" />
               <strong>法令学習</strong> — 日本国憲法や各種法令について解説しています。<Badge />
             </li>
             <li className="relative pl-7 mb-3">
-              <span className="absolute left-[5px] font-bold text-[#333]">✓</span>
+              <IconCheck className="absolute left-[5px] top-1 w-3.5 h-3.5 text-[#333]" />
               <strong>AIチャット</strong> — 法律に関する質問や不安をAIに聞くことが出来ます
             </li>
             <li className="relative pl-7 mb-3">
-              <span className="absolute left-[5px] font-bold text-[#333]">✓</span>
+              <IconCheck className="absolute left-[5px] top-1 w-3.5 h-3.5 text-[#333]" />
               <strong>法令検索</strong> — 法令をe-govの機能を使って検索することが出来ます
             </li>
             <li className="relative pl-7 mb-3">
-              <span className="absolute left-[5px] font-bold text-[#333]">✓</span>
+              <IconCheck className="absolute left-[5px] top-1 w-3.5 h-3.5 text-[#333]" />
               <strong>ニュース</strong> — 最新の法令に関する話題について詳しく知ることが出来ます<Badge />
             </li>
           </ul>

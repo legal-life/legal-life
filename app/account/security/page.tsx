@@ -37,7 +37,7 @@ export default function SecurityPage() {
           const code = genOTP();
           await saveOTP(u.id, code, "security_access");
           await sendOTP(u, code, "セキュリティセクションへのアクセス");
-          setOtpMsg(`📧 ${u.email} に認証コードを送信しました`);
+          setOtpMsg(`${u.email} に認証コードを送信しました`);
         } catch (e) {
           setOtpMsg("コード送信に失敗しました: " + (e instanceof Error ? e.message : String(e)));
         }

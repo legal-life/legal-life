@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { infoDetails } from "@/data/info-details";
+import { infoDetails, parseInfoDate } from "@/data/info-details";
 
 export const metadata: Metadata = {
   title: "お知らせ",
@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default function InfoPage() {
+  const sortedDetails = [...infoDetails].sort((a, b) => parseInfoDate(b.date) - parseInfoDate(a.date));
+
   return (
     <div className="px-4 py-8">
       <h1 className="text-2xl font-bold text-center mb-6">サイトからのお知らせ</h1>
@@ -18,7 +20,7 @@ export default function InfoPage() {
           <span className="flex-1 pr-5">内容</span>
           <span className="w-24 shrink-0 text-center">リンク</span>
         </div>
-        {infoDetails.map((d) => (
+        {sortedDetails.map((d) => (
           <div
             key={d.slug}
             className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-0 px-2.5 py-4 border-b border-[#e0f7f9] transition-colors hover:bg-[#f5fdfe]"

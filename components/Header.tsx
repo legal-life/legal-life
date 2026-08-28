@@ -42,9 +42,13 @@ export default function Header() {
               setOpen((v) => !v);
             }}
           >
-            <span className="block w-6 h-0.5 bg-black transition-all" />
-            <span className="block w-6 h-0.5 bg-black transition-all" />
-            <span className="block w-6 h-0.5 bg-black transition-all" />
+            <span
+              className={`block w-6 h-0.5 bg-black transition-all duration-300 ${open ? "translate-y-2 rotate-45" : ""}`}
+            />
+            <span className={`block w-6 h-0.5 bg-black transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span
+              className={`block w-6 h-0.5 bg-black transition-all duration-300 ${open ? "-translate-y-2 -rotate-45" : ""}`}
+            />
           </button>
           {open && (
             <div className="fixed inset-0 bg-black/30 z-[999] transition-opacity" onClick={() => setOpen(false)} />

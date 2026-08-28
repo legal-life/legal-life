@@ -8,6 +8,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import { logAct } from "@/lib/auth/session";
 import OtpPanel from "@/components/OtpPanel";
+import { IconCheck } from "@/components/icons";
 
 export default function TwoFaPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -38,7 +39,7 @@ export default function TwoFaPage() {
       const code = genOTP();
       await saveOTP(user.id, code, purpose);
       await sendOTP(user, code, checked ? "二段階認証の有効化" : "二段階認証の無効化");
-      setMsg(`📧 ${user.email} に認証コードを送信しました`);
+      setMsg(`${user.email} に認証コードを送信しました`);
       setPendingState(checked);
       setShowOtp(true);
     } catch {
@@ -61,7 +62,7 @@ export default function TwoFaPage() {
       await supabase.from("backup_codes").delete().eq("user_id", user.id);
     }
     setEnabled(pendingState);
-    setMsg(`✅ 二段階認証を${pendingState ? "有効" : "無効"}にしました`);
+    setMsg(`二段階認証を${pendingState ? "有効" : "無効"}にしました`);
     await logAct(user.id, "twofa_change", pendingState ? "有効化" : "無効化");
     setToggling(false);
     setShowOtp(false);
@@ -116,7 +117,9 @@ export default function TwoFaPage() {
 
       {recommend && (
         <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 my-4">
-          <p className="font-bold text-sm mb-1">✅ 二段階認証を有効にしました!</p>
+          <p className="font-bold text-sm mb-1 flex items-center gap-1.5">
+            <IconCheck className="w-4 h-4 shrink-0" /> 二段階認証を有効にしました!
+          </p>
           <p className="text-xs text-gray-600 mb-3">さらにセキュリティを強化するために以下の設定もお勧めします。</p>
           <div className="flex flex-col gap-2">
             <Link href="/account/security/2fa/backup-code" className="text-center bg-primary text-white text-sm font-bold rounded-lg py-2">

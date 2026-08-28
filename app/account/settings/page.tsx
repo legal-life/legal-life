@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { getProfile, setDeletionPending, type Profile } from "@/lib/auth/profile";
+import { IconPerson, IconBell, IconShield, IconFolder } from "@/components/icons";
 
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -57,7 +58,9 @@ export default function SettingsPage() {
         {profile?.photo_url ? (
           <Image src={profile.photo_url} alt="avatar" width={64} height={64} className="rounded-full object-cover border-2 border-primary shrink-0" />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl shrink-0">👤</div>
+          <div className="w-16 h-16 rounded-full bg-[#e0e0e0] flex items-center justify-center shrink-0">
+            <IconPerson className="w-8 h-8 text-[#9aa0a6]" />
+          </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="mb-1.5">
@@ -74,16 +77,21 @@ export default function SettingsPage() {
 
       <nav className="flex flex-col mb-6 border-t border-[#f1f3f4]">
         {[
-          { href: "/account/settings/profile", icon: "👤", label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
-          { href: "/account/settings/privacy", icon: "🔔", label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
-          { href: "/account/security", icon: "🛡️", label: "セキュリティ", sub: "パスワード・二段階認証・デバイス管理" },
+          { href: "/account/settings/profile", icon: IconPerson, label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
+          { href: "/account/settings/privacy", icon: IconBell, label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
+          { href: "/account/security", icon: IconShield, label: "セキュリティ", sub: "パスワード・二段階認証・デバイス管理" },
+          ...(profile?.role === "admin"
+            ? [{ href: "/admin/inquiries", icon: IconFolder, label: "お問い合わせ管理", sub: "管理者専用ページ" }]
+            : []),
         ].map((m) => (
           <Link
             key={m.href}
             href={m.href}
             className="flex items-center gap-3.5 py-4 border-b border-[#f1f3f4] hover:bg-[#f8f9fa] -mx-2 px-2 rounded-lg transition-colors"
           >
-            <span className="w-9 h-9 rounded-full bg-[#f0fbfc] flex items-center justify-center shrink-0">{m.icon}</span>
+            <span className="w-9 h-9 rounded-full bg-[#f0fbfc] flex items-center justify-center shrink-0">
+              <m.icon className="w-[18px] h-[18px] text-primary-dark" />
+            </span>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm">{m.label}</p>
               <p className="text-xs text-[#5f6368] mt-0.5">{m.sub}</p>

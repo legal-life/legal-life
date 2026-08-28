@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FAQ_CATEGORIES, FAQ_ITEMS, type FaqCategory } from "@/data/faq";
+import { IconSearch } from "@/components/icons";
 
 export default function FaqApp() {
   const [search, setSearch] = useState("");
@@ -33,7 +34,7 @@ export default function FaqApp() {
       </p>
 
       <div className="relative mb-6">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2">🔍</span>
+        <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
           className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2.5 text-sm"
