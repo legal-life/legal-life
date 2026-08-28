@@ -7,6 +7,7 @@ import {
   sendMail,
   type ContactMailParams,
 } from "@/lib/mail/gmail";
+import { supabase } from "@/lib/supabase/client";
 
 // メール送信API。旧 legal-life-mailer (Cloudflare Workers) の api/index.js を統合したもの。
 // 送信はGmail SMTP(Nodemailer)経由。第三者ESP(Resend等)はgmail.com等の共有ドメインを
@@ -35,6 +36,20 @@ export async function POST(req: NextRequest) {
         subject: buildSubject("contact", params.inquiry_type),
         html: buildContactHTML(params),
       });
+
+      const { from_name, gender, age_group, reply_email, inquiry_type, category, content, ...deviceInfo } = params;
+      const { error: insertError } = await supabase.from("contact_inquiries").insert({
+        from_name,
+        gender,
+        age_group,
+        reply_email,
+        inquiry_type,
+        category,
+        content,
+        device_info: deviceInfo,
+      });
+      if (insertError) console.error("Failed to save contact inquiry to Supabase:", insertError);
+
       return NextResponse.json({ ok: true });
     }
 

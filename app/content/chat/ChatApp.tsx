@@ -3,29 +3,82 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 
 const STORAGE_KEY = "legalChatHistory";
 const MAX_INPUT_LEN = 1000;
 
-type ChatItem = { id: string; question: string; answer: string };
+type ChatItem = { id: string; question: string; answer: string; category?: string | null };
 
 export default function ChatApp() {
   const [history, setHistory] = useState<ChatItem[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const areaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // ログイン中はSupabase(chat_history)に読み書きし、未ログイン時はブラウザのlocalStorageに保存する。
+  // 未ログインで貯まった履歴は、ログインした瞬間にSupabaseへ移行してlocalStorageから消す。
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setHistory(JSON.parse(saved));
-  }, []);
+    const loadFromLocal = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      setHistory(saved ? JSON.parse(saved) : []);
+    };
 
-  const persist = (next: ChatItem[]) => {
-    setHistory(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
+    const loadFromSupabase = async (uid: string) => {
+      const { data } = await supabase
+        .from("chat_history")
+        .select("id, question, answer, category")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: true });
+      setHistory(data ?? []);
+    };
+
+    const migrateLocalToSupabase = async (uid: string) => {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const local: ChatItem[] = JSON.parse(raw);
+      if (local.length > 0) {
+        await supabase.from("chat_history").insert(
+          local.map((item) => ({
+            user_id: uid,
+            question: item.question,
+            answer: item.answer,
+            category: item.category ?? null,
+          })),
+        );
+      }
+      localStorage.removeItem(STORAGE_KEY);
+    };
+
+    const initForUser = async (uid: string | null) => {
+      setUserId(uid);
+      if (uid) {
+        await migrateLocalToSupabase(uid);
+        await loadFromSupabase(uid);
+      } else {
+        loadFromLocal();
+      }
+    };
+
+    let subscription: { unsubscribe: () => void } | undefined;
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      await initForUser(user?.id ?? null);
+      const {
+        data: { subscription: sub },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        initForUser(session?.user?.id ?? null);
+      });
+      subscription = sub;
+    })();
+
+    return () => subscription?.unsubscribe();
+  }, []);
 
   const handleSend = async () => {
     const question = input.trim();
@@ -51,8 +104,21 @@ export default function ChatApp() {
         setError("法令に関する質問ではないため、回答・保存をスキップしました。");
         return;
       }
-      const item: ChatItem = { id: Date.now().toString(), question, answer: data.answer };
-      persist([...history, item]);
+
+      if (userId) {
+        const { data: inserted, error: insertError } = await supabase
+          .from("chat_history")
+          .insert({ user_id: userId, question, answer: data.answer, category: data.category ?? null })
+          .select("id, question, answer, category")
+          .single();
+        if (!insertError && inserted) setHistory((h) => [...h, inserted]);
+      } else {
+        const item: ChatItem = { id: Date.now().toString(), question, answer: data.answer, category: data.category ?? null };
+        const next = [...history, item];
+        setHistory(next);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      }
+
       setTimeout(() => {
         areaRef.current?.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 50);
@@ -70,11 +136,29 @@ export default function ChatApp() {
     if (history.length === 0) return;
     setConfirmTarget({ type: "all" });
   };
-  const runConfirm = () => {
+  const runConfirm = async () => {
     if (!confirmTarget) return;
-    if (confirmTarget.type === "one") persist(history.filter((i) => i.id !== confirmTarget.id));
-    else persist([]);
+    if (confirmTarget.type === "one") {
+      if (userId) await supabase.from("chat_history").delete().eq("id", confirmTarget.id).eq("user_id", userId);
+      const next = history.filter((i) => i.id !== confirmTarget.id);
+      setHistory(next);
+      if (!userId) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } else {
+      if (userId) await supabase.from("chat_history").delete().eq("user_id", userId);
+      setHistory([]);
+      if (!userId) localStorage.removeItem(STORAGE_KEY);
+    }
     setConfirmTarget(null);
+  };
+
+  const exportHistory = () => {
+    const blob = new Blob([JSON.stringify(history, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `legal-life-chat-history-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -121,13 +205,22 @@ export default function ChatApp() {
               テスト中の機能
             </span>
           </span>
-          <button
-            id="clearAllButton"
-            className="px-6 py-2 bg-[#ef4444] hover:bg-[#dc2626] text-white text-sm font-bold rounded-xl transition-all hover:scale-[1.02]"
-            onClick={clearAll}
-          >
-            全削除
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="px-4 py-2 border border-[#cbd5e1] text-[#334155] text-sm font-bold rounded-xl transition-all hover:bg-[#f1f5f9] disabled:opacity-40"
+              disabled={history.length === 0}
+              onClick={exportHistory}
+            >
+              エクスポート
+            </button>
+            <button
+              id="clearAllButton"
+              className="px-6 py-2 bg-[#ef4444] hover:bg-[#dc2626] text-white text-sm font-bold rounded-xl transition-all hover:scale-[1.02]"
+              onClick={clearAll}
+            >
+              全削除
+            </button>
+          </div>
         </div>
 
         <div ref={areaRef} className="flex-1 overflow-y-auto p-8 flex flex-col gap-5 bg-[#fcfcfd]">

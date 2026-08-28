@@ -77,6 +77,9 @@ export default function SettingsPage() {
           { href: "/account/settings/profile", icon: "👤", label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
           { href: "/account/settings/privacy", icon: "🔔", label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
           { href: "/account/security", icon: "🛡️", label: "セキュリティ", sub: "パスワード・二段階認証・デバイス管理" },
+          ...(profile?.role === "admin"
+            ? [{ href: "/admin/inquiries", icon: "🗂️", label: "お問い合わせ管理", sub: "管理者専用ページ" }]
+            : []),
         ].map((m) => (
           <Link
             key={m.href}
