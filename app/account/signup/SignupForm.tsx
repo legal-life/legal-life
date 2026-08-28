@@ -89,7 +89,7 @@ export default function SignupForm() {
         password,
         options: {
           data: { full_name: name },
-          emailRedirectTo: `${location.origin}/account/login`,
+          emailRedirectTo: `${location.origin}/welcome`,
         },
       });
       if (error || !data.user) throw error || new Error("登録に失敗しました");

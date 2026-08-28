@@ -60,7 +60,7 @@ export default function ProfilePage() {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email: user.email,
-        options: { emailRedirectTo: `${location.origin}/account/login` },
+        options: { emailRedirectTo: `${location.origin}/welcome` },
       });
       if (error) throw error;
       setVerifyMsg("確認メールを送信しました");
