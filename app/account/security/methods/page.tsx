@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
+import { IconMail } from "@/components/icons";
 
 export default function MethodsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -46,7 +47,7 @@ export default function MethodsPage() {
       return;
     }
     await logAct(user.id, "method_change", `${label}解除`);
-    setMsg("✅解除しました");
+    setMsg("解除しました");
     await refresh();
   };
 
@@ -72,14 +73,17 @@ export default function MethodsPage() {
     setShowPasswordForm(false);
     setPw1("");
     setPw2("");
-    setMsg("✅パスワードを設定しました");
+    setMsg("パスワードを設定しました");
     await refresh();
   };
 
   const setEmail = async () => {
     if (!emailInput || !emailInput.includes("@")) return setEmailMsg("正しいメールアドレスを入力してください");
     setEmailSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ email: emailInput });
+    const { error } = await supabase.auth.updateUser(
+      { email: emailInput },
+      { emailRedirectTo: `${location.origin}/account/settings/profile` },
+    );
     if (error) {
       const M: Record<string, string> = {
         email_exists: "すでに使用済み",
@@ -88,7 +92,7 @@ export default function MethodsPage() {
       setEmailSubmitting(false);
       return;
     }
-    setEmailMsg("✅確認メールを送信しました。リンクから設定を完了してください");
+    setEmailMsg("確認メールを送信しました。リンクから設定を完了してください");
     await logAct(user.id, "email_change", "");
     setEmailSubmitting(false);
     await refresh();
@@ -102,7 +106,9 @@ export default function MethodsPage() {
 
       <div className="border-t border-[#dadce0]">
         <div className="flex items-center gap-3 py-3.5 border-b border-[#dadce0]">
-          <span className="w-[30px] text-center text-xl shrink-0">✉️</span>
+          <span className="w-[30px] flex items-center justify-center shrink-0">
+            <IconMail className="w-5 h-5 text-[#5f6368]" />
+          </span>
           <div className="flex-1 min-w-0">
             <span className="block text-sm font-bold">メール / パスワード</span>
             <span className={`block text-xs mt-0.5 ${passLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
@@ -131,7 +137,7 @@ export default function MethodsPage() {
         </div>
 
         <div className="flex items-center gap-3 py-3.5">
-          <span className="w-[30px] text-center text-xl shrink-0">🔍</span>
+          <span className="w-[30px] text-center text-xl shrink-0 font-bold text-[#4285F4]">G</span>
           <div className="flex-1 min-w-0">
             <span className="block text-sm font-bold">Google</span>
             <span className={`block text-xs mt-0.5 ${googleLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>

@@ -39,7 +39,7 @@ export default function PassPage() {
       setCurrent("");
       setNewPass("");
       setConfirm("");
-      setMsg({ text: "✅ 変更しました", type: "success" });
+      setMsg({ text: "変更しました", type: "success" });
       await logAct(user.id, "password_change", "");
       setHasPassword(true);
     } catch (e: unknown) {
@@ -62,7 +62,7 @@ export default function PassPage() {
       const code = genOTP();
       await saveOTP(user!.id, code, "password_change");
       await sendOTP(user!, code, "パスワード変更");
-      setMsg({ text: `📧 ${user!.email} に認証コードを送信しました`, type: "success" });
+      setMsg({ text: `${user!.email} に認証コードを送信しました`, type: "success" });
       setShowOtp(true);
       return;
     }

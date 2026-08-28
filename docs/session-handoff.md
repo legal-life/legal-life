@@ -15,7 +15,7 @@
 - **フロントエンド**: Next.js 15 App Router, TypeScript, Tailwind CSS(CSS変数ではなくTailwindユーティリティで元サイトの配色・レイアウトを再現)
 - **フォント**: `next/font/local`で`public/assets/fonts/BIZUDGothic-Bold.ttf`を自己ホスト
 - **認証・データ**: Supabase(Auth, PostgreSQL Database, Realtime)。2026-08-21セッションでFirebaseから全面移行済み
-- **メール送信**: Gmail SMTP経由(Nodemailer)。`GMAIL_USER`/`GMAIL_APP_PASSWORD`。Resend等のESPはgmail.comドメインを送信元として認証できないためこの方式のみ採用
+- **メール送信**: Gmail SMTP経由(Nodemailer)。`GMAIL_USER`/`GMAIL_APP_PASSWORD`。Resend等のESPはgmail.comドメインを送信元として認証できないためこの方式のみ採用。**ただし2026-08-28時点、本番環境では実際には送信できていない(構築途中で断念/未設定)。** 実際に有効なGmailアプリパスワードをVercelの環境変数に設定するか、別のメール配信手段への切替が必要。これにより2FA・パスワードリセット等のOTPコード配信、アカウント通知メールは現状本番で機能しない可能性が高い。お問い合わせフォームのみ、`app/api/mail/route.ts`でSupabase `contact_inquiries` への保存をメール送信の成否から独立させたため、送信に失敗しても問い合わせ内容自体は失われず`/admin/inquiries`から確認できる
 - **配信リスト管理**: Resend Segments API(実送信はしない、リスト管理のみ)
 - **AIチャット**: Gemini API(`gemini-3.5-flash`)、サーバー側`/api/chat`経由でキーを秘匿
 - **法令検索**: e-Gov法令API Version2を直接クライアントから呼び出し(公開APIのため問題なし)

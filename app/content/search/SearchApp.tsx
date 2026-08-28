@@ -10,6 +10,7 @@ import {
   searchLaws,
   type LawSummary,
 } from "@/lib/lawSearch";
+import { IconSearch } from "@/components/icons";
 
 function escapeHtml(s: string): string {
   const div = document.createElement("div");
@@ -130,7 +131,7 @@ export default function SearchApp() {
 
         <div className="px-5 sm:px-6 pt-5 pb-6">
           <div className="relative mb-4">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2">🔍</span>
+            <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               className="w-full border-2 border-[#e0e0e0] rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-[#00bcd4] focus:ring-4 focus:ring-[#00bcd4]/10"

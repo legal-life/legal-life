@@ -1,6 +1,23 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import PopupLink from "@/components/PopupLink";
+import {
+  IconHome,
+  IconChat,
+  IconBook,
+  IconSearch,
+  IconNewspaper,
+  IconBuilding,
+  IconScroll,
+  IconQuestion,
+  IconMail,
+  IconMap,
+  IconLock,
+  IconClipboard,
+  IconWarning,
+  IconCookie,
+} from "@/components/icons";
+import type { ComponentType, SVGProps } from "react";
 
 export const metadata: Metadata = {
   title: "サイトマップ",
@@ -9,36 +26,38 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-const CATEGORIES: { title: string; links: { href: string | null; label: string }[] }[] = [
+type SitemapLink = { href: string | null; label: string; icon: ComponentType<SVGProps<SVGSVGElement>> };
+
+const CATEGORIES: { title: string; links: SitemapLink[] }[] = [
   {
     title: "主要ページ",
     links: [
-      { href: "/", label: "🏠 ホーム" },
-      { href: "/content", label: "🏠 コンテンツホーム" },
-      { href: "/content/chat", label: "💬 チャット" },
-      { href: null, label: "📖 法令学習" },
-      { href: "/content/search", label: "🔍 法令検索" },
-      { href: null, label: "📰 ニュース" },
+      { href: "/", label: "ホーム", icon: IconHome },
+      { href: "/content", label: "コンテンツホーム", icon: IconHome },
+      { href: "/content/chat", label: "チャット", icon: IconChat },
+      { href: null, label: "法令学習", icon: IconBook },
+      { href: "/content/search", label: "法令検索", icon: IconSearch },
+      { href: null, label: "ニュース", icon: IconNewspaper },
     ],
   },
   {
     title: "サイト情報ページ",
     links: [
-      { href: "/info/about", label: "🏢 サイト概要" },
-      { href: null, label: "📜 沿革" },
-      { href: "/info", label: "ⓘ お知らせ" },
-      { href: "/info/faq", label: "❓ よくある質問" },
-      { href: "/info/contact", label: "✉️ お問い合わせ" },
-      { href: "/info/map", label: "🗺 サイトマップ" },
+      { href: "/info/about", label: "サイト概要", icon: IconBuilding },
+      { href: null, label: "沿革", icon: IconScroll },
+      { href: "/info", label: "お知らせ", icon: IconNewspaper },
+      { href: "/info/faq", label: "よくある質問", icon: IconQuestion },
+      { href: "/info/contact", label: "お問い合わせ", icon: IconMail },
+      { href: "/info/map", label: "サイトマップ", icon: IconMap },
     ],
   },
   {
     title: "法的情報ページ",
     links: [
-      { href: "/law/privacy", label: "🔒 プライバシーポリシー" },
-      { href: "/law/terms", label: "📋 利用規約" },
-      { href: "/law/disclaimer", label: "⚠️ 免責事項" },
-      { href: "/law/cookie", label: "🍪 クッキーポリシー" },
+      { href: "/law/privacy", label: "プライバシーポリシー", icon: IconLock },
+      { href: "/law/terms", label: "利用規約", icon: IconClipboard },
+      { href: "/law/disclaimer", label: "免責事項", icon: IconWarning },
+      { href: "/law/cookie", label: "クッキーポリシー", icon: IconCookie },
     ],
   },
 ];
@@ -60,15 +79,17 @@ export default function SitemapPage() {
                   <Link
                     key={l.label}
                     href={l.href}
-                    className="block text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
+                    className="flex items-center gap-2 text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
                   >
+                    <l.icon className="w-4 h-4 shrink-0" />
                     {l.label}
                   </Link>
                 ) : (
                   <PopupLink
                     key={l.label}
-                    className="block text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
+                    className="flex items-center gap-2 text-sm text-[#444] bg-[#fafafa] rounded-md px-3 py-2.5 transition-all duration-200 hover:bg-[#E6F9FC] hover:text-primary-dark hover:-translate-y-0.5"
                   >
+                    <l.icon className="w-4 h-4 shrink-0" />
                     {l.label}
                   </PopupLink>
                 ),

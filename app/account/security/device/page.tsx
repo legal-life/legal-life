@@ -8,6 +8,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { regSession } from "@/lib/auth/session";
 import { getSid } from "@/lib/auth/utils";
 import { relDate } from "@/lib/auth/format";
+import { IconLaptop } from "@/components/icons";
 
 type SessionRow = {
   id: string;
@@ -90,7 +91,7 @@ export default function DevicePage() {
                 key={s.id}
                 className={`flex items-center gap-3.5 py-4 border-b border-[#dadce0] flex-wrap ${isCur ? "bg-[#f8faff] -mx-9 px-9" : ""}`}
               >
-                <span className="text-2xl shrink-0">💻</span>
+                <IconLaptop className="w-6 h-6 shrink-0 text-[#5f6368]" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold flex items-center">
                     {s.browser || "不明"} / {s.os || "不明"}

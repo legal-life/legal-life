@@ -1122,7 +1122,7 @@ export const infoDetails: InfoDetail[] = [
             </div>
 
             <section class="action-box">
-            <h3>📩 メンテナンス期間中のお問い合わせ方法</h3>
+            <h3>メンテナンス期間中のお問い合わせ方法</h3>
             <p>
                 お急ぎのご相談やご質問は、以下の臨時窓口（Googleフォーム）にて通常通り受け付けております。必要事項をご記入の上、送信してください。
             </p>

@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { collectDeviceInfo } from "@/lib/deviceInfo";
+import { IconChat, IconQuestion, IconBug, IconSparkle, IconNote, IconCheck, IconWarning } from "@/components/icons";
 
 const AGE_OPTIONS = ["10代", "20代", "30代", "40代", "50代", "60代", "70代", "80代", "90代"];
 const GENDER_OPTIONS = ["男性", "女性", "その他"];
 const INQUIRY_TYPES = [
-  { value: "コメント", label: "💬 コメント" },
-  { value: "質問", label: "❓ 質問" },
-  { value: "バグや不具合の報告", label: "🐛 バグや不具合の報告" },
-  { value: "機能のリクエスト", label: "✨ 機能のリクエスト" },
-  { value: "その他のお問い合わせ", label: "📝 その他のお問い合わせ" },
+  { value: "コメント", label: "コメント", icon: IconChat },
+  { value: "質問", label: "質問", icon: IconQuestion },
+  { value: "バグや不具合の報告", label: "バグや不具合の報告", icon: IconBug },
+  { value: "機能のリクエスト", label: "機能のリクエスト", icon: IconSparkle },
+  { value: "その他のお問い合わせ", label: "その他のお問い合わせ", icon: IconNote },
 ];
 const CATEGORY_OPTIONS = [
   "サイト全般について",
@@ -163,7 +164,7 @@ export default function ContactForm() {
   if (success) {
     return (
       <div className="bg-white rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] px-6 sm:px-10 py-12 sm:py-16 text-center">
-        <span className="block text-5xl mb-5">✅</span>
+        <IconCheck className="block w-12 h-12 mx-auto mb-5 text-[#27ae60]" />
         <p className="text-2xl font-bold text-[#27ae60] mb-5">送信が完了しました</p>
         <p className="max-w-[480px] mx-auto text-sm text-[#555] leading-loose whitespace-pre-line mb-8">
           お問い合わせフォームでの入力が正常に送信されました。
@@ -304,6 +305,7 @@ export default function ContactForm() {
                     setCategory("");
                   }}
                 />{" "}
+                <t.icon className="w-4 h-4 shrink-0" />
                 {t.label}
               </label>
             ))}
@@ -371,8 +373,8 @@ export default function ContactForm() {
 
       <div className="text-center px-6 sm:px-10 pt-7 pb-9 bg-[#fcfcfd]">
         {submitError && (
-          <p className="mb-4 px-5 py-3 bg-[#fff0ef] border border-[#fcc] rounded-lg text-sm text-[#c0392b] leading-relaxed">
-            ⚠️ 送信に失敗しました。{submitError}
+          <p className="mb-4 px-5 py-3 bg-[#fff0ef] border border-[#fcc] rounded-lg text-sm text-[#c0392b] leading-relaxed flex items-center justify-center gap-1.5 flex-wrap">
+            <IconWarning className="w-4 h-4 shrink-0" /> 送信に失敗しました。{submitError}
           </p>
         )}
         <button

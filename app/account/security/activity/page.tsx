@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { ACT_LABEL, fmtDate, relDate } from "@/lib/auth/format";
+import { IconClipboard } from "@/components/icons";
 
 type Activity = {
   type: string;
@@ -51,7 +52,9 @@ export default function ActivityPage() {
         <div>
           {items.map((it, i) => (
             <div key={i} className="flex items-start gap-3.5 py-3.5 border-b border-[#f1f3f4] last:border-b-0">
-              <span className="w-9 h-9 rounded-full bg-[#f8f9fa] flex items-center justify-center shrink-0 text-base">📋</span>
+              <span className="w-9 h-9 rounded-full bg-[#f8f9fa] flex items-center justify-center shrink-0">
+                <IconClipboard className="w-4 h-4 text-[#5f6368]" />
+              </span>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline gap-2">
                   <p className="text-sm font-semibold">

@@ -67,7 +67,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>第三者提供: なし（Supabase, Inc.は委託先であり、第三者提供には該当しません）</p>
                             </div>
                         <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
-                            <h4 style="color: #856404; margin-top: 0;">⚠️ 入力禁止情報</h4>
+                            <h4 style="color: #856404; margin-top: 0;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>入力禁止情報</h4>
                                 <p style="color: #856404; margin-bottom: 10px;">以下の情報は絶対に入力しないでください。入力された場合、当方は一切の責任を負いません。</p>
                                 <p style="color: #856404; margin-bottom: 5px;"><strong>個人情報</strong>: 住所、電話番号、マイナンバー、クレジットカード番号、健康情報等</p>
                                 <p style="color: #856404; margin-bottom: 5px;"><strong>機密情報</strong>: 企業の営業秘密、訴訟係属中の詳細、インサイダー情報等</p>
@@ -249,7 +249,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・専門的回答: 50-70%</p>
                                 <p>・最新情報: 新モデル誕生などにより知識が古くなる場合があるため、新モデルが安定した際にモデル更新を致します。</p>
                                 <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
-                                    <p style="color: #856404; font-weight: bold; margin: 0;">⚠️ すべてのAI回答について、専門家による検証を推奨します。</p>
+                                    <p style="color: #856404; font-weight: bold; margin: 0;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>すべてのAI回答について、専門家による検証を推奨します。</p>
                                 </div>
                         <h3>6-4. AIデータ処理の詳細</h3>
                             <h4>Google AI Studioへのデータ送信</h4>

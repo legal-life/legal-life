@@ -7,6 +7,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { is2FA, genOTP, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
 import { logAct } from "@/lib/auth/session";
 import { genAndSaveCodes, loadCodes, type BackupCode } from "@/lib/auth/backupCodes";
+import { IconWarning, IconCheck } from "@/components/icons";
 
 export default function BackupCodePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -69,7 +70,9 @@ export default function BackupCodePage() {
       <p className="text-sm text-gray-500 mb-5">2FAが使えない場合の緊急ログイン用コードです</p>
 
       <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-4 mb-4">
-        <p className="font-bold text-sm mb-1">⚠️ 安全な場所に保管してください</p>
+        <p className="font-bold text-sm mb-1 flex items-center gap-1.5">
+          <IconWarning className="w-4 h-4 shrink-0" /> 安全な場所に保管してください
+        </p>
         <p className="text-xs text-[#856404]">各コードは1回のみ使用可能です。誰にも見せないでください。</p>
       </div>
 
@@ -92,7 +95,13 @@ export default function BackupCodePage() {
           </div>
           <div className="flex gap-2">
             <button className="flex-1 border border-gray-300 rounded-lg py-2 text-sm font-semibold" onClick={copyCodes}>
-              {copied ? "✅ コピー済み" : "コードをコピー"}
+              {copied ? (
+                <span className="inline-flex items-center gap-1 justify-center">
+                  <IconCheck className="w-3.5 h-3.5" /> コピー済み
+                </span>
+              ) : (
+                "コードをコピー"
+              )}
             </button>
             <button className="flex-1 border border-gray-300 rounded-lg py-2 text-sm font-semibold" onClick={regenerate}>
               再生成する

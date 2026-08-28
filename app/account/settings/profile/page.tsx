@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { getProfile, updateDisplayName, type Profile } from "@/lib/auth/profile";
+import { IconPerson, IconCheck } from "@/components/icons";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -56,9 +57,13 @@ export default function ProfilePage() {
     setVerifySending(true);
     setVerifyMsg("");
     try {
-      const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: user.email,
+        options: { emailRedirectTo: `${location.origin}/account/login` },
+      });
       if (error) throw error;
-      setVerifyMsg("✅ 確認メールを送信しました");
+      setVerifyMsg("確認メールを送信しました");
     } catch (e: unknown) {
       const code = (e as { code?: string })?.code;
       setVerifyMsg(code === "over_email_send_rate_limit" ? "しばらく待ってから再試行してください" : e instanceof Error ? e.message : String(e));
@@ -82,7 +87,9 @@ export default function ProfilePage() {
         {profile?.photo_url ? (
           <Image src={profile.photo_url} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-primary" />
         ) : (
-          <div className="w-[72px] h-[72px] rounded-full bg-[#e0e0e0] flex items-center justify-center text-2xl">👤</div>
+          <div className="w-[72px] h-[72px] rounded-full bg-[#e0e0e0] flex items-center justify-center">
+            <IconPerson className="w-9 h-9 text-[#9aa0a6]" />
+          </div>
         )}
       </div>
 
@@ -130,7 +137,7 @@ export default function ProfilePage() {
             <p className="font-mono text-xs">{user.id}</p>
           </div>
           <button className="text-xs text-primary-dark font-semibold" onClick={copyUuid}>
-            {copied ? "✅" : "コピー"}
+            {copied ? <IconCheck className="inline w-3.5 h-3.5" /> : "コピー"}
           </button>
         </li>
         <li className="px-4 py-3">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { IconSearch } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "ニュース",
@@ -21,7 +22,7 @@ export default function NewsPage() {
 
       <div className="bg-white border border-gray-200 rounded-xl p-5">
         <div className="relative mb-4">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2">🔍</span>
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2.5 text-sm"

@@ -79,7 +79,7 @@ export function buildOtpHTML({ to_name, otp_code, expiry_minutes, purpose }: Otp
   </span>
 </div>
 <p style="margin:0 0 8px;font-size:13px;color:#64748b;">
-  ⏱ 有効期限: <strong>${esc(String(expiry_minutes ?? 5))}分</strong>
+  有効期限: <strong>${esc(String(expiry_minutes ?? 5))}分</strong>
 </p>
 <p style="margin:0;font-size:13px;color:#64748b;">
   用途: ${esc(purpose || "本人確認")}

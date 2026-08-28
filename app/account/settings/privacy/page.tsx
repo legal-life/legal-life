@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { NOTIFS, loadNotificationPrefs, saveNotificationPref, syncAudience, type NotifKey } from "@/lib/auth/notifications";
+import { IconWarning } from "@/components/icons";
 
 export default function PrivacyPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -73,7 +74,9 @@ export default function PrivacyPage() {
         </div>
       )}
       {!emailVerified && (
-        <p className="text-xs text-[#e74c3c] mt-3">⚠️ メールアドレス未確認のため通知は届きません。</p>
+        <p className="text-xs text-[#e74c3c] mt-3 flex items-center gap-1">
+          <IconWarning className="w-3.5 h-3.5 shrink-0" /> メールアドレス未確認のため通知は届きません。
+        </p>
       )}
 
       <div className="text-center mt-6">

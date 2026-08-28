@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
     const fullAnswer =
       answerBody +
       "\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-      "⚠️免責事項 : 本回答はAIによる一般的な法令情報です。\n" +
+      "免責事項 : 本回答はAIによる一般的な法令情報です。\n" +
       "個別の法的判断が必要な場合は、必ず弁護士等の専門家にご相談ください。";
 
     return NextResponse.json({ answer: fullAnswer, category });

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { IconWarning, IconTrash, IconBulb } from "@/components/icons";
 
 const STORAGE_KEY = "legalChatHistory";
 const MAX_INPUT_LEN = 1000;
@@ -173,7 +174,9 @@ export default function ChatApp() {
       </div>
 
       <div className="bg-[#fff9db] border border-[#ffe066] border-l-[6px] border-l-[#fcc419] rounded-xl px-6 py-4 mb-5 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <p className="font-bold text-[#856404] text-lg mb-2">⚠️ 重要な注意事項</p>
+        <p className="font-bold text-[#856404] text-lg mb-2 flex items-center gap-1.5">
+          <IconWarning className="w-5 h-5 shrink-0" /> 重要な注意事項
+        </p>
         <ul className="text-sm text-[#856404] leading-relaxed list-disc pl-5 mb-2">
           <li>個人情報(氏名、住所、電話番号等)は絶対に入力しないでください</li>
           <li>本サービスは法的助言ではありません</li>
@@ -189,8 +192,8 @@ export default function ChatApp() {
         </p>
       </div>
 
-      <div className="bg-[#f0faff] border border-[#e0f2f7] rounded-xl px-6 py-3 mb-5 text-center text-sm text-[#444]">
-        💡 わからない法令名は{" "}
+      <div className="bg-[#f0faff] border border-[#e0f2f7] rounded-xl px-6 py-3 mb-5 text-center text-sm text-[#444] flex items-center justify-center gap-1.5 flex-wrap">
+        <IconBulb className="w-4 h-4 shrink-0" /> わからない法令名は{" "}
         <Link href="/content/search" className="text-[#008fa6] font-bold border-b-[1.5px] border-primary hover:text-primary">
           法令検索
         </Link>{" "}
@@ -234,7 +237,7 @@ export default function ChatApp() {
                   className="chat-delete-btn order-first text-[#cbd5e1] hover:text-[#ef4444] hover:scale-110 transition-all"
                   onClick={() => deleteItem(item.id)}
                 >
-                  🗑️
+                  <IconTrash className="w-4 h-4" />
                 </button>
                 <div className="bg-[#0f172a] text-white rounded-[18px] rounded-br-[4px] px-5 py-3.5 max-w-[80%] text-sm whitespace-pre-wrap">
                   {item.question}
@@ -244,7 +247,11 @@ export default function ChatApp() {
             </div>
           ))}
           {sending && <span className="text-[#64748b] font-bold animate-pulse">考え中...</span>}
-          {error && <p className="text-sm text-red-600">⚠️ {error}</p>}
+          {error && (
+            <p className="text-sm text-red-600 flex items-center gap-1">
+              <IconWarning className="w-4 h-4 shrink-0" /> {error}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-4 items-end px-6 py-5 border-t border-[#f1f5f9]">
@@ -279,7 +286,7 @@ export default function ChatApp() {
       {confirmTarget && (
         <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-[9999] p-5">
           <div className="bg-white rounded-2xl w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.25)] px-6 py-7 text-center">
-            <p className="text-2xl mb-2.5">🗑️</p>
+            <IconTrash className="w-8 h-8 mb-2.5 mx-auto text-[#ef4444]" />
             <p className="text-[#1e293b] font-medium leading-relaxed mb-5">
               {confirmTarget.type === "all" ? `${history.length}件の履歴をすべて削除しますか?` : "このメッセージを削除しますか?"}
             </p>
