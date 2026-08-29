@@ -78,3 +78,6 @@ lrgal&lifeというサイトを作成しています。
 | `CONTACT_TO_EMAIL` | お問い合わせフォームの送信先メールアドレス |
 | `RESEND_API_KEY` | Resend Segments(配信リスト管理専用。メール送信自体には使用しない)のAPIキー |
 | `SEGMENT_MAINTENANCE` / `SEGMENT_FEATURE` / `SEGMENT_NEWSLETTER` | Resend Segment ID(`seg_`から始まる。通知設定連携用) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare TurnstileのSite Key(未設定時はCAPTCHAウィジェット自体を非表示にする)。Supabaseダッシュボード側でもAuthentication → Bot and Abuse Protectionの有効化とSecret Keyの登録が必要 |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4の測定ID(`G-`から始まる)。未設定時は既存IDにフォールバック |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth 2.0クライアントID(Google One Tap用。`.apps.googleusercontent.com`で終わる)。未設定時は既存IDにフォールバック。Supabaseダッシュボード側のAuthentication → Providers → GoogleにもクライアントID/シークレットの登録が別途必要 |

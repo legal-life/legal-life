@@ -1,4 +1,4 @@
-const GA_MEASUREMENT_ID = "G-2JXNJ9QJ9S";
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-2JXNJ9QJ9S";
 
 declare global {
   interface Window {

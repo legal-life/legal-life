@@ -165,7 +165,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p><strong>サービス名</strong>: Google Analytics 4（GA4）</p>
                                 <p><strong>提供者</strong>: Google LLC</p>
                                 <p><strong>利用目的</strong>: アクセス解析、利用状況の統計分析</p>
-                                <p><strong>測定ID</strong>: G-2JXNJ9QJ9S</p>
+                                <p><strong>測定ID</strong>: ${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-2JXNJ9QJ9S"}</p>
                             <h4>5-4-2. 取得・送信される情報</h4>
                                 <p>・IPアドレス（匿名化処理あり）</p>
                                 <p>・Cookie識別子（_ga, _gid等）</p>

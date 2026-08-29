@@ -6,7 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
-import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
+import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import OtpPanel from "@/components/OtpPanel";
 
 export default function PassPage() {
@@ -57,12 +57,7 @@ export default function PassPage() {
 
     setSubmitting(true);
     setMsg({ text: "", type: "" });
-    const en = await is2FA(user!.id);
-    if (en && user!.email) {
-      const code = genOTP();
-      await saveOTP(user!.id, code, "password_change");
-      await sendOTP(user!, code, "パスワード変更");
-      setMsg({ text: `${user!.email} に認証コードを送信しました`, type: "success" });
+    if (await hasMFA()) {
       setShowOtp(true);
       return;
     }
@@ -70,12 +65,11 @@ export default function PassPage() {
   };
 
   const handleOtpVerify = async (input: string) => {
-    const res = await verifyOTP(user!.id, input, "password_change");
+    const res = await challengeAndVerifyFirstFactor(input);
     if (!res.ok) {
       setSubmitting(false);
       return res;
     }
-    await clearOTP(user!.id);
     await execChange();
     return { ok: true };
   };

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   buildContactHTML,
   buildNoticeHTML,
-  buildOtpHTML,
   buildSubject,
   sendMail,
   type ContactMailParams,
@@ -67,22 +66,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // otp / notice: 会員向けメール
+    // notice: 会員向け通知メール
     const to_email = body.to_email as string | undefined;
     if (!to_email) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     const purpose = body.purpose as string | undefined;
-    const html =
-      type === "otp"
-        ? buildOtpHTML({
-            to_name: body.to_name as string | undefined,
-            otp_code: body.otp_code as string | undefined,
-            expiry_minutes: body.expiry_minutes as number | undefined,
-            purpose,
-          })
-        : buildNoticeHTML({ to_name: body.to_name as string | undefined, purpose });
+    const html = buildNoticeHTML({ to_name: body.to_name as string | undefined, purpose });
 
-    await sendMail({ to: to_email, subject: buildSubject(type as "otp" | "notice", purpose), html });
+    await sendMail({ to: to_email, subject: buildSubject("notice", purpose), html });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Mail delivery failed:", err);
