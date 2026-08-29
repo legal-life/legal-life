@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { decR } from "@/lib/auth/utils";
-import { genOTP, is2FA, saveOTP, sendOTP, tryBackup, verifyOTP, clearOTP } from "@/lib/auth/otp";
+import { needsMfaChallenge, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { logAct, regSession } from "@/lib/auth/session";
 import OtpPanel from "@/components/OtpPanel";
+import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 
-const GOOGLE_CLIENT_ID = "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 const CONSENT_INTERVAL = 30 * 24 * 60 * 60 * 1000;
 
 function afterLoginRedirect(r: string | null) {
@@ -29,22 +31,37 @@ export default function LoginForm() {
   const [googleError, setGoogleError] = useState("");
   const [show2fa, setShow2fa] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [pending, setPending] = useState<{ email: string; pass: string } | null>(null);
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) afterLoginRedirect(r);
-    });
-    return () => subscription.unsubscribe();
-  }, [r]);
+  const [pending, setPending] = useState<{ user: User; method: string } | null>(null);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<CaptchaHandle>(null);
 
   async function afterLogin(user: User, method: string) {
     await regSession(user);
     await logAct(user.id, "login", method);
     afterLoginRedirect(r);
   }
+
+  // ログイン成功直後に呼ぶ。MFA(TOTP)が有効なユーザーはここでAAL1→AAL2への
+  // 追加認証を要求し、不要なユーザーはそのままログイン処理を完了する。
+  async function proceedOrChallenge(user: User, method: string) {
+    if (await needsMfaChallenge()) {
+      setPending({ user, method });
+      setShow2fa(true);
+      setSubmitting(false);
+      return;
+    }
+    await afterLogin(user, method);
+  }
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) proceedOrChallenge(session.user, "Google");
+    });
+    return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [r]);
 
   const doGoogle = async () => {
     localStorage.setItem("ll_last_consent", Date.now().toString());
@@ -71,7 +88,7 @@ export default function LoginForm() {
             });
             if (error || !data.user) throw error || new Error("ログインに失敗しました");
             localStorage.setItem("ll_last_consent", Date.now().toString());
-            await afterLogin(data.user, "Google OneTap");
+            await proceedOrChallenge(data.user, "Google OneTap");
           } catch (e) {
             setGoogleError(e instanceof Error ? e.message : String(e));
           }
@@ -90,24 +107,18 @@ export default function LoginForm() {
       setLoginMsg({ text: "メールアドレスとパスワードを入力してください", type: "error" });
       return;
     }
+    if (isCaptchaEnabled() && !captchaToken) {
+      setLoginMsg({ text: "認証(CAPTCHA)を完了してください", type: "error" });
+      return;
+    }
     setSubmitting(true);
     setLoginMsg({ text: "", type: "" });
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
+      captchaRef.current?.reset();
+      setCaptchaToken("");
       if (error || !data.user) throw error || new Error("ログインに失敗しました");
-      const enabled = await is2FA(data.user.id);
-      if (enabled && data.user.email) {
-        const code = genOTP();
-        await saveOTP(data.user.id, code, "login_verify");
-        await sendOTP(data.user, code, "ログイン認証");
-        await supabase.auth.signOut();
-        setPending({ email, pass: password });
-        setLoginMsg({ text: `${data.user.email} に認証コードを送信しました`, type: "success" });
-        setShow2fa(true);
-        setSubmitting(false);
-        return;
-      }
-      await afterLogin(data.user, "メール");
+      await proceedOrChallenge(data.user, "メール");
     } catch (e: unknown) {
       const code = (e as { code?: string })?.code;
       const M: Record<string, string> = {
@@ -120,32 +131,13 @@ export default function LoginForm() {
     }
   };
 
-  const handle2faVerify = async (input: string, isBackup: boolean) => {
+  const handle2faVerify = async (input: string) => {
     if (!pending) return { ok: false, reason: "セッションが失われました" };
-    let user2: User;
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: pending.email, password: pending.pass });
-      if (error || !data.user) throw error;
-      user2 = data.user;
-    } catch {
-      return { ok: false, reason: "再認証に失敗しました" };
-    }
-    if (isBackup) {
-      const res = await tryBackup(user2.id, input);
-      if (!res.ok) {
-        await supabase.auth.signOut();
-        return res;
-      }
-    } else {
-      const res = await verifyOTP(user2.id, input, "login_verify");
-      if (!res.ok) {
-        await supabase.auth.signOut();
-        return res;
-      }
-      await clearOTP(user2.id);
-    }
+    const res = await challengeAndVerifyFirstFactor(input);
+    if (!res.ok) return res;
+    const { user, method } = pending;
     setPending(null);
-    await afterLogin(user2, "メール+2FA");
+    await afterLogin(user, `${method}+MFA`);
     return { ok: true };
   };
 
@@ -154,9 +146,16 @@ export default function LoginForm() {
       setLoginMsg({ text: "メールアドレスを入力してください", type: "error" });
       return;
     }
+    if (isCaptchaEnabled() && !captchaToken) {
+      setLoginMsg({ text: "認証(CAPTCHA)を完了してください", type: "error" });
+      return;
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${location.origin}/account/security/pass`,
+      captchaToken,
     });
+    captchaRef.current?.reset();
+    setCaptchaToken("");
     if (error) {
       setLoginMsg({ text: error.message, type: "error" });
     } else {
@@ -218,6 +217,7 @@ export default function LoginForm() {
                 onKeyDown={(e) => e.key === "Enter" && doEmail()}
               />
             </div>
+            <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
             {loginMsg.text && (
               <p className={`text-sm mb-2 ${loginMsg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>
                 {loginMsg.text}
@@ -227,7 +227,7 @@ export default function LoginForm() {
               id="auth-submit-btn"
               type="button"
               className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
-              disabled={submitting}
+              disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
               onClick={doEmail}
             >
               ログイン
@@ -243,8 +243,7 @@ export default function LoginForm() {
         {show2fa && (
           <OtpPanel
             title="二段階認証"
-            desc="メールに送信された6桁のコードを入力してください"
-            showBackup
+            desc="認証アプリに表示されている6桁のコードを入力してください"
             onVerify={handle2faVerify}
             onCancel={() => {
               setPending(null);

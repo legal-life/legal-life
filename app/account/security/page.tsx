@@ -4,60 +4,37 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
-import { is2FA, genOTP, saveOTP, sendOTP, verifyOTP, clearOTP, tryBackup } from "@/lib/auth/otp";
+import { listTotpFactors, getAAL, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import OtpPanel from "@/components/OtpPanel";
-
-const PASS_COOKIE = "account-Passage";
-
-function hasPassage() {
-  return document.cookie.split(";").some((c) => c.trim().startsWith(PASS_COOKIE + "=valid"));
-}
-function setPassage() {
-  const exp = new Date(Date.now() + 30 * 60 * 1000).toUTCString();
-  document.cookie = `${PASS_COOKIE}=valid; path=/account/security/; expires=${exp}; SameSite=Strict`;
-}
 
 export default function SecurityPage() {
   const [user, setUser] = useState<User | null>(null);
   const [enabled2fa, setEnabled2fa] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
   const [needsGate, setNeedsGate] = useState(false);
-  const [otpMsg, setOtpMsg] = useState("");
 
   useEffect(() => {
     (async () => {
       const u = await requireAuth();
-      const en = await is2FA(u.id);
+      const factors = await listTotpFactors();
+      const en = factors.length > 0;
       setEnabled2fa(en);
       setHasPassword((u.identities ?? []).some((i) => i.provider === "email"));
 
-      if (en && u.email && !hasPassage()) {
-        setNeedsGate(true);
-        try {
-          const code = genOTP();
-          await saveOTP(u.id, code, "security_access");
-          await sendOTP(u, code, "セキュリティセクションへのアクセス");
-          setOtpMsg(`${u.email} に認証コードを送信しました`);
-        } catch (e) {
-          setOtpMsg("コード送信に失敗しました: " + (e instanceof Error ? e.message : String(e)));
+      if (en) {
+        const { currentLevel } = await getAAL();
+        if (currentLevel !== "aal2") {
+          setNeedsGate(true);
+          return;
         }
-        return;
       }
       setUser(u);
     })();
   }, []);
 
-  const handleOtpVerify = async (input: string, isBackup: boolean) => {
-    const u = await requireAuth();
-    if (isBackup) {
-      const res = await tryBackup(u.id, input);
-      if (!res.ok) return res;
-    } else {
-      const res = await verifyOTP(u.id, input, "security_access");
-      if (!res.ok) return res;
-      await clearOTP(u.id);
-    }
-    setPassage();
+  const handleOtpVerify = async (input: string) => {
+    const res = await challengeAndVerifyFirstFactor(input);
+    if (!res.ok) return res;
     window.location.reload();
     return { ok: true };
   };
@@ -69,13 +46,11 @@ export default function SecurityPage() {
         <p className="text-sm text-gray-500 mb-4">アクセスするには本人確認が必要です</p>
         <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 mb-2">
           <p className="font-bold text-sm mb-1">二段階認証が有効です</p>
-          <p className="text-xs text-gray-600">セキュリティ設定を表示するには認証コードが必要です。</p>
+          <p className="text-xs text-gray-600">セキュリティ設定を表示するには認証アプリのコードが必要です。</p>
         </div>
-        {otpMsg && <p className="text-sm my-2">{otpMsg}</p>}
         <OtpPanel
           title="本人確認"
-          desc="認証コードを入力してください"
-          showBackup
+          desc="認証アプリに表示されている6桁のコードを入力してください"
           onVerify={handleOtpVerify}
           onCancel={() => window.location.replace("/account/settings")}
         />

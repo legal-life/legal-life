@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { decR } from "@/lib/auth/utils";
 import { logAct } from "@/lib/auth/session";
+import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 
-const GOOGLE_CLIENT_ID = "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 
 function afterLoginRedirect(r: string | null) {
   const dest = (r ? decR(r) : null) || "/account/settings";
@@ -25,6 +27,8 @@ export default function SignupForm() {
   const [msg, setMsg] = useState<{ text: string; type: string }>({ text: "", type: "" });
   const [googleError, setGoogleError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<CaptchaHandle>(null);
 
   useEffect(() => {
     const {
@@ -80,6 +84,7 @@ export default function SignupForm() {
     if (!email) return setMsg({ text: "メールアドレスを入力してください", type: "error" });
     if (password.length < 6) return setMsg({ text: "パスワードは6文字以上", type: "error" });
     if (password !== confirm) return setMsg({ text: "パスワードが一致しません", type: "error" });
+    if (isCaptchaEnabled() && !captchaToken) return setMsg({ text: "認証(CAPTCHA)を完了してください", type: "error" });
 
     setSubmitting(true);
     setMsg({ text: "", type: "" });
@@ -90,8 +95,11 @@ export default function SignupForm() {
         options: {
           data: { full_name: name },
           emailRedirectTo: `${location.origin}/welcome`,
+          captchaToken,
         },
       });
+      captchaRef.current?.reset();
+      setCaptchaToken("");
       if (error || !data.user) throw error || new Error("登録に失敗しました");
       await logAct(data.user.id, "signup", "メール");
       if (!data.session) {
@@ -191,13 +199,14 @@ export default function SignupForm() {
           登録することで <Link href="/law/terms" className="text-primary-dark">利用規約</Link> および{" "}
           <Link href="/law/privacy" className="text-primary-dark">プライバシーポリシー</Link> に同意したものとみなされます。
         </p>
+        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
         {msg.text && (
           <p className={`text-sm mb-2 ${msg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>{msg.text}</p>
         )}
         <button
           type="button"
           className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
-          disabled={submitting}
+          disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
           onClick={doSubmit}
         >
           作成する

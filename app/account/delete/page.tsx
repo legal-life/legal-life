@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { delSession, logAct } from "@/lib/auth/session";
 import { getProfile, setDeletionPending } from "@/lib/auth/profile";
-import { genOTP, is2FA, saveOTP, sendOTP, verifyOTP, clearOTP } from "@/lib/auth/otp";
+import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import OtpPanel from "@/components/OtpPanel";
 
 const CHECKS = [
@@ -22,7 +22,6 @@ export default function DeletePage() {
   const [alreadyPending, setAlreadyPending] = useState(false);
   const [scheduledDate, setScheduledDate] = useState("");
   const [checked, setChecked] = useState<boolean[]>(CHECKS.map(() => false));
-  const [msg, setMsg] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -66,12 +65,7 @@ export default function DeletePage() {
   const handleExecute = async () => {
     if (!user) return;
     setSubmitting(true);
-    const enabled = await is2FA(user.id);
-    if (enabled && user.email) {
-      const code = genOTP();
-      await saveOTP(user.id, code, "account_delete");
-      await sendOTP(user, code, "アカウント削除申請");
-      setMsg(`${user.email} に認証コードを送信しました`);
+    if (await hasMFA()) {
       setShowOtp(true);
       return;
     }
@@ -80,12 +74,11 @@ export default function DeletePage() {
 
   const handleOtpVerify = async (input: string) => {
     if (!user) return { ok: false, reason: "ユーザー情報がありません" };
-    const res = await verifyOTP(user.id, input, "account_delete");
+    const res = await challengeAndVerifyFirstFactor(input);
     if (!res.ok) {
       setSubmitting(false);
       return res;
     }
-    await clearOTP(user.id);
     await execDelete();
     return { ok: true };
   };
@@ -154,7 +147,6 @@ export default function DeletePage() {
         ))}
       </div>
 
-      {msg && <p className="text-sm mb-2">{msg}</p>}
       {showOtp ? (
         <OtpPanel
           title="本人確認"

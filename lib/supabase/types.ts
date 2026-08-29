@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -134,30 +134,6 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      backup_codes: {
-        Row: {
-          code: string
-          generated_at: string
-          id: string
-          used: boolean
-          user_id: string
-        }
-        Insert: {
-          code: string
-          generated_at?: string
-          id?: string
-          used?: boolean
-          user_id: string
-        }
-        Update: {
-          code?: string
-          generated_at?: string
-          id?: string
-          used?: boolean
-          user_id?: string
         }
         Relationships: []
       }
@@ -368,30 +344,6 @@ export type Database = {
           role?: string
           scheduled_deletion?: string | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      security_2fa: {
-        Row: {
-          enabled: boolean
-          otp_code: string | null
-          otp_expiry: string | null
-          otp_purpose: string | null
-          user_id: string
-        }
-        Insert: {
-          enabled?: boolean
-          otp_code?: string | null
-          otp_expiry?: string | null
-          otp_purpose?: string | null
-          user_id: string
-        }
-        Update: {
-          enabled?: boolean
-          otp_code?: string | null
-          otp_expiry?: string | null
-          otp_purpose?: string | null
-          user_id?: string
         }
         Relationships: []
       }

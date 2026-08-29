@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.6.1",
     "@supabase/supabase-js": "^2.112.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",

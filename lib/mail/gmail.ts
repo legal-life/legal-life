@@ -26,17 +26,9 @@ export function esc(s: unknown): string {
   );
 }
 
-export type OtpMailParams = {
-  to_name?: string;
-  otp_code?: string;
-  expiry_minutes?: number;
-  purpose?: string;
-};
-
-export type MailType = "otp" | "notice" | "contact";
+export type MailType = "notice" | "contact";
 
 export function buildSubject(type: MailType, purpose?: string): string {
-  if (type === "otp") return `【legal&life】認証コード (${purpose || "本人確認"})`;
   if (type === "contact") return `【legal&life】お問い合わせ (${purpose || "お問い合わせ"})`;
   return `【legal&life】${purpose || "重要なお知らせ"}`;
 }
@@ -62,28 +54,6 @@ function layout(bodyHtml: string): string {
     <a href="${siteUrl}" style="color:#00C8E9;">${esc(siteLabel)}</a>
   </p>
 </td></tr></table></td></tr></table></body></html>`;
-}
-
-export function buildOtpHTML({ to_name, otp_code, expiry_minutes, purpose }: OtpMailParams): string {
-  const n = esc(to_name || "ユーザー");
-  return layout(`
-<p style="margin:0 0 16px;color:#334155;font-size:15px;">${n} 様</p>
-<p style="margin:0 0 20px;color:#475569;font-size:15px;line-height:1.7;">
-  以下の認証コードを入力してください。
-</p>
-<div style="background:#f0fdff;border:2px solid #00C8E9;border-radius:10px;
-            padding:24px;text-align:center;margin-bottom:20px;">
-  <span style="font-size:36px;font-weight:700;letter-spacing:14px;
-               color:#0f172a;font-family:monospace;">
-    ${esc(otp_code || "")}
-  </span>
-</div>
-<p style="margin:0 0 8px;font-size:13px;color:#64748b;">
-  有効期限: <strong>${esc(String(expiry_minutes ?? 5))}分</strong>
-</p>
-<p style="margin:0;font-size:13px;color:#64748b;">
-  用途: ${esc(purpose || "本人確認")}
-</p>`);
 }
 
 export function buildNoticeHTML({ to_name, purpose }: { to_name?: string; purpose?: string }): string {

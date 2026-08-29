@@ -7,30 +7,27 @@ export type OtpVerifyResult = { ok: boolean; reason?: string };
 export default function OtpPanel({
   title = "認証コードを入力",
   desc = "",
-  showBackup = false,
   onVerify,
   onCancel,
 }: {
   title?: string;
   desc?: string;
-  showBackup?: boolean;
-  onVerify: (input: string, isBackup: boolean) => Promise<OtpVerifyResult>;
+  onVerify: (input: string) => Promise<OtpVerifyResult>;
   onCancel?: () => void;
 }) {
   const [code, setCode] = useState("");
-  const [backup, setBackup] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    const input = code.trim() || backup.trim();
+    const input = code.trim();
     if (!input) {
       setError("コードを入力してください");
       return;
     }
     setSubmitting(true);
     setError("");
-    const res = await onVerify(input, !!backup.trim() && !code.trim());
+    const res = await onVerify(input);
     if (!res.ok) {
       setError(res.reason || "コードが正しくありません");
       setSubmitting(false);
@@ -53,19 +50,6 @@ export default function OtpPanel({
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
         />
-        {showBackup && (
-          <>
-            <p className="text-xs text-gray-500 my-2">または バックアップコードを使用</p>
-            <input
-              type="text"
-              maxLength={16}
-              placeholder="XXXXXXXX"
-              className="w-full border-2 border-[#e0e0e0] rounded-lg px-3 py-2 text-sm outline-none mb-2 focus:border-primary"
-              value={backup}
-              onChange={(e) => setBackup(e.target.value)}
-            />
-          </>
-        )}
         <p className="text-sm text-[#e74c3c] min-h-[20px] my-2">{error}</p>
         <div className="flex gap-2.5 mt-1">
           <button
