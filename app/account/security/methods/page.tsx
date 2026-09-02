@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { sendNotice } from "@/lib/auth/notifications";
-import { IconMail } from "@/components/icons";
+import { IconMail, IconGoogleLogo } from "@/components/icons";
 
 export default function MethodsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -142,7 +142,9 @@ export default function MethodsPage() {
         </div>
 
         <div className="flex items-center gap-3 py-3.5">
-          <span className="w-[30px] text-center text-xl shrink-0 font-bold text-[#4285F4]">G</span>
+          <span className="w-[30px] flex items-center justify-center shrink-0">
+            <IconGoogleLogo className="w-5 h-5" />
+          </span>
           <div className="flex-1 min-w-0">
             <span className="block text-sm font-bold">Google</span>
             <span className={`block text-xs mt-0.5 ${googleLinked ? "text-[#27ae60] font-bold" : "text-[#5f6368]"}`}>
