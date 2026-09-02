@@ -70,3 +70,17 @@ export function getSid(): string {
 }
 
 export { SESSION_KEY };
+
+// Google One Tap用のnonceペアを生成する。生のnonceはSupabaseのsignInWithIdTokenへ、
+// SHA-256でハッシュ化した方はGoogle Identity Servicesのinitializeへそれぞれ渡す必要がある
+// (id_token内のnonceクレームとSupabase側へ渡すnonceが一致しないと
+// "Passed nonce and nonce in id_token should either both exist or not." エラーになる)。
+export async function generateNonce(): Promise<[string, string]> {
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+  const encoded = new TextEncoder().encode(nonce);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  const hashedNonce = Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return [nonce, hashedNonce];
+}

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { decR } from "@/lib/auth/utils";
+import { decR, generateNonce } from "@/lib/auth/utils";
 import { needsMfaChallenge, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { logAct, regSession } from "@/lib/auth/session";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
@@ -79,8 +79,9 @@ export default function LoginForm() {
     const w = window as unknown as {
       google?: { accounts?: { id?: { initialize: (opts: unknown) => void; prompt: () => void } } };
     };
-    const initOneTap = () => {
+    const initOneTap = async () => {
       if (!w.google?.accounts?.id) return;
+      const [nonce, hashedNonce] = await generateNonce();
       w.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (credentialResponse: { credential: string }) => {
@@ -88,6 +89,7 @@ export default function LoginForm() {
             const { data, error } = await supabase.auth.signInWithIdToken({
               provider: "google",
               token: credentialResponse.credential,
+              nonce,
             });
             if (error || !data.user) throw error || new Error("ログインに失敗しました");
             localStorage.setItem("ll_last_consent", Date.now().toString());
@@ -96,6 +98,7 @@ export default function LoginForm() {
             setGoogleError(e instanceof Error ? e.message : String(e));
           }
         },
+        nonce: hashedNonce,
         auto_select: false,
         cancel_on_tap_outside: true,
       });
