@@ -2,7 +2,7 @@
 
 このドキュメントは、コード側の対応だけでは完結せず、**ユーザー様ご自身の操作が必要な項目**をまとめたものです。Supabase・Vercel・Cloudflare・Google関連のダッシュボード設定など、AIエージェントからは実行できない(または実行すべきでない)作業が対象です。
 
-最終更新: 2026年8月29日
+最終更新: 2026年9月2日
 
 ---
 
@@ -32,10 +32,25 @@ Google Cloud・Google Analyticsを再設定された場合、新しい値をVerc
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
 - `NEXT_PUBLIC_GOOGLE_CLIENT_ID`(Google One Tap用。1-2のOAuthクライアントIDと同じ値)
 
-### 1-4. PRのレビュー・マージ
+### 1-4. Supabase: Custom SMTP(Gmail)の設定
 
-- [PR #8](https://github.com/sho29saka31/legal-life/pull/8): CAPTCHA・MFA(TOTP)をSupabase標準機能に一本化
-- 現在CI green・マージ可能な状態です。内容をご確認の上、問題なければマージをお願いします
+Resendの利用を取りやめ、メール送信をGmail SMTPに一本化しました。このアプリ自身が送るメール(お問い合わせ通知・会員向け通知メール)は既にGmail SMTPを使っていますが、**Supabase Auth自体が送るメール**(サインアップ確認・パスワードリセット・メールアドレス変更確認など)は別設定が必要です。
+
+- 場所: Supabaseダッシュボード → Authentication → Emails → SMTP Settings
+- 「Enable Custom SMTP」を有効化し、以下を入力:
+
+| 項目 | 値 |
+| --- | --- |
+| Sender email | `GMAIL_USER`と同じGmailアドレス |
+| Sender name | 任意(例: legal&life) |
+| Host | `smtp.gmail.com` |
+| Port | `587` |
+| Username | `GMAIL_USER`と同じGmailアドレス |
+| Password | `GMAIL_APP_PASSWORD`と同じアプリパスワード |
+
+- Gmailはgoogle.comという検証済みドメインを使うため、Resendのような独自ドメイン検証は不要です
+- 未設定の間はSupabaseのデフォルト送信元(無料枠・低いレート制限)が使われ続けます
+- コード側のResend連携(配信リスト同期機能)は削除済みです。Resendアカウント自体を削除いただいて問題ありません
 
 ---
 
@@ -73,15 +88,9 @@ Google Cloud・Google Analyticsを再設定された場合、新しい値をVerc
 
 ### 3-1. Gmail SMTPが本番で送信できない
 
-- 2FA(現在はTOTPに移行済みのため影響縮小)・パスワードリセット等のメール配信、お問い合わせのメール通知に影響します
-- 有効な `GMAIL_APP_PASSWORD` をVercelの環境変数に設定するか、別のメール配信手段への切替が必要です
+- 有効な `GMAIL_APP_PASSWORD` をVercelの環境変数に設定してください(1-4のSupabase Custom SMTP側にも同じ値の設定が必要です)
 - お問い合わせ内容自体はメール送信の成否に関わらず `/admin/inquiries` から確認できるよう対応済みです
-
-### 3-2. Resendが1日1通しか送信できない
-
-- コード側に原因は見当たりません。Resend側の送信元ドメインが未検証(DNS設定未了)である可能性が高いです
-- Resendダッシュボードの **Domains** で送信元ドメインを追加・DNSレコードを設定すると、無料プラン本来の上限まで送信できるようになる見込みです
-- 改善しない場合は、代替として **Brevo**(無料枠が大きめ)への切替もご検討ください
+- Gmailの個人アカウントは送信上限が目安1日500通です。会員数が増え上限に近づく場合はGoogle Workspaceの利用をご検討ください
 
 ---
 
@@ -95,11 +104,9 @@ Vercelダッシュボードの Project Settings → Environment Variables で設
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabaseのpublishable(anon)キー | ○ |
 | `NEXT_PUBLIC_SITE_URL` | サイトの本番URL(メタデータ・サイトマップ生成に使用)。`https://legal-life.vercel.app` | ○ |
 | `GEMINI_API_KEY` | Gemini API(サーバー専用、`/api/chat`のみで参照) | ○ |
-| `GMAIL_USER` | メール送信元のGmailアドレス(例: `xxxx@gmail.com`) | △(現状本番で送信不可、3-1参照) |
-| `GMAIL_APP_PASSWORD` | Googleアカウントの2段階認証を有効にした上で発行する「アプリパスワード」 | △(同上) |
+| `GMAIL_USER` | メール送信元のGmailアドレス(例: `xxxx@gmail.com`)。Supabase Custom SMTP(1-4)にも同じ値を設定 | △(現状本番で送信不可、3-1参照) |
+| `GMAIL_APP_PASSWORD` | Googleアカウントの2段階認証を有効にした上で発行する「アプリパスワード」。Supabase Custom SMTP(1-4)にも同じ値を設定 | △(同上) |
 | `CONTACT_TO_EMAIL` | お問い合わせフォームの送信先メールアドレス | ○ |
-| `RESEND_API_KEY` | Resend Segments(配信リスト管理専用。メール送信自体には未使用)のAPIキー | ○ |
-| `SEGMENT_MAINTENANCE` / `SEGMENT_FEATURE` / `SEGMENT_NEWSLETTER` | Resend Segment ID(`seg_`から始まる。通知設定連携用) | ○ |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare TurnstileのSite Key。未設定時はCAPTCHAウィジェット非表示 | 任意(2-1参照) |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4の測定ID(`G-`から始まる)。未設定時は既存IDにフォールバック | ○(再設定時は要更新) |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth 2.0クライアントID(Google One Tap用、`.apps.googleusercontent.com`で終わる)。未設定時は既存IDにフォールバック。Supabase側のGoogle Provider設定にも同じ値の登録が必要(1-2参照) | ○(再設定時は要更新) |

@@ -8,6 +8,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { delSession, logAct } from "@/lib/auth/session";
 import { getProfile, setDeletionPending } from "@/lib/auth/profile";
 import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
+import { sendNoticeForUser } from "@/lib/auth/notifications";
 import OtpPanel from "@/components/OtpPanel";
 
 const CHECKS = [
@@ -45,6 +46,7 @@ export default function DeletePage() {
     if (!user) return;
     await setDeletionPending(user.id, true);
     await logAct(user.id, "deletion_request", "30日後削除予定");
+    await sendNoticeForUser(user, "deletion_request", "アカウント削除の申請を受け付けました(30日後に完全削除されます)");
     await delSession(user);
     await supabase.auth.signOut();
     sessionStorage.removeItem("ll_auth_cache");

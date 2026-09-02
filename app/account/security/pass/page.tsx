@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
+import { sendNoticeForUser } from "@/lib/auth/notifications";
 import OtpPanel from "@/components/OtpPanel";
 
 export default function PassPage() {
@@ -41,6 +42,7 @@ export default function PassPage() {
       setConfirm("");
       setMsg({ text: "変更しました", type: "success" });
       await logAct(user.id, "password_change", "");
+      sendNoticeForUser(user, "password_change", "パスワードが変更されました");
       setHasPassword(true);
     } catch (e: unknown) {
       setMsg({ text: e instanceof Error ? e.message : String(e), type: "error" });

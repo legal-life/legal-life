@@ -56,7 +56,6 @@
 | `GMAIL_USER` / `GMAIL_APP_PASSWORD` | メール送信(Gmail SMTP) |
 | `CONTACT_TO_EMAIL` | お問い合わせ受信先 |
 | `GEMINI_API_KEY` | AIチャット機能 |
-| `RESEND_API_KEY` | 通知設定のSegment管理(メール送信自体には未使用) |
 | `NEXT_PUBLIC_SITE_URL` | デプロイ先の実際のURL(OGP等に使用) |
 
 Vercelダッシュボードの Project Settings → Environment Variables、またはCLIの場合:

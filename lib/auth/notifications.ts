@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 
@@ -14,13 +15,6 @@ export const NOTIFS = [
 
 export type NotifKey = (typeof NOTIFS)[number]["key"];
 
-// notification_settingsテーブルのキー(new_feature)とResend Audience側のキー(feature)の対応
-const AUDIENCE_KEY_MAP: Partial<Record<NotifKey, string>> = {
-  maintenance: "maintenance",
-  new_feature: "feature",
-  newsletter: "newsletter",
-};
-
 export async function loadNotificationPrefs(uid: string): Promise<Partial<Record<NotifKey, boolean>>> {
   const { data } = await supabase
     .from("notification_settings")
@@ -35,24 +29,22 @@ export async function saveNotificationPref(uid: string, key: NotifKey, enabled: 
   await supabase.from("notification_settings").upsert(payload);
 }
 
-export async function syncAudience(params: {
-  key: NotifKey;
-  enabled: boolean;
-  email: string;
-  name?: string;
-}) {
-  const audienceKey = AUDIENCE_KEY_MAP[params.key];
-  if (!audienceKey) return; // Resend Audience未連携の通知種別(login等)はDB設定のみ
-  await fetch("/api/mail/audience", {
+// notification_settingsのトグル(デフォルトtrue)を尊重した上で、Gmail SMTP経由(/api/mail)で
+// 会員向け通知メールを送る。宛先を明示的に渡す版(email_changeのようにuser.emailが
+// まだ確定していないケース用)と、ログイン中のUserからそのまま送る版の2つを用意する。
+export async function sendNotice(uid: string, key: NotifKey, purpose: string, target: { email: string; name?: string }) {
+  const prefs = await loadNotificationPrefs(uid);
+  if (prefs[key] === false) return;
+  await fetch("/api/mail", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: params.enabled ? "add" : "remove",
-      email: params.email,
-      name: params.name,
-      audiences: [audienceKey],
-    }),
+    body: JSON.stringify({ type: "notice", to_email: target.email, to_name: target.name, purpose }),
   }).catch(() => {
-    /* Audience同期の失敗はUI上の設定変更をブロックしない */
+    /* 通知メールの送信失敗でユーザー操作をブロックしない */
   });
+}
+
+export async function sendNoticeForUser(user: User, key: NotifKey, purpose: string) {
+  if (!user.email || !user.email_confirmed_at) return; // メール未確認のユーザーには送らない
+  await sendNotice(user.id, key, purpose, { email: user.email, name: user.user_metadata?.full_name });
 }

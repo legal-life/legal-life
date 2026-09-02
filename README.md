@@ -60,8 +60,7 @@ lrgal&lifeというサイトを作成しています。
 - **スタイル**: Tailwind CSS(`next/font/local`でBIZUDGothicフォントを自己ホスト化。旧woff2ファイルは実体が壊れたフォントデータだったため削除・修正済み)
 - **認証**: Supabase Auth(Google / メール・パスワード、2FA、セッション管理)
 - **データベース**: Supabase(PostgreSQL)
-- **メール送信**: Gmail SMTP(Nodemailer)。旧legal-life-mailerリポジトリのCloudflare Workers実装を`/api/mail`としてこのリポジトリに統合(legal-life-mailerリポジトリはアーカイブ予定)。第三者ESP(Resend/Brevo等)はgmail.com等の共有ドメインを送信元として認証できないため、独自ドメインなしでGmailアドレスから送るにはこの方式を採用
-- **通知配信リスト管理**: Resend Segments(実際のメール送信は行わず、`/api/mail/audience`でお知らせ配信対象リストの管理のみに使用。ドメイン未認証でも利用可能)
+- **メール送信**: Gmail SMTP(Nodemailer)に一本化。旧legal-life-mailerリポジトリのCloudflare Workers実装を`/api/mail`としてこのリポジトリに統合(legal-life-mailerリポジトリはアーカイブ予定)。第三者ESP(Resend/Brevo等)はgmail.com等の共有ドメインを送信元として認証できないため、独自ドメインなしでGmailアドレスから送るにはこの方式を採用。Supabase Auth自体のメール(サインアップ確認・パスワードリセット等)もSupabaseダッシュボード側のCustom SMTP設定で同じGmailアカウントを使用
 - **AIチャット**: Gemini API(APIキーはサーバー側`/api/chat`経由のみで使用し、クライアントに露出しない構成)
 - **法令検索**: e-Gov法令API
 - **ホスティング**: Vercel
@@ -76,8 +75,6 @@ lrgal&lifeというサイトを作成しています。
 | `GMAIL_USER` | メール送信元のGmailアドレス(例: `xxxx@gmail.com`) |
 | `GMAIL_APP_PASSWORD` | Googleアカウントの2段階認証を有効にした上で発行する「アプリパスワード」 |
 | `CONTACT_TO_EMAIL` | お問い合わせフォームの送信先メールアドレス |
-| `RESEND_API_KEY` | Resend Segments(配信リスト管理専用。メール送信自体には使用しない)のAPIキー |
-| `SEGMENT_MAINTENANCE` / `SEGMENT_FEATURE` / `SEGMENT_NEWSLETTER` | Resend Segment ID(`seg_`から始まる。通知設定連携用) |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare TurnstileのSite Key(未設定時はCAPTCHAウィジェット自体を非表示にする)。Supabaseダッシュボード側でもAuthentication → Bot and Abuse Protectionの有効化とSecret Keyの登録が必要 |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4の測定ID(`G-`から始まる)。未設定時は既存IDにフォールバック |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth 2.0クライアントID(Google One Tap用。`.apps.googleusercontent.com`で終わる)。未設定時は既存IDにフォールバック。Supabaseダッシュボード側のAuthentication → Providers → GoogleにもクライアントID/シークレットの登録が別途必要 |
