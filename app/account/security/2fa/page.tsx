@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
+import { sendNoticeForUser } from "@/lib/auth/notifications";
 import { IconCheck, IconTrash } from "@/components/icons";
 
 type TotpFactor = { id: string; friendly_name?: string; created_at: string };
@@ -69,6 +70,7 @@ export default function TwoFaPage() {
       return;
     }
     await logAct(user.id, "twofa_change", "認証アプリを追加");
+    sendNoticeForUser(user, "otp_change", "二段階認証の設定が変更されました(認証アプリを追加)");
     setEnrolling(false);
     setCode("");
     setJustEnabled(true);
@@ -92,6 +94,7 @@ export default function TwoFaPage() {
       return;
     }
     await logAct(user.id, "twofa_change", "認証アプリを削除");
+    sendNoticeForUser(user, "otp_change", "二段階認証の設定が変更されました(認証アプリを削除)");
     await refresh();
   };
 

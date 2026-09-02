@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
+import { sendNotice } from "@/lib/auth/notifications";
 import { IconMail } from "@/components/icons";
 
 export default function MethodsPage() {
@@ -94,6 +95,10 @@ export default function MethodsPage() {
     }
     setEmailMsg("確認メールを送信しました。リンクから設定を完了してください");
     await logAct(user.id, "email_change", "");
+    sendNotice(user.id, "email_change", "アカウントのメールアドレス設定・変更をリクエストされました", {
+      email: emailInput,
+      name: user.user_metadata?.full_name,
+    });
     setEmailSubmitting(false);
     await refresh();
   };

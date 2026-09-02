@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase/client";
 import { decR } from "@/lib/auth/utils";
 import { needsMfaChallenge, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { logAct, regSession } from "@/lib/auth/session";
+import { sendNoticeForUser } from "@/lib/auth/notifications";
 import OtpPanel from "@/components/OtpPanel";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 
@@ -38,6 +39,7 @@ export default function LoginForm() {
   async function afterLogin(user: User, method: string) {
     await regSession(user);
     await logAct(user.id, "login", method);
+    sendNoticeForUser(user, "login", "新しいログインがありました"); // 画面遷移をブロックしないよう待たない
     afterLoginRedirect(r);
   }
 

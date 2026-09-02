@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
-import { NOTIFS, loadNotificationPrefs, saveNotificationPref, syncAudience, type NotifKey } from "@/lib/auth/notifications";
+import { NOTIFS, loadNotificationPrefs, saveNotificationPref, type NotifKey } from "@/lib/auth/notifications";
 import { IconWarning } from "@/components/icons";
 
 export default function PrivacyPage() {
@@ -31,9 +31,6 @@ export default function PrivacyPage() {
       await saveNotificationPref(user.id, key, checked);
     } catch {
       /* ignore */
-    }
-    if (user.email) {
-      await syncAudience({ key, enabled: checked, email: user.email, name: user.user_metadata?.full_name });
     }
   };
 
