@@ -25,7 +25,16 @@ export default function ChatApp() {
   useEffect(() => {
     const loadFromLocal = () => {
       const saved = localStorage.getItem(STORAGE_KEY);
-      setHistory(saved ? JSON.parse(saved) : []);
+      if (!saved) {
+        setHistory([]);
+        return;
+      }
+      try {
+        setHistory(JSON.parse(saved));
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        setHistory([]);
+      }
     };
 
     const loadFromSupabase = async (uid: string) => {
@@ -40,7 +49,13 @@ export default function ChatApp() {
     const migrateLocalToSupabase = async (uid: string) => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const local: ChatItem[] = JSON.parse(raw);
+      let local: ChatItem[];
+      try {
+        local = JSON.parse(raw);
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
       if (local.length > 0) {
         await supabase.from("chat_history").insert(
           local.map((item) => ({
