@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { fetchLocation, parseUA } from "@/lib/browserInfo";
 
 // 独自アクセスログ収集。access_logsテーブルにページビュー・スクロール・滞在時間・クリックを記録する。
 // 90日以上前のデータの削除はクライアントには書き込み権限がないため、Supabase側のスケジュールジョブで行う。
@@ -16,57 +17,6 @@ function getVisitorInfo() {
   const isNewSession = !sessionStorage.getItem(SESSION_KEY);
   if (isNewSession) sessionStorage.setItem(SESSION_KEY, String(now));
   return { isNewVisitor, isNewSession };
-}
-
-function parseUA() {
-  const ua = navigator.userAgent;
-  let browser = "Other";
-  if (ua.includes("Edg/")) browser = "Edge";
-  else if (ua.includes("OPR/") || ua.includes("Opera")) browser = "Opera";
-  else if (ua.includes("Chrome/")) browser = "Chrome";
-  else if (ua.includes("Firefox/")) browser = "Firefox";
-  else if (ua.includes("Safari/")) browser = "Safari";
-
-  let os = "Other";
-  if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
-  else if (ua.includes("Android")) os = "Android";
-  else if (ua.includes("Windows")) os = "Windows";
-  else if (ua.includes("Mac OS X")) os = "macOS";
-  else if (ua.includes("Linux")) os = "Linux";
-
-  const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? "Mobile" : "Desktop";
-  return { browser, os, device };
-}
-
-async function fetchLocation() {
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch("https://ipapi.co/json", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const d = await res.json();
-      if (d?.country_name) {
-        return { country: d.country_name || "不明", region: d.region || "不明", city: d.city || "不明" };
-      }
-    }
-  } catch {
-    /* fallback */
-  }
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 2000);
-    const res = await fetch("https://cloudflare.com/cdn-cgi/trace", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const text = await res.text();
-      const loc = text.match(/loc=([A-Z]{2})/)?.[1];
-      if (loc) return { country: loc, region: "不明", city: "不明" };
-    }
-  } catch {
-    /* both failed */
-  }
-  return { country: "不明", region: "不明", city: "不明" };
 }
 
 export default function AccessLogger() {

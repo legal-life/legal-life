@@ -1,10 +1,3 @@
-export function esc(s: unknown): string {
-  return String(s ?? "").replace(
-    /[<>&"']/g,
-    (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" })[c]!,
-  );
-}
-
 export function encR(url: string): string {
   try {
     return btoa(unescape(encodeURIComponent(url)));
@@ -22,48 +15,13 @@ export function decR(enc: string): string | null {
   }
 }
 
-export function parseUA() {
-  const ua = navigator.userAgent;
-  let browser = "その他";
-  let os = "その他";
-  if (ua.includes("Edg/")) browser = "Edge";
-  else if (ua.includes("Chrome/")) browser = "Chrome";
-  else if (ua.includes("Firefox/")) browser = "Firefox";
-  else if (ua.includes("Safari/")) browser = "Safari";
-  if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
-  else if (ua.includes("Android")) os = "Android";
-  else if (ua.includes("Windows")) os = "Windows";
-  else if (ua.includes("Mac OS X")) os = "macOS";
-  else if (ua.includes("Linux")) os = "Linux";
-  return {
-    browser,
-    os,
-    device: /Mobi|Android|iPhone|iPad/i.test(ua) ? "スマートフォン/タブレット" : "PC",
-  };
-}
-
-export async function fetchLocation(): Promise<string> {
-  try {
-    const r = await fetch("https://cloudflare.com/cdn-cgi/trace", {
-      signal: AbortSignal.timeout(2000),
-    });
-    if (r.ok) {
-      const text = await r.text();
-      const loc = text.match(/loc=([A-Z]{2})/)?.[1];
-      if (loc) return loc;
-    }
-  } catch {
-    /* ignore */
-  }
-  return "不明";
-}
-
 const SESSION_KEY = "legallife_session_id";
 
+// crypto.randomUUID()はCSPRNGベースで、旧Math.random()由来のIDより衝突・推測耐性が高い。
 export function getSid(): string {
   let id = localStorage.getItem(SESSION_KEY);
   if (!id) {
-    id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    id = crypto.randomUUID();
     localStorage.setItem(SESSION_KEY, id);
   }
   return id;
