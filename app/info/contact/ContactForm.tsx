@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { collectDeviceInfo } from "@/lib/deviceInfo";
 import { IconChat, IconQuestion, IconBug, IconSparkle, IconNote, IconCheck, IconWarning } from "@/components/icons";
+import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 
 const AGE_OPTIONS = ["10代", "20代", "30代", "40代", "50代", "60代", "70代", "80代", "90代"];
 const GENDER_OPTIONS = ["男性", "女性", "その他"];
@@ -54,6 +55,8 @@ export default function ContactForm() {
   const [submitError, setSubmitError] = useState("");
   const [storageConsent, setStorageConsent] = useState(false);
   const [loadingDraft, setLoadingDraft] = useState(true);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captchaRef = useRef<CaptchaHandle>(null);
 
   // 下書きの読み込みと同意状態の反映(旧contact.jsのloadDraft/applyConsentUIに相当)
   useEffect(() => {
@@ -129,6 +132,10 @@ export default function ContactForm() {
 
   const handleSubmit = async () => {
     if (!validate()) return;
+    if (isCaptchaEnabled() && !captchaToken) {
+      setSubmitError("認証(CAPTCHA)を完了してください");
+      return;
+    }
     setSubmitting(true);
     setSubmitError("");
     try {
@@ -145,9 +152,12 @@ export default function ContactForm() {
           inquiry_type: type,
           category: needsCategory ? category : undefined,
           content,
+          captchaToken,
           ...deviceInfo,
         }),
       });
+      captchaRef.current?.reset();
+      setCaptchaToken("");
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "送信に失敗しました");
@@ -372,6 +382,7 @@ export default function ContactForm() {
       )}
 
       <div className="text-center px-6 sm:px-10 pt-7 pb-9 bg-[#fcfcfd]">
+        <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
         {submitError && (
           <p className="mb-4 px-5 py-3 bg-[#fff0ef] border border-[#fcc] rounded-lg text-sm text-[#c0392b] leading-relaxed flex items-center justify-center gap-1.5 flex-wrap">
             <IconWarning className="w-4 h-4 shrink-0" /> 送信に失敗しました。{submitError}
@@ -380,7 +391,7 @@ export default function ContactForm() {
         <button
           className="inline-flex items-center justify-center gap-2 px-14 py-4 rounded-full text-white font-bold tracking-wide shadow-[0_4px_16px_rgba(0,200,233,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,200,233,0.45)] disabled:opacity-70 disabled:hover:translate-y-0"
           style={{ background: "linear-gradient(135deg, #00C8E9 0%, #00a3bf 100%)" }}
-          disabled={submitting}
+          disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
           onClick={handleSubmit}
         >
           {submitting ? "送信中..." : "送信する"}

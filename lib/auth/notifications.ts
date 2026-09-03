@@ -32,12 +32,18 @@ export async function saveNotificationPref(uid: string, key: NotifKey, enabled: 
 // notification_settingsのトグル(デフォルトtrue)を尊重した上で、Gmail SMTP経由(/api/mail)で
 // 会員向け通知メールを送る。宛先を明示的に渡す版(email_changeのようにuser.emailが
 // まだ確定していないケース用)と、ログイン中のUserからそのまま送る版の2つを用意する。
+// /api/mailのnotice種別は認証済みセッションを要求するため、現在のアクセストークンを
+// Authorizationヘッダーで渡す(未ログイン状態からの任意宛先へのメール送信を防ぐため)。
 export async function sendNotice(uid: string, key: NotifKey, purpose: string, target: { email: string; name?: string }) {
   const prefs = await loadNotificationPrefs(uid);
   if (prefs[key] === false) return;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return;
   await fetch("/api/mail", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
     body: JSON.stringify({ type: "notice", to_email: target.email, to_name: target.name, purpose }),
   }).catch(() => {
     /* 通知メールの送信失敗でユーザー操作をブロックしない */
