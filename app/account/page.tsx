@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { getProfile, setDeletionPending, type Profile } from "@/lib/auth/profile";
-import { IconPerson, IconBell, IconShield, IconFolder } from "@/components/icons";
+import { IconPerson, IconBell, IconShield, IconLaptop, IconFolder } from "@/components/icons";
 import MdAccountCard from "@/components/material/MdAccountCard";
 import MdButton from "@/components/material/MdButton";
 
-export default function SettingsPage() {
+export default function AccountPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -74,9 +74,10 @@ export default function SettingsPage() {
 
       <nav className="flex flex-col mb-6 border-t border-md-outline-variant">
         {[
-          { href: "/account/settings/profile", icon: IconPerson, label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
-          { href: "/account/settings/privacy", icon: IconBell, label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
-          { href: "/account/security", icon: IconShield, label: "セキュリティ", sub: "パスワード・二段階認証・デバイス管理" },
+          { href: "/account/profile", icon: IconPerson, label: "プロフィール", sub: "表示名・メール確認・アカウント削除" },
+          { href: "/account/privacy", icon: IconBell, label: "通知・プライバシー", sub: "メール通知・ニュースレター設定" },
+          { href: "/account/security", icon: IconShield, label: "セキュリティ", sub: "パスワード・二段階認証・ログイン方法" },
+          { href: "/account/device", icon: IconLaptop, label: "デバイス管理", sub: "ログイン中のデバイス・アクティビティ履歴" },
           ...(profile?.role === "admin"
             ? [{ href: "/admin/inquiries", icon: IconFolder, label: "お問い合わせ管理", sub: "管理者専用ページ" }]
             : []),

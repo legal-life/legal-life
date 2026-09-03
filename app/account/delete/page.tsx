@@ -59,7 +59,7 @@ export default function DeletePage() {
     try {
       await setDeletionPending(user.id, false);
       setCancelMsg("削除申請をキャンセルしました");
-      setTimeout(() => window.location.replace("/account/settings"), 1500);
+      setTimeout(() => window.location.replace("/account"), 1500);
     } catch (e) {
       setCancelMsg(e instanceof Error ? e.message : String(e));
     }
@@ -120,7 +120,7 @@ export default function DeletePage() {
 
   return (
     <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
-      <Link href="/account/settings" className="text-m3-body-medium text-md-on-surface-variant">← アカウント設定に戻る</Link>
+      <Link href="/account" className="text-m3-body-medium text-md-on-surface-variant">← アカウント設定に戻る</Link>
       <h1 className="text-m3-headline-medium text-md-on-surface mt-3">アカウントの削除</h1>
       <p className="text-m3-body-medium text-md-on-surface-variant mb-5">削除申請後、30日間はキャンセル可能です</p>
 

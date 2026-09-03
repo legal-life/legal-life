@@ -15,7 +15,7 @@ const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 
 function afterLoginRedirect(r: string | null) {
-  const dest = (r ? decR(r) : null) || "/account/settings";
+  const dest = (r ? decR(r) : null) || "/account";
   window.location.replace(dest);
 }
 

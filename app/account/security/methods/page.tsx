@@ -129,7 +129,7 @@ export default function MethodsPage() {
     setEmailSubmitting(true);
     const { error } = await supabase.auth.updateUser(
       { email: emailInput },
-      { emailRedirectTo: `${location.origin}/account/settings/profile` },
+      { emailRedirectTo: `${location.origin}/account/profile` },
     );
     if (error) {
       const M: Record<string, string> = {

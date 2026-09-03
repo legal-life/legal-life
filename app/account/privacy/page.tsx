@@ -41,7 +41,7 @@ export default function PrivacyPage() {
   const emailVerified = !!user.email_confirmed_at;
 
   return (
-    <MdAccountCard backHref="/account/settings" backLabel="アカウント設定に戻る" title="通知・プライバシー設定" subtitle="メールアドレス確認済みの場合のみ通知が届きます">
+    <MdAccountCard backHref="/account" backLabel="アカウント設定に戻る" title="通知・プライバシー設定" subtitle="メールアドレス確認済みの場合のみ通知が届きます">
       <p className="text-m3-label-small text-md-on-surface-variant mb-2 uppercase tracking-wide">メール通知設定</p>
       {loading ? (
         <p className="text-m3-body-medium text-md-on-surface-variant">読み込み中...</p>
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
       )}
 
       <div className="text-center mt-6">
-        <Link href="/account/settings" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
+        <Link href="/account" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
       </div>
     </MdAccountCard>
   );

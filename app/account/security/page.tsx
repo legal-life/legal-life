@@ -51,10 +51,10 @@ export default function SecurityPage() {
           title="本人確認"
           desc="認証アプリに表示されている6桁のコードを入力してください"
           onVerify={handleOtpVerify}
-          onCancel={() => window.location.replace("/account/settings")}
+          onCancel={() => window.location.replace("/account")}
         />
         <div className="mt-4">
-          <Link href="/account/settings" className="text-m3-body-medium text-md-on-surface-variant">アカウント設定に戻る</Link>
+          <Link href="/account" className="text-m3-body-medium text-md-on-surface-variant">アカウント設定に戻る</Link>
         </div>
       </MdAccountCard>
     );
@@ -67,7 +67,7 @@ export default function SecurityPage() {
     : "--";
 
   return (
-    <MdAccountCard backHref="/account/settings" backLabel="アカウント設定に戻る" title="セキュリティ" subtitle={`最終ログイン: ${lastSignIn}`}>
+    <MdAccountCard backHref="/account" backLabel="アカウント設定に戻る" title="セキュリティ" subtitle={`最終ログイン: ${lastSignIn}`}>
       <p className="text-m3-label-small text-md-on-surface-variant mb-2 uppercase tracking-wide">ログインとパスワード</p>
       <nav className="space-y-2 mb-5">
         <Link href="/account/security/pass" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
@@ -77,7 +77,7 @@ export default function SecurityPage() {
           </div>
           <span className="text-md-outline">›</span>
         </Link>
-        <Link href="/account/security/2fa" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
+        <Link href="/account/security/totp" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
             <p className="font-semibold text-m3-body-medium text-md-on-surface">二段階認証</p>
             <p className={`text-m3-body-small ${enabled2fa ? "text-[#146c2e]" : "text-md-on-surface-variant"}`}>{enabled2fa ? "有効" : "無効"}</p>
@@ -93,26 +93,8 @@ export default function SecurityPage() {
         </Link>
       </nav>
 
-      <p className="text-m3-label-small text-md-on-surface-variant mb-2 uppercase tracking-wide">アクティビティ</p>
-      <nav className="space-y-2 mb-5">
-        <Link href="/account/security/activity" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
-          <div className="flex-1">
-            <p className="font-semibold text-m3-body-medium text-md-on-surface">最近のアクティビティ</p>
-            <p className="text-m3-body-small text-md-on-surface-variant">ログイン・設定変更の履歴(最大1年)</p>
-          </div>
-          <span className="text-md-outline">›</span>
-        </Link>
-        <Link href="/account/security/device" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
-          <div className="flex-1">
-            <p className="font-semibold text-m3-body-medium text-md-on-surface">ログイン中のデバイス</p>
-            <p className="text-m3-body-small text-md-on-surface-variant">アクティブなセッションの管理</p>
-          </div>
-          <span className="text-md-outline">›</span>
-        </Link>
-      </nav>
-
       <div className="text-center">
-        <Link href="/account/settings" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
+        <Link href="/account" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
       </div>
     </MdAccountCard>
   );

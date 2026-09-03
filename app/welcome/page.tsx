@@ -66,7 +66,7 @@ export default function WelcomePage() {
           サイトを利用する
         </Link>
         <div className="mt-4">
-          <Link href="/account/settings" className="text-sm text-primary-dark font-semibold">
+          <Link href="/account" className="text-sm text-primary-dark font-semibold">
             アカウント設定を確認する
           </Link>
         </div>

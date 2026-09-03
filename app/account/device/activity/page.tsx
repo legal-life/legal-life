@@ -41,8 +41,8 @@ export default function ActivityPage() {
 
   return (
     <MdAccountCard
-      backHref="/account/security"
-      backLabel="セキュリティに戻る"
+      backHref="/account/device"
+      backLabel="デバイス管理に戻る"
       title="最近のアクティビティ"
       subtitle="過去1年間のアカウント操作ログ(最大50件)"
       maxWidthClassName="max-w-[640px]"
@@ -88,7 +88,7 @@ export default function ActivityPage() {
             パスワードを変更
           </Link>
           <Link
-            href="/account/security/2fa"
+            href="/account/security/totp"
             className="flex-1 flex items-center justify-center h-10 rounded-full border border-md-outline text-md-primary text-m3-label-large font-medium"
           >
             二段階認証を確認
@@ -97,7 +97,7 @@ export default function ActivityPage() {
       </div>
 
       <div className="text-center mt-5">
-        <Link href="/account/security" className="text-m3-body-medium text-md-on-surface-variant">セキュリティに戻る</Link>
+        <Link href="/account/device" className="text-m3-body-medium text-md-on-surface-variant">デバイス管理に戻る</Link>
       </div>
     </MdAccountCard>
   );

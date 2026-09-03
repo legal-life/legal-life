@@ -82,7 +82,7 @@ export default function ProfilePage() {
     : "--";
 
   return (
-    <MdAccountCard backHref="/account/settings" backLabel="アカウント設定に戻る" title="プロフィール">
+    <MdAccountCard backHref="/account" backLabel="アカウント設定に戻る" title="プロフィール">
       <div className="flex justify-center mb-5 mt-4">
         {profile?.photo_url ? (
           <Image src={profile.photo_url} alt="avatar" width={72} height={72} className="rounded-full object-cover border-2 border-md-primary" />
@@ -168,7 +168,7 @@ export default function ProfilePage() {
       </Link>
 
       <div className="text-center mt-5">
-        <Link href="/account/settings" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
+        <Link href="/account" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
       </div>
     </MdAccountCard>
   );

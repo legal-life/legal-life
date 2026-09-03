@@ -22,7 +22,7 @@ const GOOGLE_CLIENT_ID =
 const CONSENT_INTERVAL = 30 * 24 * 60 * 60 * 1000;
 
 function afterLoginRedirect(r: string | null) {
-  const dest = (r ? decR(r) : null) || "/account/settings";
+  const dest = (r ? decR(r) : null) || "/account";
   window.location.replace(dest);
 }
 
