@@ -15,7 +15,12 @@ export function parseInfoDate(date: string): number {
   return new Date(y, (m || 1) - 1, d || 1).getTime();
 }
 
-export const infoDetails: InfoDetail[] = [
+// 実データは執筆・更新の都合上、必ずしも日付降順(新着順)には並んでいない(例: slug "0008" の
+// date: "2025/3/5" は slug "0005"〜"0007" の 2026年1月分より後ろに配置されている)。
+// 呼び出し側の一部(トップページ)は infoDetails をソートせずそのまま slice して「最新のお知らせ」として
+// 表示するため、配列の並び順そのものが表示順の前提になっている。個々の呼び出し側に再ソートを委ねると
+// 実装漏れで表示順が食い違う恐れがあるため、エクスポートするデータ自体を日付降順に確定させる。
+const infoDetailsSource: InfoDetail[] = [
   {
     slug: "0001",
     date: "2025/9/17",
@@ -1216,3 +1221,9 @@ export const infoDetails: InfoDetail[] = [
                 </p>`,
   },
 ];
+
+// 日付降順(新着順)に確定させたお知らせ一覧。日付が同じ・未設定(parseInfoDate が -Infinity を返す)の
+// 項目同士は、Array.prototype.sort の安定ソート特性により infoDetailsSource 内の元の並び順を維持する。
+export const infoDetails: InfoDetail[] = [...infoDetailsSource].sort(
+  (a, b) => parseInfoDate(b.date) - parseInfoDate(a.date)
+);
