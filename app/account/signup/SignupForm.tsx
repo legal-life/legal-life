@@ -8,6 +8,8 @@ import { decR, generateNonce, validatePassword } from "@/lib/auth/utils";
 import { logAct } from "@/lib/auth/session";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 import { IconGoogleLogo } from "@/components/icons";
+import MdButton from "@/components/material/MdButton";
+import MdTextField from "@/components/material/MdTextField";
 
 const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
@@ -126,97 +128,81 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <h1 className="text-2xl font-bold text-center mb-1.5">アカウントを作成</h1>
-        <p className="text-center text-sm text-gray-500 mb-6">legal&life に参加する</p>
+    <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
+        <h1 className="text-center text-m3-headline-medium text-md-on-surface mb-1.5">アカウントを作成</h1>
+        <p className="text-center text-m3-body-medium text-md-on-surface-variant mb-6">legal&life に参加する</p>
 
-        <button
-          type="button"
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition"
-          onClick={doGoogle}
-        >
+        <MdButton variant="outlined" className="w-full" onClick={doGoogle}>
           <IconGoogleLogo className="w-[18px] h-[18px]" />
           Googleで登録
-        </button>
-        {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
+        </MdButton>
+        {googleError && <p className="text-m3-body-small text-md-error mt-2">{googleError}</p>}
 
-        <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
-          <span className="flex-1 h-px bg-gray-200" />
+        <div className="flex items-center gap-3 my-5 text-m3-body-small text-md-on-surface-variant">
+          <span className="flex-1 h-px bg-md-outline-variant" />
           または
-          <span className="flex-1 h-px bg-gray-200" />
+          <span className="flex-1 h-px bg-md-outline-variant" />
         </div>
 
-        <div className="mb-3">
-          <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="signup-name">お名前</label>
-          <input
-            id="signup-name"
-            type="text"
-            autoComplete="name"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            placeholder="氏名またはニックネーム"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="signup-email">メールアドレス</label>
-          <input
-            id="signup-email"
-            type="email"
-            autoComplete="email"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            placeholder="example@mail.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="signup-password">パスワード</label>
-          <input
-            id="signup-password"
-            type="password"
-            autoComplete="new-password"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            placeholder="8文字以上、大文字・小文字・数字・記号を含む"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="mb-2">
-          <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="signup-password-confirm">パスワード（確認）</label>
-          <input
-            id="signup-password-confirm"
-            type="password"
-            autoComplete="new-password"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            placeholder="もう一度入力"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && doSubmit()}
-          />
-        </div>
-        <p className="text-xs text-gray-400 mb-3 leading-relaxed">
-          登録することで <Link href="/law/terms" className="text-primary-dark">利用規約</Link> および{" "}
-          <Link href="/law/privacy" className="text-primary-dark">プライバシーポリシー</Link> に同意したものとみなされます。
+        <MdTextField
+          id="signup-name"
+          label="お名前"
+          type="text"
+          autoComplete="name"
+          containerClassName="mb-4"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <MdTextField
+          id="signup-email"
+          label="メールアドレス"
+          type="email"
+          autoComplete="email"
+          containerClassName="mb-4"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <MdTextField
+          id="signup-password"
+          label="パスワード(8文字以上、大文字・小文字・数字・記号を含む)"
+          type="password"
+          autoComplete="new-password"
+          containerClassName="mb-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <MdTextField
+          id="signup-password-confirm"
+          label="パスワード(確認)"
+          type="password"
+          autoComplete="new-password"
+          containerClassName="mb-3"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && doSubmit()}
+        />
+        <p className="text-m3-body-small text-md-on-surface-variant mb-3 leading-relaxed">
+          登録することで <Link href="/law/terms" className="text-md-primary">利用規約</Link> および{" "}
+          <Link href="/law/privacy" className="text-md-primary">プライバシーポリシー</Link> に同意したものとみなされます。
         </p>
         <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
         {msg.text && (
-          <p className={`text-sm mb-2 ${msg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>{msg.text}</p>
+          <p className={`text-m3-body-small mb-2 ${msg.type === "error" ? "text-md-error" : "text-[#146c2e]"}`}>{msg.text}</p>
         )}
-        <button
-          type="button"
-          className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
+        <MdButton
+          variant="filled"
+          className="w-full"
           disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
           onClick={doSubmit}
         >
           作成する
-        </button>
+        </MdButton>
 
         <div className="text-center mt-5">
-          <Link href="/account/login" className="text-sm text-primary-dark font-semibold">すでにアカウントをお持ちの方</Link>
+          <Link href="/account/login" className="text-m3-body-medium text-md-primary font-medium">すでにアカウントをお持ちの方</Link>
         </div>
         <div className="text-center mt-2">
-          <Link href="/" className="text-sm text-gray-400">ホームへ戻る</Link>
+          <Link href="/" className="text-m3-body-small text-md-on-surface-variant">ホームへ戻る</Link>
         </div>
     </div>
   );

@@ -13,6 +13,9 @@ import { signInWithPasskey } from "@/lib/auth/passkey";
 import { IconGoogleLogo, IconLock } from "@/components/icons";
 import OtpPanel from "@/components/OtpPanel";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
+import MdAccountCard from "@/components/material/MdAccountCard";
+import MdButton from "@/components/material/MdButton";
+import MdTextField from "@/components/material/MdTextField";
 
 const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
@@ -187,83 +190,72 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <h1 className="text-2xl font-bold text-center mb-1.5">ログイン</h1>
-        <p className="text-center text-sm text-gray-500 mb-6">legal&life アカウントにログイン</p>
+    <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
+        <h1 className="text-center text-m3-headline-medium text-md-on-surface mb-1.5">ログイン</h1>
+        <p className="text-center text-m3-body-medium text-md-on-surface-variant mb-6">legal&life アカウントにログイン</p>
 
-        <button
-          id="auth-google-btn"
-          type="button"
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition"
-          onClick={doGoogle}
-        >
+        <MdButton id="auth-google-btn" variant="outlined" className="w-full" onClick={doGoogle}>
           <IconGoogleLogo className="w-[18px] h-[18px]" />
           Googleでログイン
-        </button>
-        {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
+        </MdButton>
+        {googleError && <p className="text-m3-body-small text-md-error mt-2">{googleError}</p>}
 
-        <button
+        <MdButton
           id="auth-passkey-btn"
-          type="button"
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition mt-2.5 disabled:opacity-60"
+          variant="outlined"
+          className="w-full mt-2.5"
           disabled={passkeySubmitting}
           onClick={doPasskey}
         >
           <IconLock className="w-[18px] h-[18px]" />
           {passkeySubmitting ? "確認中..." : "パスキーでログイン"}
-        </button>
-        {passkeyError && <p className="text-[#e74c3c] text-sm mt-2">{passkeyError}</p>}
+        </MdButton>
+        {passkeyError && <p className="text-m3-body-small text-md-error mt-2">{passkeyError}</p>}
 
-        <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
-          <span className="flex-1 h-px bg-gray-200" />
+        <div className="flex items-center gap-3 my-5 text-m3-body-small text-md-on-surface-variant">
+          <span className="flex-1 h-px bg-md-outline-variant" />
           または
-          <span className="flex-1 h-px bg-gray-200" />
+          <span className="flex-1 h-px bg-md-outline-variant" />
         </div>
 
         {!show2fa && (
           <div>
-            <div className="mb-3">
-              <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="login-email">メールアドレス</label>
-              <input
-                id="login-email"
-                type="email"
-                autoComplete="email"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="example@mail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="login-password">パスワード</label>
-              <input
-                id="login-password"
-                type="password"
-                autoComplete="current-password"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="パスワード"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && doEmail()}
-              />
-            </div>
+            <MdTextField
+              id="login-email"
+              label="メールアドレス"
+              type="email"
+              autoComplete="email"
+              containerClassName="mb-4"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <MdTextField
+              id="login-password"
+              label="パスワード"
+              type="password"
+              autoComplete="current-password"
+              containerClassName="mb-3"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && doEmail()}
+            />
             <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
             {loginMsg.text && (
-              <p className={`text-sm mb-2 ${loginMsg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>
+              <p className={`text-m3-body-small mb-2 ${loginMsg.type === "error" ? "text-md-error" : "text-[#146c2e]"}`}>
                 {loginMsg.text}
               </p>
             )}
-            <button
+            <MdButton
               id="auth-submit-btn"
-              type="button"
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
+              variant="filled"
+              className="w-full"
               disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
               onClick={doEmail}
             >
               ログイン
-            </button>
+            </MdButton>
             <div className="text-center mt-3">
-              <button type="button" className="text-sm text-gray-500 underline" onClick={doForgotPassword}>
+              <button type="button" className="text-m3-body-medium text-md-on-surface-variant underline" onClick={doForgotPassword}>
                 パスワードをお忘れの方
               </button>
             </div>
@@ -283,12 +275,12 @@ export default function LoginForm() {
           />
         )}
 
-        <div className="h-px bg-gray-200 my-5" />
+        <div className="h-px bg-md-outline-variant my-5" />
         <div className="text-center">
-          <Link href="/account/signup" className="text-sm text-primary-dark font-semibold">アカウントをお持ちでない方</Link>
+          <Link href="/account/signup" className="text-m3-body-medium text-md-primary font-medium">アカウントをお持ちでない方</Link>
         </div>
         <div className="text-center mt-2">
-          <Link href="/" className="text-sm text-gray-400">ホームへ戻る</Link>
+          <Link href="/" className="text-m3-body-small text-md-on-surface-variant">ホームへ戻る</Link>
         </div>
     </div>
   );

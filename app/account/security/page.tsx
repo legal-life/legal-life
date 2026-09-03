@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { listTotpFactors, getAAL, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import OtpPanel from "@/components/OtpPanel";
+import MdAccountCard from "@/components/material/MdAccountCard";
 
 export default function SecurityPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -41,12 +42,10 @@ export default function SecurityPage() {
 
   if (needsGate) {
     return (
-      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <h1 className="text-xl font-bold mb-1">セキュリティ</h1>
-        <p className="text-sm text-gray-500 mb-4">アクセスするには本人確認が必要です</p>
-        <div className="bg-[#f0fbfe] border border-primary/60 rounded-xl p-4 mb-2">
-          <p className="font-bold text-sm mb-1">二段階認証が有効です</p>
-          <p className="text-xs text-gray-600">セキュリティ設定を表示するには認証アプリのコードが必要です。</p>
+      <MdAccountCard title="セキュリティ" subtitle="アクセスするには本人確認が必要です">
+        <div className="rounded-m3-md bg-md-primary-container p-4 mb-2">
+          <p className="font-bold text-m3-body-medium text-md-on-primary-container mb-1">二段階認証が有効です</p>
+          <p className="text-m3-body-small text-md-on-primary-container">セキュリティ設定を表示するには認証アプリのコードが必要です。</p>
         </div>
         <OtpPanel
           title="本人確認"
@@ -55,9 +54,9 @@ export default function SecurityPage() {
           onCancel={() => window.location.replace("/account/settings")}
         />
         <div className="mt-4">
-          <Link href="/account/settings" className="text-sm text-gray-500">アカウント設定に戻る</Link>
+          <Link href="/account/settings" className="text-m3-body-medium text-md-on-surface-variant">アカウント設定に戻る</Link>
         </div>
-      </div>
+      </MdAccountCard>
     );
   }
 
@@ -68,57 +67,53 @@ export default function SecurityPage() {
     : "--";
 
   return (
-    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-      <Link href="/account/settings" className="text-sm text-gray-500">← アカウント設定に戻る</Link>
-      <h1 className="text-xl font-bold mt-3">セキュリティ</h1>
-      <p className="text-sm text-gray-500 mb-5">最終ログイン: {lastSignIn}</p>
-
-      <p className="text-xs font-bold text-gray-500 mb-2">ログインとパスワード</p>
+    <MdAccountCard backHref="/account/settings" backLabel="アカウント設定に戻る" title="セキュリティ" subtitle={`最終ログイン: ${lastSignIn}`}>
+      <p className="text-m3-label-small text-md-on-surface-variant mb-2 uppercase tracking-wide">ログインとパスワード</p>
       <nav className="space-y-2 mb-5">
-        <Link href="/account/security/pass" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
+        <Link href="/account/security/pass" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
-            <p className="font-semibold text-sm">パスワード</p>
-            <p className="text-xs text-gray-500">{hasPassword ? "設定済み" : "未設定"}</p>
+            <p className="font-semibold text-m3-body-medium text-md-on-surface">パスワード</p>
+            <p className="text-m3-body-small text-md-on-surface-variant">{hasPassword ? "設定済み" : "未設定"}</p>
           </div>
-          <span className="text-gray-300">›</span>
+          <span className="text-md-outline">›</span>
         </Link>
-        <Link href="/account/security/2fa" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
+        <Link href="/account/security/2fa" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
-            <p className="font-semibold text-sm">二段階認証</p>
-            <p className={`text-xs ${enabled2fa ? "text-[#27ae60]" : "text-gray-500"}`}>{enabled2fa ? "有効" : "無効"}</p>
+            <p className="font-semibold text-m3-body-medium text-md-on-surface">二段階認証</p>
+            <p className={`text-m3-body-small ${enabled2fa ? "text-[#146c2e]" : "text-md-on-surface-variant"}`}>{enabled2fa ? "有効" : "無効"}</p>
           </div>
-          <span className="text-gray-300">›</span>
+          <span className="text-md-outline">›</span>
         </Link>
-        <Link href="/account/security/methods" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
+        <Link href="/account/security/methods" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
-            <p className="font-semibold text-sm">ログイン方法</p>
-            <p className="text-xs text-gray-500">メール・Google連携の管理</p>
+            <p className="font-semibold text-m3-body-medium text-md-on-surface">ログイン方法</p>
+            <p className="text-m3-body-small text-md-on-surface-variant">メール・Google連携の管理</p>
           </div>
-          <span className="text-gray-300">›</span>
+          <span className="text-md-outline">›</span>
         </Link>
       </nav>
 
-      <p className="text-xs font-bold text-gray-500 mb-2">アクティビティ</p>
+      <p className="text-m3-label-small text-md-on-surface-variant mb-2 uppercase tracking-wide">アクティビティ</p>
       <nav className="space-y-2 mb-5">
-        <Link href="/account/security/activity" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
+        <Link href="/account/security/activity" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
-            <p className="font-semibold text-sm">最近のアクティビティ</p>
-            <p className="text-xs text-gray-500">ログイン・設定変更の履歴(最大1年)</p>
+            <p className="font-semibold text-m3-body-medium text-md-on-surface">最近のアクティビティ</p>
+            <p className="text-m3-body-small text-md-on-surface-variant">ログイン・設定変更の履歴(最大1年)</p>
           </div>
-          <span className="text-gray-300">›</span>
+          <span className="text-md-outline">›</span>
         </Link>
-        <Link href="/account/security/device" className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50">
+        <Link href="/account/security/device" className="flex items-center gap-3 bg-md-surface-container-lowest border border-md-outline-variant rounded-m3-md px-4 py-3 hover:bg-md-surface-container">
           <div className="flex-1">
-            <p className="font-semibold text-sm">ログイン中のデバイス</p>
-            <p className="text-xs text-gray-500">アクティブなセッションの管理</p>
+            <p className="font-semibold text-m3-body-medium text-md-on-surface">ログイン中のデバイス</p>
+            <p className="text-m3-body-small text-md-on-surface-variant">アクティブなセッションの管理</p>
           </div>
-          <span className="text-gray-300">›</span>
+          <span className="text-md-outline">›</span>
         </Link>
       </nav>
 
       <div className="text-center">
-        <Link href="/account/settings" className="text-sm text-primary-dark font-semibold">アカウント設定に戻る</Link>
+        <Link href="/account/settings" className="text-m3-body-medium text-md-primary font-medium">アカウント設定に戻る</Link>
       </div>
-    </div>
+    </MdAccountCard>
   );
 }
