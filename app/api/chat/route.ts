@@ -132,14 +132,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { question?: string };
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const question = body.question?.trim();
+  // body.questionが文字列以外(number/array/object等)の場合、旧実装では
+  // `.trim()`呼び出し自体がTypeErrorを投げてtry/catchの外側で未捕捉例外となり、
+  // 500エラー(素のNext.jsエラーページ)につながっていた。型を明示的に検証する。
+  const rawQuestion = body && typeof body === "object" ? (body as Record<string, unknown>).question : undefined;
+  const question = typeof rawQuestion === "string" ? rawQuestion.trim() : "";
   if (!question) return NextResponse.json({ error: "質問を入力してください" }, { status: 400 });
   if (question.length > MAX_INPUT_LEN) {
     return NextResponse.json({ error: `質問は${MAX_INPUT_LEN}文字以内で入力してください。` }, { status: 400 });
