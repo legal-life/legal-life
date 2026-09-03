@@ -95,6 +95,31 @@ export type ContactMailParams = {
   sent_at?: string;
 };
 
+// お問い合わせAPI(/api/mail)が受け取るdevice_infoの許可キー一覧。
+// このリストに無いキーは(悪意あるリクエストが任意のキーを送ってきても)
+// device_infoへ保存・メール本文へ埋め込みしない。
+export const DEVICE_INFO_KEYS = [
+  "device_browser",
+  "device_os",
+  "device_type",
+  "device_ua",
+  "device_screen",
+  "device_viewport",
+  "device_theme",
+  "device_language",
+  "device_timezone",
+  "device_network",
+  "device_country",
+  "device_region",
+  "device_city",
+  "device_ip",
+  "device_storage",
+  "device_memory",
+  "page_url",
+  "page_referrer",
+  "sent_at",
+] as const satisfies readonly (keyof ContactMailParams)[];
+
 const DEVICE_INFO_LABELS: [keyof ContactMailParams, string][] = [
   ["device_browser", "ブラウザ"],
   ["device_os", "OS"],

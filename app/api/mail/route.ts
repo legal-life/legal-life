@@ -3,10 +3,33 @@ import {
   buildContactHTML,
   buildNoticeHTML,
   buildSubject,
+  DEVICE_INFO_KEYS,
   sendMail,
   type ContactMailParams,
 } from "@/lib/mail/gmail";
 import { supabase } from "@/lib/supabase/client";
+
+// お問い合わせフォームは未認証で誰でも呼べるため、各フィールドの長さに上限を
+// 設けないと、巨大なペイロードによるDB肥大化・巨大メール送信・スパムに対して
+// 無防備になる。フロント側(ContactForm.tsx)にも一部制限はあるが、
+// APIを直接叩かれるケースに備えてサーバー側でも必ず検証する。
+const MAX_LENGTHS: Record<string, number> = {
+  from_name: 100,
+  reply_email: 254,
+  gender: 50,
+  age_group: 50,
+  inquiry_type: 100,
+  category: 100,
+  content: 5000,
+};
+
+function findOversizedField(params: Record<string, unknown>): string | null {
+  for (const [field, max] of Object.entries(MAX_LENGTHS)) {
+    const value = params[field];
+    if (typeof value === "string" && value.length > max) return field;
+  }
+  return null;
+}
 
 // メール送信API。旧 legal-life-mailer (Cloudflare Workers) の api/index.js を統合したもの。
 // 送信はGmail SMTP(Nodemailer)経由。第三者ESP(Resend等)はgmail.com等の共有ドメインを
@@ -48,13 +71,29 @@ export async function POST(req: NextRequest) {
       if (!params.from_name || !params.inquiry_type || !params.content) {
         return NextResponse.json({ error: "Missing fields" }, { status: 400 });
       }
+      const oversizedField = findOversizedField(params as unknown as Record<string, unknown>);
+      if (oversizedField) {
+        return NextResponse.json(
+          { error: `${oversizedField}が長すぎます(最大${MAX_LENGTHS[oversizedField]}文字)` },
+          { status: 400 },
+        );
+      }
       if (!(await verifyCaptcha(params.captchaToken))) {
         return NextResponse.json({ error: "CAPTCHA検証に失敗しました" }, { status: 400 });
       }
 
       // お問い合わせの保存を主経路とする。メール送信(Gmail SMTP)は現状不安定なため、
       // 送信に失敗してもSupabaseへの保存が成功していれば管理画面から確認できるようにする。
-      const { from_name, gender, age_group, reply_email, inquiry_type, category, content, captchaToken: _captchaToken, ...deviceInfo } = params;
+      const { from_name, gender, age_group, reply_email, inquiry_type, category, content } = params;
+      // device_infoは未認証で誰でも送れる値のため、既知のキーのみを許可リストで
+      // 取り込み(任意のキーを無制限にJSONBへ書き込ませない)、各値も長さを制限する。
+      const MAX_DEVICE_FIELD_LEN = 500;
+      const deviceInfo = Object.fromEntries(
+        DEVICE_INFO_KEYS.filter((key) => typeof params[key] === "string").map((key) => [
+          key,
+          (params[key] as string).slice(0, MAX_DEVICE_FIELD_LEN),
+        ]),
+      );
       const { error: insertError } = await supabase.from("contact_inquiries").insert({
         from_name,
         gender,

@@ -17,12 +17,18 @@ export async function getProfile(uid: string): Promise<Profile | null> {
   return data;
 }
 
+// 呼び出し元(プロフィール編集・削除申請ページ)はtry/catchでSupabaseエラーを
+// キャッチしてユーザーに表示する前提のため、ここでエラーを握りつぶすと
+// 更新が実際には失敗しているのに画面上は成功したかのように見えてしまう
+// (例: アカウント削除申請が実は保存されていないのに「申請済み」画面が出る)。
+// 必ずエラーをthrowして呼び出し元に伝播させる。
 export async function updateDisplayName(uid: string, name: string) {
-  await supabase.from("profiles").update({ display_name: name }).eq("id", uid);
+  const { error } = await supabase.from("profiles").update({ display_name: name }).eq("id", uid);
+  if (error) throw error;
 }
 
 export async function setDeletionPending(uid: string, pending: boolean) {
-  await supabase
+  const { error } = await supabase
     .from("profiles")
     .update({
       deletion_pending: pending,
@@ -30,4 +36,5 @@ export async function setDeletionPending(uid: string, pending: boolean) {
       deletion_request_at: pending ? new Date().toISOString() : null,
     })
     .eq("id", uid);
+  if (error) throw error;
 }
