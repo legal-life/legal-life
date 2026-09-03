@@ -2,11 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { IconCross, IconCheck } from "@/components/icons";
+import PopupLink from "@/components/PopupLink";
 
 export const metadata: Metadata = {
   title: "料金プラン",
   description:
     "このページはlegal&lifeの料金プランページです。当ページでは料金プランの比較などを記載しています。当サイトは法令知識の普及と法知識不足による不利益を生まないことを目指しているサイトです。",
+  // 正式公開前の機能のためサイト内ナビゲーションからは意図的にブロックしており、検索エンジンにも公開しない。
+  robots: { index: false, follow: true },
 };
 
 const PLANS = [
@@ -30,14 +33,14 @@ const PLANS = [
     price: "¥500 / 月",
     featured: true,
     features: ["チャット利用: 15回/日", "履歴保存: 最大50件", "学習: 月間制限あり", "ニュース: 3時間後公開"],
-    href: "#",
+    href: null,
     label: "プラス会員になる",
   },
   {
     name: "プロ",
     price: "¥1,000 / 月",
     features: ["チャット利用: 無制限", "履歴保存: 無制限", "学習: すべて無制限", "ニュース: 即時閲覧可能", "新機能先行体験"],
-    href: "#",
+    href: null,
     label: "プロ会員になる",
   },
 ];
@@ -86,14 +89,24 @@ export default function PlanPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href={p.href}
-              className={`block w-4/5 text-center font-bold rounded px-5 py-2.5 text-sm text-white ${
-                p.featured ? "bg-[#3498db]" : "bg-[#2c3e50]"
-              }`}
-            >
-              {p.label}
-            </Link>
+            {p.href ? (
+              <Link
+                href={p.href}
+                className={`block w-4/5 text-center font-bold rounded px-5 py-2.5 text-sm text-white ${
+                  p.featured ? "bg-[#3498db]" : "bg-[#2c3e50]"
+                }`}
+              >
+                {p.label}
+              </Link>
+            ) : (
+              <PopupLink
+                className={`block w-4/5 text-center font-bold rounded px-5 py-2.5 text-sm text-white ${
+                  p.featured ? "bg-[#3498db]" : "bg-[#2c3e50]"
+                }`}
+              >
+                {p.label}
+              </PopupLink>
+            )}
           </div>
         ))}
       </div>
