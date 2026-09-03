@@ -7,7 +7,8 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { sendNotice } from "@/lib/auth/notifications";
-import { IconMail, IconGoogleLogo } from "@/components/icons";
+import { listPasskeys, registerPasskey, deletePasskey, type PasskeyItem } from "@/lib/auth/passkey";
+import { IconMail, IconGoogleLogo, IconLock, IconTrash } from "@/components/icons";
 
 export default function MethodsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,16 +20,53 @@ export default function MethodsPage() {
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [pwMsg, setPwMsg] = useState("");
+  const [passkeys, setPasskeys] = useState<PasskeyItem[] | null>(null);
+  const [passkeyMsg, setPasskeyMsg] = useState("");
+  const [passkeySubmitting, setPasskeySubmitting] = useState(false);
 
   useEffect(() => {
     (async () => {
       setUser(await requireAuth());
+      await refreshPasskeys();
     })();
   }, []);
 
   const refresh = async () => {
     const { data } = await supabase.auth.getUser();
     setUser(data.user);
+  };
+
+  const refreshPasskeys = async () => {
+    try {
+      setPasskeys(await listPasskeys());
+    } catch {
+      setPasskeys([]);
+    }
+  };
+
+  const addPasskey = async () => {
+    setPasskeySubmitting(true);
+    setPasskeyMsg("");
+    try {
+      await registerPasskey();
+      await logAct(user!.id, "method_change", "パスキー追加");
+      await refreshPasskeys();
+    } catch (e) {
+      setPasskeyMsg(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPasskeySubmitting(false);
+    }
+  };
+
+  const removePasskey = async (id: string) => {
+    if (!confirm("このパスキーを削除しますか?")) return;
+    try {
+      await deletePasskey(id);
+      await logAct(user!.id, "method_change", "パスキー削除");
+      await refreshPasskeys();
+    } catch (e) {
+      setPasskeyMsg(e instanceof Error ? e.message : String(e));
+    }
   };
 
   if (!user) return null;
@@ -173,6 +211,43 @@ export default function MethodsPage() {
             </button>
           )}
         </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="text-xs font-bold text-gray-500 mb-2">パスキー</p>
+        {passkeys && passkeys.length > 0 && (
+          <div className="space-y-2 mb-2">
+            {passkeys.map((p) => (
+              <div key={p.id} className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <IconLock className="w-4 h-4 text-[#5f6368] shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm truncate">{p.friendly_name || "パスキー"}</p>
+                    <p className="text-xs text-gray-500">登録日: {new Date(p.created_at).toLocaleDateString("ja-JP")}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="shrink-0 text-[#e74c3c] p-1.5 hover:bg-[#fff5f5] rounded-md"
+                  onClick={() => removePasskey(p.id)}
+                  aria-label="削除"
+                >
+                  <IconTrash className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition disabled:opacity-60"
+          disabled={passkeySubmitting}
+          onClick={addPasskey}
+        >
+          <IconLock className="w-4 h-4" />
+          {passkeySubmitting ? "登録中..." : "パスキーを追加する"}
+        </button>
+        {passkeyMsg && <p className="text-sm text-[#e74c3c] mt-2">{passkeyMsg}</p>}
       </div>
 
       {msg && <p className="text-sm mt-3">{msg}</p>}

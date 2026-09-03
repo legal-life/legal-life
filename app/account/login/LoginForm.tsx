@@ -9,7 +9,8 @@ import { decR, generateNonce } from "@/lib/auth/utils";
 import { needsMfaChallenge, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { logAct, regSession } from "@/lib/auth/session";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
-import { IconGoogleLogo } from "@/components/icons";
+import { signInWithPasskey } from "@/lib/auth/passkey";
+import { IconGoogleLogo, IconLock } from "@/components/icons";
 import OtpPanel from "@/components/OtpPanel";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 
@@ -31,6 +32,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [loginMsg, setLoginMsg] = useState<{ text: string; type: string }>({ text: "", type: "" });
   const [googleError, setGoogleError] = useState("");
+  const [passkeyError, setPasskeyError] = useState("");
+  const [passkeySubmitting, setPasskeySubmitting] = useState(false);
   const [show2fa, setShow2fa] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pending, setPending] = useState<{ user: User; method: string } | null>(null);
@@ -73,6 +76,20 @@ export default function LoginForm() {
       options: { redirectTo: `${location.origin}/account/login${r ? `?r=${r}` : ""}` },
     });
     if (error) setGoogleError(error.message);
+  };
+
+  const doPasskey = async () => {
+    setPasskeySubmitting(true);
+    setPasskeyError("");
+    try {
+      const { data, error } = await signInWithPasskey();
+      if (error || !data.user) throw error || new Error("ログインに失敗しました");
+      await proceedOrChallenge(data.user, "パスキー");
+    } catch (e) {
+      setPasskeyError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPasskeySubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -184,6 +201,18 @@ export default function LoginForm() {
           Googleでログイン
         </button>
         {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
+
+        <button
+          id="auth-passkey-btn"
+          type="button"
+          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition mt-2.5 disabled:opacity-60"
+          disabled={passkeySubmitting}
+          onClick={doPasskey}
+        >
+          <IconLock className="w-[18px] h-[18px]" />
+          {passkeySubmitting ? "確認中..." : "パスキーでログイン"}
+        </button>
+        {passkeyError && <p className="text-[#e74c3c] text-sm mt-2">{passkeyError}</p>}
 
         <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
           <span className="flex-1 h-px bg-gray-200" />

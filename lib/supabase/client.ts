@@ -9,4 +9,10 @@ import type { Database } from "./types";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key";
 
-export const supabase = createClient<Database>(url, anonKey);
+export const supabase = createClient<Database>(url, anonKey, {
+  auth: {
+    // パスキー(WebAuthn)関連API(signInWithPasskey/registerPasskey/passkey.*)を有効化する。
+    // @supabase/supabase-js v2.105.0以降で提供されるExperimental機能。
+    experimental: { passkey: true },
+  },
+});
