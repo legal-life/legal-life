@@ -14,8 +14,8 @@ export default function MdSwitch({ className = "", ...props }: MdSwitchProps) {
           peer-focus-visible:ring-2 peer-focus-visible:ring-md-primary/50 ${className}`}
       />
       <span
-        className="absolute left-1 top-1 h-4 w-4 rounded-full bg-md-outline transition-all
-          peer-checked:left-[26px] peer-checked:top-0.5 peer-checked:h-6 peer-checked:w-6 peer-checked:bg-md-on-primary"
+        className="absolute left-1 top-2 h-4 w-4 rounded-full bg-md-outline transition-all
+          peer-checked:left-[26px] peer-checked:top-1 peer-checked:h-6 peer-checked:w-6 peer-checked:bg-md-on-primary"
       />
     </label>
   );
