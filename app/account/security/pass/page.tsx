@@ -8,6 +8,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
+import { validatePassword } from "@/lib/auth/utils";
 import OtpPanel from "@/components/OtpPanel";
 
 export default function PassPage() {
@@ -53,7 +54,8 @@ export default function PassPage() {
 
   const handleSubmit = async () => {
     if (!newPass) return setMsg({ text: "新しいパスワードを入力してください", type: "error" });
-    if (newPass.length < 6) return setMsg({ text: "6文字以上にしてください", type: "error" });
+    const pwError = validatePassword(newPass);
+    if (pwError) return setMsg({ text: pwError, type: "error" });
     if (newPass !== confirm) return setMsg({ text: "パスワードが一致しません", type: "error" });
     if (hasPassword && !current) return setMsg({ text: "現在のパスワードを入力してください", type: "error" });
 
@@ -105,7 +107,7 @@ export default function PassPage() {
               id="new-password"
               type="password"
               autoComplete="new-password"
-              placeholder="6文字以上"
+              placeholder="8文字以上、大文字・小文字・数字・記号を含む"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               value={newPass}
               onChange={(e) => setNewPass(e.target.value)}

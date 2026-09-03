@@ -8,6 +8,7 @@ import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { sendNotice } from "@/lib/auth/notifications";
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyItem } from "@/lib/auth/passkey";
+import { validatePassword } from "@/lib/auth/utils";
 import { IconMail, IconGoogleLogo, IconLock, IconTrash } from "@/components/icons";
 
 export default function MethodsPage() {
@@ -101,7 +102,9 @@ export default function MethodsPage() {
   };
 
   const setPassword = async () => {
-    if (!pw1 || pw1.length < 6) return setPwMsg("6文字以上にしてください");
+    if (!pw1) return setPwMsg("パスワードを入力してください");
+    const pwError = validatePassword(pw1);
+    if (pwError) return setPwMsg(pwError);
     if (pw1 !== pw2) return setPwMsg("一致しません");
     const { error } = await supabase.auth.updateUser({ password: pw1 });
     if (error) {
@@ -256,7 +259,7 @@ export default function MethodsPage() {
         <div className="border rounded-xl p-4 mt-4">
           <p className="font-bold text-sm mb-3">パスワードを設定する</p>
           <div className="mb-2">
-            <label className="block text-xs font-bold text-gray-600 mb-1">パスワード(6文字以上)</label>
+            <label className="block text-xs font-bold text-gray-600 mb-1">パスワード(8文字以上、大文字・小文字・数字・記号を含む)</label>
             <input type="password" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value={pw1} onChange={(e) => setPw1(e.target.value)} />
           </div>
           <div className="mb-2">

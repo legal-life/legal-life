@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import { decR, generateNonce } from "@/lib/auth/utils";
+import { decR, generateNonce, validatePassword } from "@/lib/auth/utils";
 import { logAct } from "@/lib/auth/session";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
 import { IconGoogleLogo } from "@/components/icons";
@@ -86,7 +86,8 @@ export default function SignupForm() {
   const doSubmit = async () => {
     if (!name) return setMsg({ text: "お名前を入力してください", type: "error" });
     if (!email) return setMsg({ text: "メールアドレスを入力してください", type: "error" });
-    if (password.length < 6) return setMsg({ text: "パスワードは6文字以上", type: "error" });
+    const pwError = validatePassword(password);
+    if (pwError) return setMsg({ text: pwError, type: "error" });
     if (password !== confirm) return setMsg({ text: "パスワードが一致しません", type: "error" });
     if (isCaptchaEnabled() && !captchaToken) return setMsg({ text: "認証(CAPTCHA)を完了してください", type: "error" });
 
@@ -117,7 +118,7 @@ export default function SignupForm() {
       const M: Record<string, string> = {
         user_already_exists: "すでに使用済みです",
         email_address_invalid: "形式が正しくありません",
-        weak_password: "6文字以上にしてください",
+        weak_password: "8文字以上で、大文字・小文字・数字・記号を含めてください",
       };
       setMsg({ text: (code && M[code]) || (e instanceof Error ? e.message : String(e)), type: "error" });
       setSubmitting(false);
@@ -176,7 +177,7 @@ export default function SignupForm() {
             type="password"
             autoComplete="new-password"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            placeholder="6文字以上"
+            placeholder="8文字以上、大文字・小文字・数字・記号を含む"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
