@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { fetchLocation, parseUA } from "@/lib/browserInfo";
+import { fetchLocation, parseUA, type LocationInfo } from "@/lib/browserInfo";
 
 // 独自アクセスログ収集。access_logsテーブルにページビュー・スクロール・滞在時間・クリックを記録する。
 // 90日以上前のデータの削除はクライアントには書き込み権限がないため、Supabase側のスケジュールジョブで行う。
@@ -19,7 +20,22 @@ function getVisitorInfo() {
   return { isNewVisitor, isNewSession };
 }
 
+// IPジオロケーションは訪問者が変わらない限り変化しないため、ページ遷移のたびに
+// 外部APIへ問い合わせるのは無駄。セッション中に最初の1回だけ取得してキャッシュする。
+let cachedLocation: Promise<LocationInfo> | null = null;
+function getLocationOnce() {
+  if (!cachedLocation) cachedLocation = fetchLocation();
+  return cachedLocation;
+}
+
 export default function AccessLogger() {
+  // App RouterはLinkでの画面遷移時にこのコンポーネントを再マウントしないため、
+  // pathnameをuseEffectの依存配列に含めて画面遷移のたびにeffectを再実行しないと、
+  // 2ページ目以降のpage_view/スクロール深度/滞在時間が一切記録されないバグになる
+  // (旧実装はマウント時に1回だけ実行され、初回ページ以外のpage_viewが送信されず、
+  // スクロール到達率もセッション中ずっとリセットされない状態だった)。
+  const pathname = usePathname();
+
   useEffect(() => {
     let cancelled = false;
     // async IIFE内でaddEventListenerしたリスナーの解除関数をここに集める。
@@ -28,11 +44,14 @@ export default function AccessLogger() {
     // アンマウント時(React Strict Modeでの2重マウント含む)にリスナーが解除されずに
     // 積み重なって二重計測されるバグになるため、外側の配列に集めて外側のreturnで解除する。
     const cleanupFns: (() => void)[] = [];
+    // このページの滞在時間を送信する関数。beforeunload/visibilitychangeに加え、
+    // このページから離れる(=このeffectがクリーンアップされる)タイミングでも呼ぶ。
+    let flushEngagement = () => {};
 
     (async () => {
       const session = getVisitorInfo();
       const ua = parseUA();
-      const loc = await fetchLocation();
+      const loc = await getLocationOnce();
       if (cancelled) return;
 
       const logEvent = (type: string, extra: Record<string, string | number | boolean | null> = {}) => {
@@ -40,7 +59,7 @@ export default function AccessLogger() {
           .from("access_logs")
           .insert({
             event_type: type,
-            path: location.pathname,
+            path: pathname,
             browser: ua.browser,
             os: ua.os,
             device: ua.device,
@@ -117,13 +136,18 @@ export default function AccessLogger() {
       };
       document.addEventListener("click", onClick, { passive: true });
       cleanupFns.push(() => document.removeEventListener("click", onClick));
+
+      flushEngagement = sendEngagement;
     })();
 
     return () => {
       cancelled = true;
+      // ページ遷移(pathname変更によるeffect再実行)またはアンマウント時に、
+      // そのページでの滞在時間を確定して送信する。
+      flushEngagement();
       cleanupFns.forEach((fn) => fn());
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
