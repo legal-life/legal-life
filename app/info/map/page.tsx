@@ -44,7 +44,7 @@ const CATEGORIES: { title: string; links: SitemapLink[] }[] = [
     title: "サイト情報ページ",
     links: [
       { href: "/info/about", label: "サイト概要", icon: IconBuilding },
-      { href: "/info/history", label: "沿革", icon: IconScroll },
+      { href: null, label: "沿革", icon: IconScroll },
       { href: "/info", label: "お知らせ", icon: IconNewspaper },
       { href: "/info/faq", label: "よくある質問", icon: IconQuestion },
       { href: "/info/contact", label: "お問い合わせ", icon: IconMail },
