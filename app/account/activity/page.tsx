@@ -41,8 +41,8 @@ export default function ActivityPage() {
 
   return (
     <MdAccountCard
-      backHref="/account/device"
-      backLabel="デバイス管理に戻る"
+      backHref="/account"
+      backLabel="アカウント設定に戻る"
       title="最近のアクティビティ"
       subtitle="過去1年間のアカウント操作ログ(最大50件)"
       maxWidthClassName="max-w-[640px]"
@@ -97,7 +97,7 @@ export default function ActivityPage() {
       </div>
 
       <div className="text-center mt-5">
-        <Link href="/account/device" className="text-m3-body-medium text-md-on-surface-variant">デバイス管理に戻る</Link>
+        <Link href="/account" className="text-m3-body-medium text-md-on-surface-variant">アカウント設定に戻る</Link>
       </div>
     </MdAccountCard>
   );

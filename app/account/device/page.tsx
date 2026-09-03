@@ -78,14 +78,10 @@ export default function DevicePage() {
     <MdAccountCard
       backHref="/account"
       backLabel="アカウント設定に戻る"
-      title="デバイス管理"
+      title="ログイン中のデバイス"
       subtitle="現在アクティブなセッション一覧"
       maxWidthClassName="max-w-[640px]"
     >
-      <div className="mb-4">
-        <Link href="/account/device/activity" className="text-m3-body-medium text-md-primary font-medium">アクティビティ履歴を見る →</Link>
-      </div>
-
       {error && <p className="text-m3-body-medium text-md-error">読み込みに失敗しました</p>}
       {!error && sessions === null && <p className="text-m3-body-medium text-md-on-surface-variant">読み込み中...</p>}
       {!error && sessions?.length === 0 && <p className="text-m3-body-medium text-md-on-surface-variant">セッション情報がありません</p>}
