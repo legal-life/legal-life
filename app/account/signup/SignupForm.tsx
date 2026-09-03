@@ -14,8 +14,18 @@ import MdTextField from "@/components/material/MdTextField";
 const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 
+// decR は "/" で始まる文字列であれば許可するが、"//evil.com" のようなプロトコル
+// 相対URL(スキームなしの絶対URL)も "/" で始まるため素通りしてしまい、
+// 登録後に外部サイトへリダイレクトされるオープンリダイレクト脆弱性になり得る。
+// そのため同一オリジンの相対パス("/xxx" で始まり "//" や "/\" で始まらない)
+// であることをここで追加検証する。
+function isSafeRedirectPath(path: string): boolean {
+  return path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\");
+}
+
 function afterLoginRedirect(r: string | null) {
-  const dest = (r ? decR(r) : null) || "/account";
+  const decoded = r ? decR(r) : null;
+  const dest = decoded && isSafeRedirectPath(decoded) ? decoded : "/account";
   window.location.replace(dest);
 }
 
