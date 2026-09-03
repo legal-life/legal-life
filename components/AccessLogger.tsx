@@ -22,6 +22,12 @@ function getVisitorInfo() {
 export default function AccessLogger() {
   useEffect(() => {
     let cancelled = false;
+    // async IIFE内でaddEventListenerしたリスナーの解除関数をここに集める。
+    // asyncクロージャの中で直接 `return () => {...}` しても、それはこの即時関数の
+    // Promiseの解決値になるだけでuseEffectのクリーンアップとしては使われず、
+    // アンマウント時(React Strict Modeでの2重マウント含む)にリスナーが解除されずに
+    // 積み重なって二重計測されるバグになるため、外側の配列に集めて外側のreturnで解除する。
+    const cleanupFns: (() => void)[] = [];
 
     (async () => {
       const session = getVisitorInfo();
@@ -71,6 +77,7 @@ export default function AccessLogger() {
         });
       };
       window.addEventListener("scroll", onScroll, { passive: true });
+      cleanupFns.push(() => window.removeEventListener("scroll", onScroll));
 
       // 滞在時間
       const start = Date.now();
@@ -80,10 +87,12 @@ export default function AccessLogger() {
         logEvent("engagement", { ms, sec: Math.round(ms / 1000) });
       };
       window.addEventListener("beforeunload", sendEngagement);
+      cleanupFns.push(() => window.removeEventListener("beforeunload", sendEngagement));
       const onVisibility = () => {
         if (document.visibilityState === "hidden") sendEngagement();
       };
       document.addEventListener("visibilitychange", onVisibility);
+      cleanupFns.push(() => document.removeEventListener("visibilitychange", onVisibility));
 
       // クリック計測
       const targets = [
@@ -107,17 +116,12 @@ export default function AccessLogger() {
         }
       };
       document.addEventListener("click", onClick, { passive: true });
-
-      return () => {
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("beforeunload", sendEngagement);
-        document.removeEventListener("visibilitychange", onVisibility);
-        document.removeEventListener("click", onClick);
-      };
+      cleanupFns.push(() => document.removeEventListener("click", onClick));
     })();
 
     return () => {
       cancelled = true;
+      cleanupFns.forEach((fn) => fn());
     };
   }, []);
 
