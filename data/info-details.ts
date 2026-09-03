@@ -428,7 +428,7 @@ export const infoDetails: InfoDetail[] = [
                     </tr>
                     <tr>
                     <th>設定ページ</th>
-                    <td><a href="/account/security/2fa/">アカウントセキュリティ設定</a></td>
+                    <td><a href="/account/security/totp/">アカウントセキュリティ設定</a></td>
                     </tr>
                 </table>
                 </div>

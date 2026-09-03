@@ -5,19 +5,24 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { decR } from "@/lib/auth/utils";
+import { decR, generateNonce } from "@/lib/auth/utils";
 import { needsMfaChallenge, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { logAct, regSession } from "@/lib/auth/session";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
+import { signInWithPasskey } from "@/lib/auth/passkey";
+import { IconGoogleLogo, IconLock } from "@/components/icons";
 import OtpPanel from "@/components/OtpPanel";
 import Captcha, { isCaptchaEnabled, type CaptchaHandle } from "@/components/Captcha";
+import MdAccountCard from "@/components/material/MdAccountCard";
+import MdButton from "@/components/material/MdButton";
+import MdTextField from "@/components/material/MdTextField";
 
 const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 const CONSENT_INTERVAL = 30 * 24 * 60 * 60 * 1000;
 
 function afterLoginRedirect(r: string | null) {
-  const dest = (r ? decR(r) : null) || "/account/settings";
+  const dest = (r ? decR(r) : null) || "/account";
   window.location.replace(dest);
 }
 
@@ -30,6 +35,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [loginMsg, setLoginMsg] = useState<{ text: string; type: string }>({ text: "", type: "" });
   const [googleError, setGoogleError] = useState("");
+  const [passkeyError, setPasskeyError] = useState("");
+  const [passkeySubmitting, setPasskeySubmitting] = useState(false);
   const [show2fa, setShow2fa] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pending, setPending] = useState<{ user: User; method: string } | null>(null);
@@ -74,12 +81,27 @@ export default function LoginForm() {
     if (error) setGoogleError(error.message);
   };
 
+  const doPasskey = async () => {
+    setPasskeySubmitting(true);
+    setPasskeyError("");
+    try {
+      const { data, error } = await signInWithPasskey();
+      if (error || !data.user) throw error || new Error("ログインに失敗しました");
+      await proceedOrChallenge(data.user, "パスキー");
+    } catch (e) {
+      setPasskeyError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPasskeySubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const w = window as unknown as {
       google?: { accounts?: { id?: { initialize: (opts: unknown) => void; prompt: () => void } } };
     };
-    const initOneTap = () => {
+    const initOneTap = async () => {
       if (!w.google?.accounts?.id) return;
+      const [nonce, hashedNonce] = await generateNonce();
       w.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (credentialResponse: { credential: string }) => {
@@ -87,6 +109,7 @@ export default function LoginForm() {
             const { data, error } = await supabase.auth.signInWithIdToken({
               provider: "google",
               token: credentialResponse.credential,
+              nonce,
             });
             if (error || !data.user) throw error || new Error("ログインに失敗しました");
             localStorage.setItem("ll_last_consent", Date.now().toString());
@@ -95,6 +118,7 @@ export default function LoginForm() {
             setGoogleError(e instanceof Error ? e.message : String(e));
           }
         },
+        nonce: hashedNonce,
         auto_select: false,
         cancel_on_tap_outside: true,
       });
@@ -166,76 +190,72 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <h1 className="text-2xl font-bold text-center mb-1.5">ログイン</h1>
-        <p className="text-center text-sm text-gray-500 mb-6">legal&life アカウントにログイン</p>
+    <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
+        <h1 className="text-center text-m3-headline-medium text-md-on-surface mb-1.5">ログイン</h1>
+        <p className="text-center text-m3-body-medium text-md-on-surface-variant mb-6">legal&life アカウントにログイン</p>
 
-        <button
-          id="auth-google-btn"
-          type="button"
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-50 transition"
-          onClick={doGoogle}
-        >
-          <svg width="18" height="18" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z" />
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.43-8.71l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-          </svg>
+        <MdButton id="auth-google-btn" variant="outlined" className="w-full" onClick={doGoogle}>
+          <IconGoogleLogo className="w-[18px] h-[18px]" />
           Googleでログイン
-        </button>
-        {googleError && <p className="text-[#e74c3c] text-sm mt-2">{googleError}</p>}
+        </MdButton>
+        {googleError && <p className="text-m3-body-small text-md-error mt-2">{googleError}</p>}
 
-        <div className="flex items-center gap-3 my-5 text-xs text-gray-400">
-          <span className="flex-1 h-px bg-gray-200" />
+        <MdButton
+          id="auth-passkey-btn"
+          variant="outlined"
+          className="w-full mt-2.5"
+          disabled={passkeySubmitting}
+          onClick={doPasskey}
+        >
+          <IconLock className="w-[18px] h-[18px]" />
+          {passkeySubmitting ? "確認中..." : "パスキーでログイン"}
+        </MdButton>
+        {passkeyError && <p className="text-m3-body-small text-md-error mt-2">{passkeyError}</p>}
+
+        <div className="flex items-center gap-3 my-5 text-m3-body-small text-md-on-surface-variant">
+          <span className="flex-1 h-px bg-md-outline-variant" />
           または
-          <span className="flex-1 h-px bg-gray-200" />
+          <span className="flex-1 h-px bg-md-outline-variant" />
         </div>
 
         {!show2fa && (
           <div>
-            <div className="mb-3">
-              <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="login-email">メールアドレス</label>
-              <input
-                id="login-email"
-                type="email"
-                autoComplete="email"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="example@mail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block text-xs font-bold text-gray-600 mb-1" htmlFor="login-password">パスワード</label>
-              <input
-                id="login-password"
-                type="password"
-                autoComplete="current-password"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="パスワード"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && doEmail()}
-              />
-            </div>
+            <MdTextField
+              id="login-email"
+              label="メールアドレス"
+              type="email"
+              autoComplete="email"
+              containerClassName="mb-4"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <MdTextField
+              id="login-password"
+              label="パスワード"
+              type="password"
+              autoComplete="current-password"
+              containerClassName="mb-3"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && doEmail()}
+            />
             <Captcha ref={captchaRef} onVerify={setCaptchaToken} onExpire={() => setCaptchaToken("")} />
             {loginMsg.text && (
-              <p className={`text-sm mb-2 ${loginMsg.type === "error" ? "text-[#e74c3c]" : "text-[#27ae60]"}`}>
+              <p className={`text-m3-body-small mb-2 ${loginMsg.type === "error" ? "text-md-error" : "text-[#146c2e]"}`}>
                 {loginMsg.text}
               </p>
             )}
-            <button
+            <MdButton
               id="auth-submit-btn"
-              type="button"
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-lg py-2.5 text-sm transition disabled:opacity-60"
+              variant="filled"
+              className="w-full"
               disabled={submitting || (isCaptchaEnabled() && !captchaToken)}
               onClick={doEmail}
             >
               ログイン
-            </button>
+            </MdButton>
             <div className="text-center mt-3">
-              <button type="button" className="text-sm text-gray-500 underline" onClick={doForgotPassword}>
+              <button type="button" className="text-m3-body-medium text-md-on-surface-variant underline" onClick={doForgotPassword}>
                 パスワードをお忘れの方
               </button>
             </div>
@@ -255,12 +275,12 @@ export default function LoginForm() {
           />
         )}
 
-        <div className="h-px bg-gray-200 my-5" />
+        <div className="h-px bg-md-outline-variant my-5" />
         <div className="text-center">
-          <Link href="/account/signup" className="text-sm text-primary-dark font-semibold">アカウントをお持ちでない方</Link>
+          <Link href="/account/signup" className="text-m3-body-medium text-md-primary font-medium">アカウントをお持ちでない方</Link>
         </div>
         <div className="text-center mt-2">
-          <Link href="/" className="text-sm text-gray-400">ホームへ戻る</Link>
+          <Link href="/" className="text-m3-body-small text-md-on-surface-variant">ホームへ戻る</Link>
         </div>
     </div>
   );

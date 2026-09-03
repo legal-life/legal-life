@@ -10,6 +10,7 @@ import SessionWatcher from "@/components/SessionWatcher";
 import ScrollTopButton from "@/components/ScrollTopButton";
 import MaintenancePopup from "@/components/MaintenancePopup";
 import CookieBanner from "@/components/CookieBanner";
+import SiteChrome from "@/components/SiteChrome";
 import "./globals.css";
 
 // 元リポジトリの BIZUDGothic-Bold.woff2 は拡張子のみwoff2で実体が壊れたフォントデータのため
@@ -41,15 +42,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja" className={bizUDGothic.variable}>
       <body className="font-sans">
-        <div id="header"><Header /></div>
+        <SiteChrome>
+          <div id="header"><Header /></div>
+        </SiteChrome>
         <main>{children}</main>
-        <div id="footer"><Footer /></div>
+        <SiteChrome>
+          <div id="footer"><Footer /></div>
+        </SiteChrome>
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
         <AccessLogger />
         <SessionWatcher />
         <ScrollTopButton />
         <MaintenancePopup />
-        <CookieBanner />
+        <SiteChrome>
+          <CookieBanner />
+        </SiteChrome>
         <Analytics />
         <SpeedInsights />
       </body>

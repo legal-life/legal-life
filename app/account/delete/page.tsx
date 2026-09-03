@@ -10,6 +10,7 @@ import { getProfile, setDeletionPending } from "@/lib/auth/profile";
 import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
 import OtpPanel from "@/components/OtpPanel";
+import MdButton from "@/components/material/MdButton";
 
 const CHECKS = [
   "削除後、すべてのデータ(チャット履歴・アカウント情報)は完全に消去され復元不可です",
@@ -58,7 +59,7 @@ export default function DeletePage() {
     try {
       await setDeletionPending(user.id, false);
       setCancelMsg("削除申請をキャンセルしました");
-      setTimeout(() => window.location.replace("/account/settings"), 1500);
+      setTimeout(() => window.location.replace("/account"), 1500);
     } catch (e) {
       setCancelMsg(e instanceof Error ? e.message : String(e));
     }
@@ -89,54 +90,51 @@ export default function DeletePage() {
 
   if (success) {
     return (
-      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9 text-center">
-        <p className="text-lg font-bold">削除を申請しました</p>
-        <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+      <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1 text-center">
+        <p className="text-m3-title-large font-bold text-md-on-surface">削除を申請しました</p>
+        <p className="text-m3-body-medium text-md-on-surface-variant mt-2 leading-relaxed">
           30日後に完全削除されます。
           <br />
           キャンセルはアカウント設定ページから可能です。
         </p>
-        <Link href="/" className="inline-block mt-5 text-primary-dark font-semibold text-sm">ホームへ戻る</Link>
+        <Link href="/" className="inline-block mt-5 text-md-primary font-semibold text-m3-body-medium">ホームへ戻る</Link>
       </div>
     );
   }
 
   if (alreadyPending) {
     return (
-      <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-        <div className="bg-[#fffdf0] border border-[#ffc107]/70 rounded-xl p-5 text-center">
-          <p className="font-bold mb-2">削除申請済みです</p>
-          <p className="text-sm mb-2">削除予定日: <strong>{scheduledDate || "--"}</strong></p>
-          <p className="text-xs text-[#856404] mb-4">予定日まで、アカウントの利用は一部制限されます。</p>
-          <button
-            className="bg-primary text-white font-bold rounded-lg py-2.5 px-6 text-sm"
-            onClick={handleCancelPending}
-          >
+      <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
+        <div className="rounded-m3-md bg-[#fff8e1] border border-[#f9a825]/40 p-5 text-center">
+          <p className="font-bold text-m3-body-medium text-md-on-surface mb-2">削除申請済みです</p>
+          <p className="text-m3-body-medium text-md-on-surface mb-2">削除予定日: <strong>{scheduledDate || "--"}</strong></p>
+          <p className="text-m3-body-small text-[#856404] mb-4">予定日まで、アカウントの利用は一部制限されます。</p>
+          <MdButton variant="filled" onClick={handleCancelPending}>
             削除申請をキャンセルする
-          </button>
-          {cancelMsg && <p className="text-sm mt-2">{cancelMsg}</p>}
+          </MdButton>
+          {cancelMsg && <p className="text-m3-body-medium text-md-on-surface mt-2">{cancelMsg}</p>}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-[520px] bg-white border border-[#dadce0] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.07)] p-9">
-      <Link href="/account/settings" className="text-sm text-gray-500">← アカウント設定に戻る</Link>
-      <h1 className="text-xl font-bold mt-3">アカウントの削除</h1>
-      <p className="text-sm text-gray-500 mb-5">削除申請後、30日間はキャンセル可能です</p>
+    <div className="w-full max-w-[520px] rounded-m3-lg bg-md-surface-container-lowest p-9 shadow-m3-1">
+      <Link href="/account" className="text-m3-body-medium text-md-on-surface-variant">← アカウント設定に戻る</Link>
+      <h1 className="text-m3-headline-medium text-md-on-surface mt-3">アカウントの削除</h1>
+      <p className="text-m3-body-medium text-md-on-surface-variant mb-5">削除申請後、30日間はキャンセル可能です</p>
 
-      <div className="bg-[#fff9f9] border border-[#e74c3c]/60 rounded-xl p-4 mb-4">
-        <p className="font-bold text-sm mb-1">削除前に必ずご確認ください</p>
-        <p className="text-xs text-[#c0392b]">削除申請から30日後にすべてのデータが完全削除されます。この操作は取り消せません。</p>
+      <div className="rounded-m3-md bg-md-error-container p-4 mb-4">
+        <p className="font-bold text-m3-body-medium text-md-on-error-container mb-1">削除前に必ずご確認ください</p>
+        <p className="text-m3-body-small text-md-on-error-container">削除申請から30日後にすべてのデータが完全削除されます。この操作は取り消せません。</p>
       </div>
 
       <div className="space-y-3 mb-4">
         {CHECKS.map((text, i) => (
-          <label key={i} className="flex items-start gap-2 text-sm">
+          <label key={i} className="flex items-start gap-2 text-m3-body-medium text-md-on-surface">
             <input
               type="checkbox"
-              className="mt-1"
+              className="mt-1 accent-md-primary"
               checked={checked[i]}
               onChange={(e) => {
                 const next = [...checked];
@@ -160,13 +158,14 @@ export default function DeletePage() {
           }}
         />
       ) : (
-        <button
-          className="w-full bg-[#e74c3c] hover:bg-[#c0392b] text-white font-bold rounded-lg py-2.5 text-sm disabled:opacity-50"
+        <MdButton
+          variant="filled"
+          className="w-full !bg-md-error !text-md-on-error"
           disabled={!checked.every(Boolean) || submitting}
           onClick={handleExecute}
         >
           削除を申請する
-        </button>
+        </MdButton>
       )}
     </div>
   );
