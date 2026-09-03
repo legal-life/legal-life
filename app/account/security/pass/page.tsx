@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
@@ -13,9 +11,10 @@ import OtpPanel from "@/components/OtpPanel";
 import MdAccountCard from "@/components/material/MdAccountCard";
 import MdButton from "@/components/material/MdButton";
 import MdTextField from "@/components/material/MdTextField";
+import { useSecurityGate, SecurityGateScreen } from "../SecurityGate";
 
 export default function PassPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, needsGate } = useSecurityGate();
   const [hasPassword, setHasPassword] = useState(false);
   const [current, setCurrent] = useState("");
   const [newPass, setNewPass] = useState("");
@@ -25,12 +24,9 @@ export default function PassPage() {
   const [showOtp, setShowOtp] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const u = await requireAuth();
-      setUser(u);
-      setHasPassword((u.identities ?? []).some((i) => i.provider === "email"));
-    })();
-  }, []);
+    if (!user) return;
+    setHasPassword((user.identities ?? []).some((i) => i.provider === "email"));
+  }, [user]);
 
   const execChange = async () => {
     if (!user?.email) throw new Error("メールアドレスが設定されていません");
@@ -80,6 +76,8 @@ export default function PassPage() {
     await execChange();
     return { ok: true };
   };
+
+  if (needsGate) return <SecurityGateScreen title="パスワード" />;
 
   if (!user) return null;
 

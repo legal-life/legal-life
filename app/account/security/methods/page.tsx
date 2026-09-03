@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { sendNotice } from "@/lib/auth/notifications";
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyItem } from "@/lib/auth/passkey";
@@ -15,9 +13,11 @@ import MdButton from "@/components/material/MdButton";
 import MdTextField from "@/components/material/MdTextField";
 import MdListItem from "@/components/material/MdListItem";
 import MdIconButton from "@/components/material/MdIconButton";
+import { useSecurityGate, SecurityGateScreen } from "../SecurityGate";
 
 export default function MethodsPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user: gatedUser, needsGate } = useSecurityGate();
+  const [user, setUser] = useState(gatedUser);
   const [msg, setMsg] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [emailMsg, setEmailMsg] = useState("");
@@ -31,11 +31,11 @@ export default function MethodsPage() {
   const [passkeySubmitting, setPasskeySubmitting] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      setUser(await requireAuth());
-      await refreshPasskeys();
-    })();
-  }, []);
+    if (!gatedUser) return;
+    setUser(gatedUser);
+    refreshPasskeys();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gatedUser]);
 
   const refresh = async () => {
     const { data } = await supabase.auth.getUser();
@@ -74,6 +74,8 @@ export default function MethodsPage() {
       setPasskeyMsg(e instanceof Error ? e.message : String(e));
     }
   };
+
+  if (needsGate) return <SecurityGateScreen title="ログイン方法" />;
 
   if (!user) return null;
 

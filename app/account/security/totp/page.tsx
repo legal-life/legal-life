@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { requireAuth } from "@/lib/auth/requireAuth";
 import { logAct } from "@/lib/auth/session";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
 import { IconCheck, IconTrash } from "@/components/icons";
@@ -12,11 +10,12 @@ import MdAccountCard from "@/components/material/MdAccountCard";
 import MdButton from "@/components/material/MdButton";
 import MdIconButton from "@/components/material/MdIconButton";
 import MdListItem from "@/components/material/MdListItem";
+import { useSecurityGate, SecurityGateScreen } from "../SecurityGate";
 
 type TotpFactor = { id: string; friendly_name?: string; created_at: string };
 
 export default function TwoFaPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, needsGate } = useSecurityGate();
   const [factors, setFactors] = useState<TotpFactor[] | null>(null);
   const [enrolling, setEnrolling] = useState(false);
   const [factorId, setFactorId] = useState("");
@@ -33,12 +32,9 @@ export default function TwoFaPage() {
   };
 
   useEffect(() => {
-    (async () => {
-      const u = await requireAuth();
-      setUser(u);
-      await refresh();
-    })();
-  }, []);
+    if (!user) return;
+    refresh();
+  }, [user]);
 
   const startEnroll = async () => {
     setError("");
@@ -101,6 +97,8 @@ export default function TwoFaPage() {
     sendNoticeForUser(user, "otp_change", "二段階認証の設定が変更されました(認証アプリを削除)");
     await refresh();
   };
+
+  if (needsGate) return <SecurityGateScreen title="二段階認証" />;
 
   if (!user || factors === null) return null;
 
