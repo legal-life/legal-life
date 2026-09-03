@@ -28,6 +28,7 @@ export default function SearchApp() {
   const [laws, setLaws] = useState<LawSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const [openDetailId, setOpenDetailId] = useState<string | null>(null);
   const [detailHtml, setDetailHtml] = useState<Record<string, string>>({});
   const [detailLoading, setDetailLoading] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function SearchApp() {
       setLaws(results);
       setTotalCount(total);
       setOffset(nextOffset);
+      setHasSearched(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -196,6 +198,9 @@ export default function SearchApp() {
 
       {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
       {loading && <div className="text-gray-500 text-sm mt-4">検索中...</div>}
+      {!loading && !error && hasSearched && laws.length === 0 && (
+        <div className="text-center text-gray-400 text-sm mt-6">該当する法令が見つかりませんでした。</div>
+      )}
 
       {!loading && laws.length > 0 && (
         <>
