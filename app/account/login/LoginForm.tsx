@@ -82,10 +82,16 @@ export default function LoginForm() {
   };
 
   const doPasskey = async () => {
+    if (isCaptchaEnabled() && !captchaToken) {
+      setPasskeyError("認証(CAPTCHA)を完了してください");
+      return;
+    }
     setPasskeySubmitting(true);
     setPasskeyError("");
     try {
-      const { data, error } = await signInWithPasskey();
+      const { data, error } = await signInWithPasskey(captchaToken);
+      captchaRef.current?.reset();
+      setCaptchaToken("");
       if (error || !data.user) throw error || new Error("ログインに失敗しました");
       await proceedOrChallenge(data.user, "パスキー");
     } catch (e) {

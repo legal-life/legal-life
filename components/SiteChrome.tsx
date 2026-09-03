@@ -2,11 +2,12 @@
 
 import { usePathname } from "next/navigation";
 
-// ログイン・サインアップ画面ではヘッダー・フッター・Cookie同意バナーを表示しない。
-const HIDDEN_CHROME_PATHS = ["/account/login", "/account/signup"];
+// /account/** 配下(ログイン・サインアップ・アカウント設定関連の全画面)では
+// ヘッダー・フッター・Cookie同意バナーを表示しない。
+const HIDDEN_CHROME_PREFIX = "/account";
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (HIDDEN_CHROME_PATHS.includes(pathname)) return null;
+  if (pathname === HIDDEN_CHROME_PREFIX || pathname.startsWith(`${HIDDEN_CHROME_PREFIX}/`)) return null;
   return <>{children}</>;
 }

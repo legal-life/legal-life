@@ -29,7 +29,8 @@ export async function deletePasskey(passkeyId: string) {
   if (error) throw error;
 }
 
-// パスキーでログインする(未ログイン状態から呼ぶ)。
-export async function signInWithPasskey() {
-  return supabase.auth.signInWithPasskey();
+// パスキーでログインする(未ログイン状態から呼ぶ)。CAPTCHA保護が有効な場合は
+// captchaTokenを渡さないと「captcha protection: request disallowed」で失敗する。
+export async function signInWithPasskey(captchaToken?: string) {
+  return supabase.auth.signInWithPasskey(captchaToken ? { options: { captchaToken } } : undefined);
 }
