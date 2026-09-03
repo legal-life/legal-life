@@ -54,12 +54,9 @@ export default function HomePage() {
             <PopupLink className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1">
               法令学習
             </PopupLink>
-            <Link
-              href="/content/chat"
-              className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1"
-            >
+            <PopupLink className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1">
               チャット
-            </Link>
+            </PopupLink>
             <Link
               href="/content/search"
               className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1"
