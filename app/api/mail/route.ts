@@ -33,6 +33,15 @@ const NOTICE_MAX_LENGTHS: Record<string, number> = {
   purpose: 300,
 };
 
+// nodemailerのaddressparserは"a@x.com,b@y.com"のようなカンマ区切り文字列を
+// 複数の宛先として解釈する。to_emailは単一の宛先を想定した値であり、これを
+// そのままsendMail()の"to"へ渡すと、認証済みユーザーが1回のリクエストで
+// (長さ254文字の上限内で)カンマ区切りの複数アドレスを詰め込むことができ、
+// NOTICE_RATE_LIMIT_MAX_REQUESTSによるユーザー単位のレート制限を実質的に
+// バイパスして本サイトのGmailアカウントから多数の第三者へメールを送りつけ
+// られてしまう。単一のメールアドレス形式であることをここで検証する。
+const SINGLE_EMAIL_RE = /^[^\s,<>]+@[^\s,<>]+\.[^\s,<>]+$/;
+
 // フィールドが文字列型でない場合(配列・オブジェクト等)、これまでは長さチェックを
 // 素通りしてしまい、MAX_LENGTHS/NOTICE_MAX_LENGTHSが本来防ぐはずの巨大ペイロード
 // (ネストしたJSONオブジェクト等、文字列のlengthでは測れない値)をDB保存・メール本文への
@@ -194,6 +203,9 @@ export async function POST(req: NextRequest) {
     const to_email = body.to_email;
     if (typeof to_email !== "string" || !to_email) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    }
+    if (!SINGLE_EMAIL_RE.test(to_email)) {
+      return NextResponse.json({ error: "to_emailが不正です" }, { status: 400 });
     }
 
     const invalidNoticeField = findInvalidField(body, NOTICE_MAX_LENGTHS);
