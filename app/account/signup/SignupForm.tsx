@@ -14,6 +14,13 @@ import MdTextField from "@/components/material/MdTextField";
 const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 
+// doGoogle()(フルリダイレクト方式のGoogle OAuth)は遷移前に立て、Google側から
+// 戻ってきた直後の1回だけ onAuthStateChange 経由の処理を行うためのフラグ。
+// これがないと、既にログイン済みのユーザーがこのページを開いただけでも
+// INITIAL_SESSIONイベントに反応してリダイレクトしてしまう
+// (LoginForm.tsxの同名フラグと同じ理由。詳細はそちらのコメントを参照)。
+const OAUTH_PENDING_KEY = "ll_oauth_pending_signup";
+
 // decR は "/" で始まる文字列であれば許可するが、"//evil.com" のようなプロトコル
 // 相対URL(スキームなしの絶対URL)も "/" で始まるため素通りしてしまい、
 // 登録後に外部サイトへリダイレクトされるオープンリダイレクト脆弱性になり得る。
@@ -47,13 +54,23 @@ export default function SignupForm() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) afterLoginRedirect(r);
+      // OAUTH_PENDING_KEYが立っている(=直前にdoGoogleでリダイレクトし、
+      // 戻ってきた)場合のみ処理する。詳細は上のOAUTH_PENDING_KEYのコメントを参照。
+      if (session?.user && sessionStorage.getItem(OAUTH_PENDING_KEY)) {
+        sessionStorage.removeItem(OAUTH_PENDING_KEY);
+        // 他の登録経路(メール・Google One Tap)と同様、アクティビティ履歴に記録する。
+        // 以前はこのフルリダイレクト経路だけlogActが呼ばれておらず、
+        // Googleボタン経由で登録したユーザーの「アカウント作成」履歴が抜け落ちていた。
+        logAct(session.user.id, "signup", "Google");
+        afterLoginRedirect(r);
+      }
     });
     return () => subscription.unsubscribe();
   }, [r]);
 
   const doGoogle = async () => {
     localStorage.setItem("ll_last_consent", Date.now().toString());
+    sessionStorage.setItem(OAUTH_PENDING_KEY, "1");
     // r はBase64文字列(encR由来)で "+" "/" "=" を含み得るため、クエリ文字列に
     // そのまま埋め込むと "+" が空白として再解釈される等でGoogle OAuth往復後に
     // decR()が壊れた値を受け取ってしまう。encodeURIComponentで再エンコードする。
@@ -61,7 +78,10 @@ export default function SignupForm() {
       provider: "google",
       options: { redirectTo: `${location.origin}/account/signup${r ? `?r=${encodeURIComponent(r)}` : ""}` },
     });
-    if (error) setGoogleError(error.message);
+    if (error) {
+      sessionStorage.removeItem(OAUTH_PENDING_KEY);
+      setGoogleError(error.message);
+    }
   };
 
   useEffect(() => {
