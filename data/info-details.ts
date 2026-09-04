@@ -1145,7 +1145,7 @@ const infoDetailsSource: InfoDetail[] = [
             <p style="margin-bottom: 0;">
                 <strong>リニューアル延期に関する詳細はこちら：</strong><br>
                 今回のメールシステム移行を含む、アカウントシステム刷新の全貌とスケジュール変更につきましては、以下のお知らせをご確認ください。<br>
-                <a href="0013"><strong>&rarr; アカウントシステム刷新の全貌とリリース延期に伴う影響について</strong></a>
+                <a href="/info/details/0013"><strong>&rarr; アカウントシステム刷新の全貌とリリース延期に伴う影響について</strong></a>
             </p>
             </section>
 
