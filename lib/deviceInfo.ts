@@ -10,7 +10,17 @@ export async function collectDeviceInfo() {
 
   let storageUsage = "取得不可";
   try {
-    storageUsage = `${(encodeURI(JSON.stringify(localStorage)).length / 1024).toFixed(2)} KB`;
+    // localStorage(Storage interface)は仕様上 LegacyUnenumerableNamedProperties が
+    // 付与されており、格納したキーはObject.keys/for-in/JSON.stringifyでは列挙されない
+    // (JSON.stringify(localStorage) は常に "{}" を返す)。そのため、length/key()/getItem()で
+    // 明示的に走査して実際の使用量を集計する。
+    let raw = "";
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key === null) continue;
+      raw += key + (localStorage.getItem(key) ?? "");
+    }
+    storageUsage = `${(encodeURI(raw).length / 1024).toFixed(2)} KB`;
   } catch {
     /* ignore */
   }

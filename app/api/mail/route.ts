@@ -33,10 +33,15 @@ const NOTICE_MAX_LENGTHS: Record<string, number> = {
   purpose: 300,
 };
 
-function findOversizedField(params: Record<string, unknown>, limits: Record<string, number>): string | null {
+// フィールドが文字列型でない場合(配列・オブジェクト等)、これまでは長さチェックを
+// 素通りしてしまい、MAX_LENGTHS/NOTICE_MAX_LENGTHSが本来防ぐはずの巨大ペイロード
+// (ネストしたJSONオブジェクト等、文字列のlengthでは測れない値)をDB保存・メール本文への
+// 埋め込みに使えてしまっていた。存在する値は文字列型であることも合わせて要求する。
+function findInvalidField(params: Record<string, unknown>, limits: Record<string, number>): string | null {
   for (const [field, max] of Object.entries(limits)) {
     const value = params[field];
-    if (typeof value === "string" && value.length > max) return field;
+    if (value === undefined || value === null) continue;
+    if (typeof value !== "string" || value.length > max) return field;
   }
   return null;
 }
@@ -103,13 +108,20 @@ export async function POST(req: NextRequest) {
   try {
     if (type === "contact") {
       const params = body as unknown as ContactMailParams & { captchaToken?: string };
-      if (!params.from_name || !params.inquiry_type || !params.content) {
+      if (
+        typeof params.from_name !== "string" ||
+        !params.from_name ||
+        typeof params.inquiry_type !== "string" ||
+        !params.inquiry_type ||
+        typeof params.content !== "string" ||
+        !params.content
+      ) {
         return NextResponse.json({ error: "Missing fields" }, { status: 400 });
       }
-      const oversizedField = findOversizedField(params as unknown as Record<string, unknown>, MAX_LENGTHS);
-      if (oversizedField) {
+      const invalidField = findInvalidField(params as unknown as Record<string, unknown>, MAX_LENGTHS);
+      if (invalidField) {
         return NextResponse.json(
-          { error: `${oversizedField}が長すぎます(最大${MAX_LENGTHS[oversizedField]}文字)` },
+          { error: `${invalidField}が不正です(最大${MAX_LENGTHS[invalidField]}文字の文字列)` },
           { status: 400 },
         );
       }
@@ -179,13 +191,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const to_email = body.to_email as string | undefined;
-    if (!to_email) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    const to_email = body.to_email;
+    if (typeof to_email !== "string" || !to_email) {
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    }
 
-    const oversizedNoticeField = findOversizedField(body, NOTICE_MAX_LENGTHS);
-    if (oversizedNoticeField) {
+    const invalidNoticeField = findInvalidField(body, NOTICE_MAX_LENGTHS);
+    if (invalidNoticeField) {
       return NextResponse.json(
-        { error: `${oversizedNoticeField}が長すぎます(最大${NOTICE_MAX_LENGTHS[oversizedNoticeField]}文字)` },
+        { error: `${invalidNoticeField}が不正です(最大${NOTICE_MAX_LENGTHS[invalidNoticeField]}文字の文字列)` },
         { status: 400 },
       );
     }
