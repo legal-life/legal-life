@@ -8,7 +8,7 @@ export type LawDoc = {
 export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawDoc> = {
   privacy: {
     title: "プライバシーポリシー",
-    dateLabel: `最終更新日: 2026年8月28日`,
+    dateLabel: `最終更新日: 2026年9月4日`,
     bodyHtml: `<p>このプライバシーポリシーは、個人情報、Cookie、外部サービス利用、AI利用、セキュリティ対策、運営体制に関する包括的な情報開示文書です。</p>
 
                     <h2 id="section1">1. 基本方針</h2>
@@ -152,7 +152,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                                 <p>・ユーザーID</p>
                                 <p>・チャット内容（テキスト）、AI生成回答、法令分野のカテゴリ、タイムスタンプ（ログイン時のみ）</p>
                                 <p>・お問い合わせ内容、デバイス診断情報</p>
-                                <p>・二段階認証設定（有効/無効フラグ、OTPコード、有効期限※認証完了後即削除）</p>
+                                <p>・二段階認証（認証アプリによるTOTP方式）の登録状況。TOTPの秘密鍵や認証コード自体はSupabase Authが管理し、当方が別途データベースに保存することはありません</p>
                             <h4>5-3-4. その他の情報</h4>
                                 <p><strong>データ処理地</strong>: 東京リージョン</p>
                                 <p><strong>保持期間</strong>: チャット履歴はユーザーが削除するまで、または作成から6ヶ月間。お問い合わせ内容は対応完了確認まで（自動削除の仕組みはありません）。その他のアカウント関連情報はアカウント削除まで</p>
@@ -359,7 +359,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>・定期的な委託先のセキュリティ状況の確認</p>
                         <h3>9-7. ユーザーの皆様へのお願い</h3>
                             <p><strong>個人情報・機密情報の入力禁止</strong>: チャット機能には、個人を特定できる情報や機密情報を入力しないでください。</p>
-                            <p><strong>パスワードの管理</strong>: Googleログインを利用する場合、Googleアカウントのセキュリティを適切に管理し、Google側での二段階認証の設定を推奨します。メール・パスワードでログインしている場合は、アカウント設定ページから本サイトのメール二段階認証を有効にすることを推奨します。</p>
+                            <p><strong>パスワードの管理</strong>: Googleログインを利用する場合、Googleアカウントのセキュリティを適切に管理し、Google側での二段階認証の設定を推奨します。また、ログイン方法にかかわらず、アカウント設定ページから認証アプリを使った本サイトの二段階認証(TOTP)を有効にすることを推奨します。</p>
                             <p><strong>不審なメール・リンクへの注意</strong>: 当サイトを装った不審なメールやリンクにご注意ください。当方から、パスワードやクレジットカード情報をメールで要求することは一切ありません。</p>
                         <h3>9-8. セキュリティインシデント発生時の対応</h3>
                             <p>万が一、個人情報の漏洩や不正アクセス等が発生した場合:</p>
@@ -489,6 +489,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     <p><strong>2026年3月6日</strong>: ログイン方法をGoogleおよびメール・パスワードのみに変更（Twitter・LINE連携を廃止）。メール二段階認証機能の追加に伴う記述を更新。表示名変更・UUID表示機能の追加に関する記述を更新。</p>
                     <p><strong>2026年8月21日</strong>: データベース・認証基盤をFirebaseからSupabaseへ移行したことに伴い、関連する記述(取得・保存されるデータ、データ処理地、セキュリティ対策、AI利用時のデータ保存先等)を更新。実在しなくなったreCAPTCHA Enterprise(Firebase App Check)に関する記述を削除。</p>
                     <p><strong>2026年8月28日</strong>: チャット機能をログイン時のみSupabaseに保存する仕様に変更(保存期間は作成から6ヶ月)し、関連する記述を実装に合わせて更新。お問い合わせフォームの実装をGoogle Forms相当の記述からSupabase保存+Gmail SMTP送信の実態に合わせて修正。チャット履歴のセルフサービスエクスポート機能、法令分野カテゴリの統計利用に関する記述を追加。</p>
+                    <p><strong>2026年9月4日</strong>: 二段階認証の方式を、メール送付によるワンタイムパスワード方式から、認証アプリ(Google Authenticator等)を用いたTOTP方式に変更したことに伴い、関連する記述を実装に合わせて更新。あわせて、二段階認証がログイン方法(Google/メール・パスワード)にかかわらず利用可能である旨を明記。</p>
                     <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
                     
                     <p><strong>運営者</strong>: LEGAL&LIFE運営チーム</p>
@@ -496,7 +497,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
   },
   terms: {
     title: "利用規約",
-    dateLabel: `最終更新日: 2026年8月28日`,
+    dateLabel: `最終更新日: 2026年9月4日`,
     bodyHtml: `<p>この利用規約（以下「本規約」）は、著作権・引用ルール、紛争解決、アクセシビリティ方針を含む、サイト利用に関する包括的な契約書です。</p>
 
                     <h2 id="section1">第1条（適用範囲）</h2>
@@ -529,7 +530,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                             <p>2. ログインは任意であり、ログインせずに本サイトの基本機能を利用できます。</p>
                             <p>3. Googleログインを利用する場合、Googleのプライバシーポリシーおよび利用規約が適用されます。</p>
                             <p>4. 同一のメールアドレスで複数のログイン方法を利用している場合、自動的にアカウントが連携されます。</p>
-                            <p>5. メール・パスワードによるログインを利用するユーザーは、アカウント設定ページでメールによる二段階認証を有効にすることができます。</p>
+                            <p>5. ユーザーは、ログイン方法にかかわらず、アカウント設定ページで認証アプリを用いた二段階認証(TOTP)を有効にすることができます。</p>
                         <h3>4-2. アカウント情報の管理</h3>
                             <p>1. ユーザーは、自己の責任においてログインに使用するアカウント（Googleまたはメールアドレスとパスワード）を適切に管理してください。</p>
                             <p>2. 各アカウントが第三者に不正使用された場合でも、当方は一切の責任を負いません。</p>
@@ -759,7 +760,7 @@ export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawD
                     
                     <p><strong>運営者</strong>: LEGAL&LIFE運営チーム</p>
                     <p><strong>制定日</strong>: 2026年1月30日</p>
-                    <p><strong>最終更新日</strong>: 2026年8月28日</p>`,
+                    <p><strong>最終更新日</strong>: 2026年9月4日</p>`,
   },
   disclaimer: {
     title: "免責事項",
