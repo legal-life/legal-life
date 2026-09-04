@@ -84,9 +84,12 @@ export default function LoginForm() {
 
   const doGoogle = async () => {
     localStorage.setItem("ll_last_consent", Date.now().toString());
+    // r はBase64文字列(encR由来)で "+" "/" "=" を含み得るため、クエリ文字列に
+    // そのまま埋め込むと "+" が空白として再解釈される等でGoogle OAuth往復後に
+    // decR()が壊れた値を受け取ってしまう。encodeURIComponentで再エンコードする。
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/account/login${r ? `?r=${r}` : ""}` },
+      options: { redirectTo: `${location.origin}/account/login${r ? `?r=${encodeURIComponent(r)}` : ""}` },
     });
     if (error) setGoogleError(error.message);
   };

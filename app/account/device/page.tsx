@@ -70,13 +70,18 @@ export default function DevicePage() {
     if (!user || !sessions) return;
     const others = sessions.filter((s) => s.id !== currentSid);
     if (!others.length) return alert("他にアクティブな端末はありません");
-    if (!confirm(`${others.length}台の端末からログアウトしますか?`)) return;
+    if (!confirm("他のすべての端末からログアウトしますか?")) return;
     setActionError("");
+    // 一覧は表示用に最新10件までしか読み込んでいないため、その中の
+    // id だけを対象に更新すると11台目以降のセッションが取りこぼされ、
+    // 「他のすべての端末をログアウト」という説明と実際の挙動が食い違ってしまう。
+    // user_id + 現在のセッションID以外、という条件で直接更新することで
+    // 一覧に表示しきれていないセッションも確実に対象にする。
     const { error } = await supabase
       .from("sessions")
       .update({ should_logout: true })
-      .in("id", others.map((s) => s.id))
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .neq("id", currentSid);
     if (error) {
       setActionError("ログアウトに失敗しました: " + error.message);
       return;
