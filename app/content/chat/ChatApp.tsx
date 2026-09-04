@@ -56,17 +56,22 @@ export default function ChatApp() {
         localStorage.removeItem(STORAGE_KEY);
         return;
       }
-      if (local.length > 0) {
-        await supabase.from("chat_history").insert(
-          local.map((item) => ({
-            user_id: uid,
-            question: item.question,
-            answer: item.answer,
-            category: item.category ?? null,
-          })),
-        );
+      if (local.length === 0) {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
       }
-      localStorage.removeItem(STORAGE_KEY);
+      const { error: migrateError } = await supabase.from("chat_history").insert(
+        local.map((item) => ({
+          user_id: uid,
+          question: item.question,
+          answer: item.answer,
+          category: item.category ?? null,
+        })),
+      );
+      // Only clear the locally-stored history once it has actually been saved to
+      // Supabase; previously this ran unconditionally, so a failed insert (network
+      // error, RLS rejection, etc.) permanently deleted the user's chat history.
+      if (!migrateError) localStorage.removeItem(STORAGE_KEY);
     };
 
     const initForUser = async (uid: string | null) => {
@@ -79,21 +84,34 @@ export default function ChatApp() {
       }
     };
 
+    let isMounted = true;
     let subscription: { unsubscribe: () => void } | undefined;
     (async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      if (!isMounted) return;
       await initForUser(user?.id ?? null);
+      if (!isMounted) return;
       const {
         data: { subscription: sub },
       } = supabase.auth.onAuthStateChange((_event, session) => {
         initForUser(session?.user?.id ?? null);
       });
+      // If the component unmounted while the above awaits were in flight, the
+      // cleanup below already ran (subscription was still undefined at that
+      // point), so unsubscribe immediately instead of leaking this listener.
+      if (!isMounted) {
+        sub.unsubscribe();
+        return;
+      }
       subscription = sub;
     })();
 
-    return () => subscription?.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const handleSend = async () => {
@@ -127,7 +145,18 @@ export default function ChatApp() {
           .insert({ user_id: userId, question, answer: data.answer, category: data.category ?? null })
           .select("id, question, answer, category")
           .single();
-        if (!insertError && inserted) setHistory((h) => [...h, inserted]);
+        if (!insertError && inserted) {
+          setHistory((h) => [...h, inserted]);
+        } else {
+          // Saving to Supabase failed, but the AI already answered — show the
+          // answer locally instead of silently discarding it (previously the
+          // question and answer both vanished with no feedback to the user).
+          setHistory((h) => [
+            ...h,
+            { id: `local-${Date.now()}`, question, answer: data.answer, category: data.category ?? null },
+          ]);
+          setError("回答を表示していますが、履歴の保存に失敗しました。");
+        }
       } else {
         const item: ChatItem = { id: Date.now().toString(), question, answer: data.answer, category: data.category ?? null };
         const next = [...history, item];
