@@ -100,7 +100,7 @@ export default function ChatApp() {
     const question = input.trim();
     if (!question || sending) return;
     if (question.length > MAX_INPUT_LEN) {
-      alert(`質問は${MAX_INPUT_LEN}文字以内で入力してください。`);
+      setError(`質問は${MAX_INPUT_LEN}文字以内で入力してください。`);
       return;
     }
     setSending(true);
@@ -114,7 +114,7 @@ export default function ChatApp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "エラーが発生しました");
       if (data.ignored) {
         setError("法令に関する質問ではないため、回答・保存をスキップしました。");
@@ -140,6 +140,8 @@ export default function ChatApp() {
       }, 50);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+      // Restore the question text on failure so the user doesn't lose what they typed.
+      setInput((current) => current || question);
     } finally {
       setSending(false);
     }
