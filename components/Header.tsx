@@ -17,8 +17,23 @@ export default function Header() {
       if (menuRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
       setOpen(false);
     };
+    // マウスでオーバーレイをクリックすれば閉じられるが、キーボード操作のみの
+    // ユーザーにはそれに相当する手段がなくメニューを閉じられなくなるため、
+    // Escapeキーでも閉じられるようにする。閉じた後はフォーカスをハンバーガー
+    // ボタンへ戻し、フォーカスがメニュー項目のまま(閉じて非表示化された要素)
+    // に取り残されるのを防ぐ。
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
     document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [open]);
 
   return (
@@ -62,14 +77,11 @@ export default function Header() {
           >
             <li className="mb-5"><Link href="/" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">ホーム</Link></li>
             <li className="mb-5"><PopupLink onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">法令学習</PopupLink></li>
-            <li className="mb-5"><Link href="/content/chat" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">AIチャット</Link></li>
+            <li className="mb-5"><PopupLink onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">AIチャット</PopupLink></li>
             <li className="mb-5"><Link href="/content/search" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">法令検索</Link></li>
             <li className="mb-5"><PopupLink onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">ニュース</PopupLink></li>
             <li className="mb-5"><hr className="border-t-2 border-black/15" /></li>
-            <li className="mb-5 text-xs text-gray-500">
-              アカウントはメンテナンス中です。詳しくは
-              <Link href="/info/details/0013" onClick={() => setOpen(false)} className="text-primary-dark"> こちら</Link>
-            </li>
+            <li className="mb-5"><Link href="/account/login" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">アカウント</Link></li>
             <li className="mb-5"><hr className="border-t-2 border-black/15" /></li>
             <li className="mb-5"><Link href="/info/about" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">サイト概要</Link></li>
             <li className="mb-5"><Link href="/info" onClick={() => setOpen(false)} className="text-gray-800 hover:text-primary-dark">お知らせ</Link></li>

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import { fetchLocation, parseUA, type LocationInfo } from "@/lib/browserInfo";
 
 // 独自アクセスログ収集。access_logsテーブルにページビュー・スクロール・滞在時間・クリックを記録する。
 // 90日以上前のデータの削除はクライアントには書き込み権限がないため、Supabase側のスケジュールジョブで行う。
@@ -18,65 +20,38 @@ function getVisitorInfo() {
   return { isNewVisitor, isNewSession };
 }
 
-function parseUA() {
-  const ua = navigator.userAgent;
-  let browser = "Other";
-  if (ua.includes("Edg/")) browser = "Edge";
-  else if (ua.includes("OPR/") || ua.includes("Opera")) browser = "Opera";
-  else if (ua.includes("Chrome/")) browser = "Chrome";
-  else if (ua.includes("Firefox/")) browser = "Firefox";
-  else if (ua.includes("Safari/")) browser = "Safari";
-
-  let os = "Other";
-  if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
-  else if (ua.includes("Android")) os = "Android";
-  else if (ua.includes("Windows")) os = "Windows";
-  else if (ua.includes("Mac OS X")) os = "macOS";
-  else if (ua.includes("Linux")) os = "Linux";
-
-  const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? "Mobile" : "Desktop";
-  return { browser, os, device };
-}
-
-async function fetchLocation() {
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch("https://ipapi.co/json", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const d = await res.json();
-      if (d?.country_name) {
-        return { country: d.country_name || "不明", region: d.region || "不明", city: d.city || "不明" };
-      }
-    }
-  } catch {
-    /* fallback */
-  }
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 2000);
-    const res = await fetch("https://cloudflare.com/cdn-cgi/trace", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const text = await res.text();
-      const loc = text.match(/loc=([A-Z]{2})/)?.[1];
-      if (loc) return { country: loc, region: "不明", city: "不明" };
-    }
-  } catch {
-    /* both failed */
-  }
-  return { country: "不明", region: "不明", city: "不明" };
+// IPジオロケーションは訪問者が変わらない限り変化しないため、ページ遷移のたびに
+// 外部APIへ問い合わせるのは無駄。セッション中に最初の1回だけ取得してキャッシュする。
+let cachedLocation: Promise<LocationInfo> | null = null;
+function getLocationOnce() {
+  if (!cachedLocation) cachedLocation = fetchLocation();
+  return cachedLocation;
 }
 
 export default function AccessLogger() {
+  // App RouterはLinkでの画面遷移時にこのコンポーネントを再マウントしないため、
+  // pathnameをuseEffectの依存配列に含めて画面遷移のたびにeffectを再実行しないと、
+  // 2ページ目以降のpage_view/スクロール深度/滞在時間が一切記録されないバグになる
+  // (旧実装はマウント時に1回だけ実行され、初回ページ以外のpage_viewが送信されず、
+  // スクロール到達率もセッション中ずっとリセットされない状態だった)。
+  const pathname = usePathname();
+
   useEffect(() => {
     let cancelled = false;
+    // async IIFE内でaddEventListenerしたリスナーの解除関数をここに集める。
+    // asyncクロージャの中で直接 `return () => {...}` しても、それはこの即時関数の
+    // Promiseの解決値になるだけでuseEffectのクリーンアップとしては使われず、
+    // アンマウント時(React Strict Modeでの2重マウント含む)にリスナーが解除されずに
+    // 積み重なって二重計測されるバグになるため、外側の配列に集めて外側のreturnで解除する。
+    const cleanupFns: (() => void)[] = [];
+    // このページの滞在時間を送信する関数。beforeunload/visibilitychangeに加え、
+    // このページから離れる(=このeffectがクリーンアップされる)タイミングでも呼ぶ。
+    let flushEngagement = () => {};
 
     (async () => {
       const session = getVisitorInfo();
       const ua = parseUA();
-      const loc = await fetchLocation();
+      const loc = await getLocationOnce();
       if (cancelled) return;
 
       const logEvent = (type: string, extra: Record<string, string | number | boolean | null> = {}) => {
@@ -84,7 +59,7 @@ export default function AccessLogger() {
           .from("access_logs")
           .insert({
             event_type: type,
-            path: location.pathname,
+            path: pathname,
             browser: ua.browser,
             os: ua.os,
             device: ua.device,
@@ -120,20 +95,34 @@ export default function AccessLogger() {
           }
         });
       };
+      // ページ内アンカー(例: /law/privacy#section5)経由で着地した場合、
+      // ロード直後から既に到達しているスクロール位置がある。scrollイベント
+      // 待ちだけだと、その後ユーザーが一切スクロールしなかった場合に
+      // 到達済みのマイルストーンが一切記録されず、滞在ページの実際の
+      // 閲覧範囲が過小に計測されるバグになるため、登録直後に一度評価する。
+      onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
+      cleanupFns.push(() => window.removeEventListener("scroll", onScroll));
 
       // 滞在時間
-      const start = Date.now();
+      let start = Date.now();
       const sendEngagement = () => {
         const ms = Date.now() - start;
         if (ms < 2000) return;
         logEvent("engagement", { ms, sec: Math.round(ms / 1000) });
+        // タブの表示/非表示を何度も切り替えた場合、startをリセットしないと
+        // visibilitychangeのたびに「ページ表示開始からの累計時間」が重複して
+        // 送信され続け、滞在時間の集計が実際より大きく水増しされるバグになる。
+        // 送信のたびに起点をリセットし、以降は前回送信からの差分のみを計測する。
+        start = Date.now();
       };
       window.addEventListener("beforeunload", sendEngagement);
+      cleanupFns.push(() => window.removeEventListener("beforeunload", sendEngagement));
       const onVisibility = () => {
         if (document.visibilityState === "hidden") sendEngagement();
       };
       document.addEventListener("visibilitychange", onVisibility);
+      cleanupFns.push(() => document.removeEventListener("visibilitychange", onVisibility));
 
       // クリック計測
       const targets = [
@@ -157,19 +146,19 @@ export default function AccessLogger() {
         }
       };
       document.addEventListener("click", onClick, { passive: true });
+      cleanupFns.push(() => document.removeEventListener("click", onClick));
 
-      return () => {
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("beforeunload", sendEngagement);
-        document.removeEventListener("visibilitychange", onVisibility);
-        document.removeEventListener("click", onClick);
-      };
+      flushEngagement = sendEngagement;
     })();
 
     return () => {
       cancelled = true;
+      // ページ遷移(pathname変更によるeffect再実行)またはアンマウント時に、
+      // そのページでの滞在時間を確定して送信する。
+      flushEngagement();
+      cleanupFns.forEach((fn) => fn());
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

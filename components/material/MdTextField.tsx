@@ -17,11 +17,11 @@ export default function MdTextField({ label, error, id, containerClassName = "",
       <div className="relative">
         <input
           id={inputId}
-          placeholder=" "
           className={`peer w-full rounded-t-m3-xs border-b-2 bg-md-surface-container-highest px-4 pt-5 pb-1.5 text-m3-body-large text-md-on-surface outline-none transition-colors placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 focus:border-md-primary ${
             error ? "border-md-error" : "border-md-on-surface-variant/50"
           } ${className}`}
           {...props}
+          placeholder=" "
         />
         <label
           htmlFor={inputId}

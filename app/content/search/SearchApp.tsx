@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   convertToJapaneseCalendar,
   fetchLawDetail,
@@ -28,9 +28,15 @@ export default function SearchApp() {
   const [laws, setLaws] = useState<LawSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const [openDetailId, setOpenDetailId] = useState<string | null>(null);
   const [detailHtml, setDetailHtml] = useState<Record<string, string>>({});
   const [detailLoading, setDetailLoading] = useState<string | null>(null);
+  // Guards against out-of-order responses: if the pagination/search buttons are
+  // clicked again before the in-flight request resolves (nothing was disabling
+  // them while loading), an older, slower response could otherwise overwrite the
+  // results of a newer request that already resolved.
+  const searchRequestIdRef = useRef(0);
 
   const highlight = (text: string) => {
     if (target === "keyword" && input.trim()) {
@@ -41,12 +47,18 @@ export default function SearchApp() {
   };
 
   const runSearch = async (nextOffset = 0) => {
+    // Pressing Enter in the text input is not gated by the search/pagination
+    // buttons' disabled state, so without this guard a request already in
+    // flight (e.g. triggered by pagination) could be duplicated, and a slower
+    // earlier response could race with and overwrite a later one.
+    if (loading) return;
     if (!input.trim() && !lawType) {
       setError("検索ワードを入力してください");
       return;
     }
     setError("");
     setLoading(true);
+    const requestId = ++searchRequestIdRef.current;
     try {
       const { laws: results, totalCount: total } = await searchLaws({
         query: input.trim(),
@@ -55,13 +67,23 @@ export default function SearchApp() {
         sort,
         offset: nextOffset,
       });
+      if (searchRequestIdRef.current !== requestId) return; // a newer request already superseded this one
       setLaws(results);
       setTotalCount(total);
       setOffset(nextOffset);
+      setHasSearched(true);
+      // Detail HTML is cached per law ID and baked in with the highlight of the
+      // search that was active when it was fetched (see toggleDetail below). A
+      // fresh search can change the highlighted term (or turn highlighting off
+      // entirely when switching to title search), so stale cached detail HTML
+      // must not be reused across searches.
+      setDetailHtml({});
+      setOpenDetailId(null);
     } catch (e) {
+      if (searchRequestIdRef.current !== requestId) return;
       setError(e instanceof Error ? e.message : String(e));
     } finally {
-      setLoading(false);
+      if (searchRequestIdRef.current === requestId) setLoading(false);
     }
   };
 
@@ -196,6 +218,9 @@ export default function SearchApp() {
 
       {error && <div className="text-red-600 text-sm mt-4">{error}</div>}
       {loading && <div className="text-gray-500 text-sm mt-4">検索中...</div>}
+      {!loading && !error && hasSearched && laws.length === 0 && (
+        <div className="text-center text-gray-400 text-sm mt-6">該当する法令が見つかりませんでした。</div>
+      )}
 
       {!loading && laws.length > 0 && (
         <>

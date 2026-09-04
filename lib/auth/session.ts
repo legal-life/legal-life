@@ -1,10 +1,11 @@
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import { fetchLocation, getSid, parseUA, SESSION_KEY } from "./utils";
+import { fetchLocation, parseUA } from "@/lib/browserInfo";
+import { getSid, SESSION_KEY } from "./utils";
 
 export async function logAct(uid: string, type: string, detail = "") {
-  const ua = parseUA();
   try {
+    const ua = parseUA();
     await supabase.from("activity_log").insert({
       user_id: uid,
       type,
@@ -19,9 +20,13 @@ export async function logAct(uid: string, type: string, detail = "") {
 }
 
 export async function regSession(user: Pick<User, "id">) {
-  const sid = getSid();
-  const ua = parseUA();
   try {
+    // getSid()はlocalStorageへアクセスするため、プライベートブラウジングやストレージが
+    // ブロックされた環境では例外を投げ得る。この関数はログイン処理をブロックしない
+    // 「失敗しても無視する」設計のため、try内に含めてまとめて捕捉する
+    // (以前はtryの外にあり、ここで投げるとログイン後のリダイレクトごと失敗しかねなかった)。
+    const sid = getSid();
+    const ua = parseUA();
     const { data: existing } = await supabase.from("sessions").select("id").eq("id", sid).maybeSingle();
     if (!existing) {
       const loc = await fetchLocation();
@@ -31,7 +36,7 @@ export async function regSession(user: Pick<User, "id">) {
         browser: ua.browser,
         os: ua.os,
         device: ua.device,
-        location: loc,
+        location: loc.country,
       });
     } else {
       await supabase.from("sessions").update({ last_active: new Date().toISOString() }).eq("id", sid);

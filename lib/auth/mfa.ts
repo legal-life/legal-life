@@ -4,10 +4,16 @@ import { supabase } from "@/lib/supabase/client";
 // 独自メールOTP実装(旧lib/auth/otp.ts)を置き換え、Supabaseの
 // enroll/challenge/verify APIに一本化する。
 
+// listFactors()はTOTP登録を最後まで完了していない("unverified"のまま放置された)
+// ファクターも含めて返す。verify()未完了のファクターはchallenge()に使えず、
+// ログインのAAL判定にも影響しないため、ここでは検証済み("verified")のものだけを返す。
+// これを怠ると、hasMFA()が「2FA有効」と誤判定したり、challengeAndVerifyFirstFactor()が
+// 未検証ファクターを選んでしまい常に失敗する(=SecurityGateの各ページで
+// パスワード変更・2FA解除等が一切できなくなる)不具合につながる。
 export async function listTotpFactors() {
   const { data, error } = await supabase.auth.mfa.listFactors();
   if (error) throw error;
-  return data.totp;
+  return data.totp.filter((f) => f.status === "verified");
 }
 
 export async function hasMFA(): Promise<boolean> {

@@ -19,6 +19,18 @@ export default function MaintenancePopup() {
     return () => window.removeEventListener(EVENT_NAME, handler);
   }, []);
 
+  useEffect(() => {
+    if (!visible) return;
+    // 背景クリックでは閉じられるが、キーボードのみの操作やスクリーンリーダー
+    // 利用者には同等の手段がない(全画面を覆うモーダルのため、閉じるボタンまで
+    // Tabで辿り着く必要がある)。Escapeキーでも閉じられるようにする。
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setVisible(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [visible]);
+
   if (!visible) return null;
 
   return (

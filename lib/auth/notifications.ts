@@ -24,20 +24,30 @@ export async function loadNotificationPrefs(uid: string): Promise<Partial<Record
   return data ?? {};
 }
 
+// lib/auth/profile.ts の updateDisplayName/setDeletionPending と同じ理由でエラーをthrowする。
+// 呼び出し元(通知設定ページ)はUIを楽観的更新した後この関数を待つため、ここでエラーを
+// 握りつぶすと保存に失敗していてもトグルが「オン」のまま表示され続けてしまう。
 export async function saveNotificationPref(uid: string, key: NotifKey, enabled: boolean) {
   const payload = { user_id: uid, [key]: enabled } as Database["public"]["Tables"]["notification_settings"]["Insert"];
-  await supabase.from("notification_settings").upsert(payload);
+  const { error } = await supabase.from("notification_settings").upsert(payload);
+  if (error) throw error;
 }
 
 // notification_settingsのトグル(デフォルトtrue)を尊重した上で、Gmail SMTP経由(/api/mail)で
 // 会員向け通知メールを送る。宛先を明示的に渡す版(email_changeのようにuser.emailが
 // まだ確定していないケース用)と、ログイン中のUserからそのまま送る版の2つを用意する。
+// /api/mailのnotice種別は認証済みセッションを要求するため、現在のアクセストークンを
+// Authorizationヘッダーで渡す(未ログイン状態からの任意宛先へのメール送信を防ぐため)。
 export async function sendNotice(uid: string, key: NotifKey, purpose: string, target: { email: string; name?: string }) {
   const prefs = await loadNotificationPrefs(uid);
   if (prefs[key] === false) return;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return;
   await fetch("/api/mail", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
     body: JSON.stringify({ type: "notice", to_email: target.email, to_name: target.name, purpose }),
   }).catch(() => {
     /* 通知メールの送信失敗でユーザー操作をブロックしない */

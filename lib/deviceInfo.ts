@@ -1,56 +1,4 @@
-function parseUA() {
-  const ua = navigator.userAgent;
-  let browser = "その他";
-  if (ua.includes("Edg/")) browser = "Microsoft Edge";
-  else if (ua.includes("OPR/") || ua.includes("Opera")) browser = "Opera";
-  else if (ua.includes("Chrome/")) browser = "Google Chrome";
-  else if (ua.includes("Firefox/")) browser = "Mozilla Firefox";
-  else if (ua.includes("Safari/")) browser = "Safari";
-
-  let os = "その他";
-  if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
-  else if (ua.includes("Android")) os = "Android";
-  else if (ua.includes("Windows")) os = "Windows";
-  else if (ua.includes("Mac OS X")) os = "macOS";
-  else if (ua.includes("Linux")) os = "Linux";
-
-  const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? "スマートフォン/タブレット" : "PC";
-  return { browser, os, device };
-}
-
-async function fetchLocation(): Promise<{ country: string; region: string; city: string; ip: string }> {
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch("https://ipapi.co/json", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const d = await res.json();
-      if (d?.country_name) {
-        return { country: d.country_name || "不明", region: d.region || "不明", city: d.city || "不明", ip: d.ip || "不明" };
-      }
-    }
-  } catch {
-    /* ignore, fall through to secondary source */
-  }
-
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 2000);
-    const res = await fetch("https://cloudflare.com/cdn-cgi/trace", { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (res.ok) {
-      const text = await res.text();
-      const loc = text.match(/loc=([A-Z]{2})/)?.[1];
-      const ip = text.match(/ip=([^\n]+)/)?.[1];
-      if (loc) return { country: loc, region: "不明", city: "不明", ip: ip || "不明" };
-    }
-  } catch {
-    /* ignore */
-  }
-
-  return { country: "不明", region: "不明", city: "不明", ip: "不明" };
-}
+import { fetchLocation, parseUA } from "@/lib/browserInfo";
 
 export async function collectDeviceInfo() {
   const ua = parseUA();
@@ -62,7 +10,17 @@ export async function collectDeviceInfo() {
 
   let storageUsage = "取得不可";
   try {
-    storageUsage = `${(encodeURI(JSON.stringify(localStorage)).length / 1024).toFixed(2)} KB`;
+    // localStorage(Storage interface)は仕様上 LegacyUnenumerableNamedProperties が
+    // 付与されており、格納したキーはObject.keys/for-in/JSON.stringifyでは列挙されない
+    // (JSON.stringify(localStorage) は常に "{}" を返す)。そのため、length/key()/getItem()で
+    // 明示的に走査して実際の使用量を集計する。
+    let raw = "";
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key === null) continue;
+      raw += key + (localStorage.getItem(key) ?? "");
+    }
+    storageUsage = `${(encodeURI(raw).length / 1024).toFixed(2)} KB`;
   } catch {
     /* ignore */
   }

@@ -26,6 +26,7 @@ export default function DevicePage() {
   const [user, setUser] = useState<User | null>(null);
   const [sessions, setSessions] = useState<SessionRow[] | null>(null);
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
   const currentSid = typeof window !== "undefined" ? getSid() : "";
 
   const load = async (u: User) => {
@@ -53,7 +54,15 @@ export default function DevicePage() {
 
   const logoutSession = async (sid: string) => {
     if (!user || !confirm("この端末からログアウトしますか?")) return;
-    await supabase.from("sessions").update({ should_logout: true }).eq("id", sid).eq("user_id", user.id);
+    // 更新失敗時にもリストから消してしまうと、実際にはログアウトされていない
+    // 端末を「ログアウト済み」と誤認させてしまう(セキュリティ上望ましくない)ため、
+    // 成功を確認してからUIを更新する。
+    setActionError("");
+    const { error } = await supabase.from("sessions").update({ should_logout: true }).eq("id", sid).eq("user_id", user.id);
+    if (error) {
+      setActionError("ログアウトに失敗しました: " + error.message);
+      return;
+    }
     setSessions((prev) => prev?.filter((s) => s.id !== sid) ?? null);
   };
 
@@ -61,12 +70,22 @@ export default function DevicePage() {
     if (!user || !sessions) return;
     const others = sessions.filter((s) => s.id !== currentSid);
     if (!others.length) return alert("他にアクティブな端末はありません");
-    if (!confirm(`${others.length}台の端末からログアウトしますか?`)) return;
-    await supabase
+    if (!confirm("他のすべての端末からログアウトしますか?")) return;
+    setActionError("");
+    // 一覧は表示用に最新10件までしか読み込んでいないため、その中の
+    // id だけを対象に更新すると11台目以降のセッションが取りこぼされ、
+    // 「他のすべての端末をログアウト」という説明と実際の挙動が食い違ってしまう。
+    // user_id + 現在のセッションID以外、という条件で直接更新することで
+    // 一覧に表示しきれていないセッションも確実に対象にする。
+    const { error } = await supabase
       .from("sessions")
       .update({ should_logout: true })
-      .in("id", others.map((s) => s.id))
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .neq("id", currentSid);
+    if (error) {
+      setActionError("ログアウトに失敗しました: " + error.message);
+      return;
+    }
     setSessions(sessions.filter((s) => s.id === currentSid));
   };
 
@@ -83,6 +102,7 @@ export default function DevicePage() {
       maxWidthClassName="max-w-[640px]"
     >
       {error && <p className="text-m3-body-medium text-md-error">読み込みに失敗しました</p>}
+      {actionError && <p className="text-m3-body-medium text-md-error mb-2">{actionError}</p>}
       {!error && sessions === null && <p className="text-m3-body-medium text-md-on-surface-variant">読み込み中...</p>}
       {!error && sessions?.length === 0 && <p className="text-m3-body-medium text-md-on-surface-variant">セッション情報がありません</p>}
 

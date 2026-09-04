@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MdButton from "@/components/material/MdButton";
 
 export type OtpVerifyResult = { ok: boolean; reason?: string };
@@ -21,6 +21,10 @@ export default function OtpPanel({
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    // Enterキーはボタンのdisabled状態を経由しないため、ここでガードしないと
+    // 連打で二重にonVerify(検証API呼び出し)が発行されてしまう
+    // (試行回数制限のあるOTP検証では、意図せず残り試行回数を消費するバグになる)。
+    if (submitting) return;
     const input = code.trim();
     if (!input) {
       setError("コードを入力してください");
@@ -28,12 +32,32 @@ export default function OtpPanel({
     }
     setSubmitting(true);
     setError("");
-    const res = await onVerify(input);
-    if (!res.ok) {
-      setError(res.reason || "コードが正しくありません");
+    try {
+      const res = await onVerify(input);
+      if (!res.ok) {
+        setError(res.reason || "コードが正しくありません");
+        setSubmitting(false);
+      }
+    } catch {
+      // onVerify(検証API呼び出し)がネットワークエラー等で例外を投げた場合、
+      // ここでcatchしないとsubmittingがtrueのまま固まり、ボタンが
+      // disabledの「確認中...」表示のまま操作不能になる(ページ再読み込み
+      // でしか復帰できなくなる)。エラーメッセージを出してユーザーが
+      // 再試行できる状態に戻す。
+      setError("通信エラーが発生しました。もう一度お試しください");
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    // 全画面モーダルのため、キーボードのみの操作でも閉じられるようEscapeで
+    // キャンセルできるようにする(送信中は誤ってキャンセルされないよう除外)。
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !submitting) onCancel?.();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [submitting, onCancel]);
 
   return (
     <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-md-on-surface/40 p-5">

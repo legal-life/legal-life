@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   openGraph: { title: "ホーム|法令の学習・相談サイト legal&life" },
 };
 
+// contentセクションの4つの導線ボタン(学習/チャット/検索/ニュース)で共通のスタイル(重複排除)
+const CONTENT_BUTTON_CLASS =
+  "inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1";
+
 function BoxTitle({ children }: { children: React.ReactNode }) {
   return (
     <p className="absolute left-1/2 -top-5 sm:-top-6 -translate-x-1/2 bg-[#7ddce8] text-[#333] font-bold text-lg sm:text-2xl px-8 sm:px-10 py-2 rounded-lg whitespace-nowrap">
@@ -51,24 +55,12 @@ export default function HomePage() {
             当サイトのコンテンツ一覧です。利用したいコンテンツを選択してください。
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <PopupLink className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1">
-              法令学習
-            </PopupLink>
-            <Link
-              href="/content/chat"
-              className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1"
-            >
-              チャット
-            </Link>
-            <Link
-              href="/content/search"
-              className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1"
-            >
+            <PopupLink className={CONTENT_BUTTON_CLASS}>法令学習</PopupLink>
+            <PopupLink className={CONTENT_BUTTON_CLASS}>チャット</PopupLink>
+            <Link href="/content/search" className={CONTENT_BUTTON_CLASS}>
               法令検索
             </Link>
-            <PopupLink className="inline-block min-w-[100px] sm:min-w-[120px] bg-[#b2e2e8] text-[#333] font-bold rounded-[10px] px-5 sm:px-6 py-3 shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:bg-[#7ddce8] hover:shadow-[0_8px_15px_rgba(0,0,0,0.15)] hover:-translate-y-1">
-              ニュース
-            </PopupLink>
+            <PopupLink className={CONTENT_BUTTON_CLASS}>ニュース</PopupLink>
           </div>
           <div className="text-right mt-5">
             <Link href="/content" className="text-[#0076a3] text-sm no-underline">

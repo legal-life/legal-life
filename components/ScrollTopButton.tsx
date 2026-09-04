@@ -8,6 +8,11 @@ export default function ScrollTopButton() {
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 300);
+    // ページ内アンカー(例: /law/privacy#section5)経由でロード直後から
+    // 既に300pxを超えてスクロールされた位置に着地した場合、以降ユーザーが
+    // 一切スクロールしなければ scroll イベントが一度も発火せず、
+    // ボタンが表示されないままになる。マウント時点の位置を即座に反映する。
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);

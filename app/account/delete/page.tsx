@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase/client";
 import { requireAuth } from "@/lib/auth/requireAuth";
 import { delSession, logAct } from "@/lib/auth/session";
 import { getProfile, setDeletionPending } from "@/lib/auth/profile";
-import { hasMFA, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
+import { listTotpFactors, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
 import { sendNoticeForUser } from "@/lib/auth/notifications";
 import OtpPanel from "@/components/OtpPanel";
 import MdButton from "@/components/material/MdButton";
@@ -28,6 +28,7 @@ export default function DeletePage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [cancelMsg, setCancelMsg] = useState("");
+  const [mfaCheckError, setMfaCheckError] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -68,7 +69,26 @@ export default function DeletePage() {
   const handleExecute = async () => {
     if (!user) return;
     setSubmitting(true);
-    if (await hasMFA()) {
+    setMfaCheckError("");
+    // 二段階認証の登録有無の確認はフェイルクローズにする。従来使っていたhasMFA()は
+    // エラー時に「2FA未設定」としてfalseを返すフェイルオープン設計のため、
+    // listTotpFactors()の通信が何らかの理由(回線不調や、悪意ある拡張機能等による
+    // リクエスト妨害)で失敗しただけで、2FA登録済みアカウントでも本人確認(OTP)なしに
+    // アカウント削除(取り消し不能な操作)が実行できてしまう。確認できない場合は
+    // 削除を進めず、エラーを表示して中断する。
+    let factorCount: number;
+    try {
+      factorCount = (await listTotpFactors()).length;
+    } catch (e) {
+      setSubmitting(false);
+      setMfaCheckError(
+        e instanceof Error
+          ? `二段階認証の設定状況を確認できませんでした: ${e.message}`
+          : "二段階認証の設定状況を確認できませんでした。時間をおいて再試行してください",
+      );
+      return;
+    }
+    if (factorCount > 0) {
       setShowOtp(true);
       return;
     }
@@ -158,14 +178,17 @@ export default function DeletePage() {
           }}
         />
       ) : (
-        <MdButton
-          variant="filled"
-          className="w-full !bg-md-error !text-md-on-error"
-          disabled={!checked.every(Boolean) || submitting}
-          onClick={handleExecute}
-        >
-          削除を申請する
-        </MdButton>
+        <>
+          {mfaCheckError && <p className="text-m3-body-small text-md-error mb-2">{mfaCheckError}</p>}
+          <MdButton
+            variant="filled"
+            className="w-full !bg-md-error !text-md-on-error"
+            disabled={!checked.every(Boolean) || submitting}
+            onClick={handleExecute}
+          >
+            削除を申請する
+          </MdButton>
+        </>
       )}
     </div>
   );

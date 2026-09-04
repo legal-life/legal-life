@@ -34,7 +34,7 @@ const CATEGORIES: { title: string; links: SitemapLink[] }[] = [
     links: [
       { href: "/", label: "ホーム", icon: IconHome },
       { href: "/content", label: "コンテンツホーム", icon: IconHome },
-      { href: "/content/chat", label: "チャット", icon: IconChat },
+      { href: null, label: "チャット", icon: IconChat },
       { href: null, label: "法令学習", icon: IconBook },
       { href: "/content/search", label: "法令検索", icon: IconSearch },
       { href: null, label: "ニュース", icon: IconNewspaper },

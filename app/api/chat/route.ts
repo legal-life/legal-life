@@ -4,6 +4,47 @@ const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
 const MAX_INPUT_LEN = 1000;
 
+// このAPIは未認証で誰でも呼べる(ログイン前でもチャットを試せる仕様)ため、
+// 対策がないと外部スクリプトが連打してGemini APIの利用料を消費させる
+// (コスト濫用/経済的DoS)ことができてしまう。サーバーレス環境ではインスタンスが
+// 複数起動しプロセスメモリが共有されないため完全な防御にはならないが、
+// 単純な連投・自動化スクリプトに対する最低限の抑止力として、
+// IPアドレス単位のインメモリ・スライディングウィンドウ制限を設ける。
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 10;
+const requestTimestamps = new Map<string, number[]>();
+let cleanupCounter = 0;
+
+function getClientIp(req: NextRequest): string {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  return req.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+
+  // Mapが無制限に肥大化しないよう、一定回数ごとに空/期限切れのエントリを掃除する。
+  cleanupCounter++;
+  if (cleanupCounter >= 200) {
+    cleanupCounter = 0;
+    for (const [key, timestamps] of requestTimestamps) {
+      const fresh = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (fresh.length === 0) requestTimestamps.delete(key);
+      else requestTimestamps.set(key, fresh);
+    }
+  }
+
+  const timestamps = (requestTimestamps.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (timestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    requestTimestamps.set(ip, timestamps);
+    return true;
+  }
+  timestamps.push(now);
+  requestTimestamps.set(ip, timestamps);
+  return false;
+}
+
 function buildPrompt(q: string): string {
   return `
 あなたは日本の法令に関する一般的な情報を提供するAIアシスタントです。
@@ -84,14 +125,25 @@ CATEGORY: <法分野名。例: 民法/刑法/商法/会社法/労働法/行政�
 // Gemini API呼び出し。旧chat.jsはクライアント側でAPIキーを直接埋め込んで呼んでいたため、
 // サーバー側Route経由に変更しキーをブラウザに一切渡さないようにする。
 export async function POST(req: NextRequest) {
-  let body: { question?: string };
+  if (isRateLimited(getClientIp(req))) {
+    return NextResponse.json(
+      { error: "リクエストが多すぎます。しばらく待ってから再度お試しください。" },
+      { status: 429 },
+    );
+  }
+
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const question = body.question?.trim();
+  // body.questionが文字列以外(number/array/object等)の場合、旧実装では
+  // `.trim()`呼び出し自体がTypeErrorを投げてtry/catchの外側で未捕捉例外となり、
+  // 500エラー(素のNext.jsエラーページ)につながっていた。型を明示的に検証する。
+  const rawQuestion = body && typeof body === "object" ? (body as Record<string, unknown>).question : undefined;
+  const question = typeof rawQuestion === "string" ? rawQuestion.trim() : "";
   if (!question) return NextResponse.json({ error: "質問を入力してください" }, { status: 400 });
   if (question.length > MAX_INPUT_LEN) {
     return NextResponse.json({ error: `質問は${MAX_INPUT_LEN}文字以内で入力してください。` }, { status: 400 });

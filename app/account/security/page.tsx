@@ -2,63 +2,24 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
-import { requireAuth } from "@/lib/auth/requireAuth";
-import { listTotpFactors, getAAL, challengeAndVerifyFirstFactor } from "@/lib/auth/mfa";
-import OtpPanel from "@/components/OtpPanel";
+import { listTotpFactors } from "@/lib/auth/mfa";
 import MdAccountCard from "@/components/material/MdAccountCard";
+import { useSecurityGate, SecurityGateScreen } from "./SecurityGate";
 
 export default function SecurityPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, needsGate } = useSecurityGate();
   const [enabled2fa, setEnabled2fa] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
-  const [needsGate, setNeedsGate] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     (async () => {
-      const u = await requireAuth();
-      const factors = await listTotpFactors();
-      const en = factors.length > 0;
-      setEnabled2fa(en);
-      setHasPassword((u.identities ?? []).some((i) => i.provider === "email"));
-
-      if (en) {
-        const { currentLevel } = await getAAL();
-        if (currentLevel !== "aal2") {
-          setNeedsGate(true);
-          return;
-        }
-      }
-      setUser(u);
+      setEnabled2fa((await listTotpFactors()).length > 0);
+      setHasPassword((user.identities ?? []).some((i) => i.provider === "email"));
     })();
-  }, []);
+  }, [user]);
 
-  const handleOtpVerify = async (input: string) => {
-    const res = await challengeAndVerifyFirstFactor(input);
-    if (!res.ok) return res;
-    window.location.reload();
-    return { ok: true };
-  };
-
-  if (needsGate) {
-    return (
-      <MdAccountCard title="セキュリティ" subtitle="アクセスするには本人確認が必要です">
-        <div className="rounded-m3-md bg-md-primary-container p-4 mb-2">
-          <p className="font-bold text-m3-body-medium text-md-on-primary-container mb-1">二段階認証が有効です</p>
-          <p className="text-m3-body-small text-md-on-primary-container">セキュリティ設定を表示するには認証アプリのコードが必要です。</p>
-        </div>
-        <OtpPanel
-          title="本人確認"
-          desc="認証アプリに表示されている6桁のコードを入力してください"
-          onVerify={handleOtpVerify}
-          onCancel={() => window.location.replace("/account")}
-        />
-        <div className="mt-4">
-          <Link href="/account" className="text-m3-body-medium text-md-on-surface-variant">アカウント設定に戻る</Link>
-        </div>
-      </MdAccountCard>
-    );
-  }
+  if (needsGate) return <SecurityGateScreen title="セキュリティ" />;
 
   if (!user) return null;
 

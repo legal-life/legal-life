@@ -21,8 +21,29 @@ const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "218375080608-kc02r32e2fjf6vdud3op740udcv5o4e2.apps.googleusercontent.com";
 const CONSENT_INTERVAL = 30 * 24 * 60 * 60 * 1000;
 
+// doGoogle()(フルリダイレクト方式のGoogle OAuth)は遷移前に立て、Google側から
+// 戻ってきた直後の1回だけ onAuthStateChange 経由の処理を行うためのフラグ。
+// これがないと、onAuthStateChangeはメール/パスキー/One TapログインによるSIGNED_IN
+// イベントや、既存セッションを持つユーザーがこのページを開いた際のINITIAL_SESSION
+// イベントにも反応してしまい、(1) proceedOrChallengeが二重実行されログイン記録・
+// 「新しいログインがありました」通知メールが重複する、(2) 実際にはGoogle以外の
+// 手段でログインしたのに履歴上の方法が常に"Google"に誤記録される、
+// (3) 既にログイン済みのユーザーが単にこのページを開いただけで再ログイン扱いに
+// なってしまう、という問題が生じる。
+const OAUTH_PENDING_KEY = "ll_oauth_pending_login";
+
+// decR は "/" で始まる文字列であれば許可するが、"//evil.com" のようなプロトコル
+// 相対URL(スキームなしの絶対URL)も "/" で始まるため素通りしてしまい、
+// ログイン後に外部サイトへリダイレクトされるオープンリダイレクト脆弱性になり得る。
+// そのため同一オリジンの相対パス("/xxx" で始まり "//" や "/\" で始まらない)
+// であることをここで追加検証する。
+function isSafeRedirectPath(path: string): boolean {
+  return path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/\\");
+}
+
 function afterLoginRedirect(r: string | null) {
-  const dest = (r ? decR(r) : null) || "/account";
+  const decoded = r ? decR(r) : null;
+  const dest = decoded && isSafeRedirectPath(decoded) ? decoded : "/account";
   window.location.replace(dest);
 }
 
@@ -66,7 +87,12 @@ export default function LoginForm() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) proceedOrChallenge(session.user, "Google");
+      // OAUTH_PENDING_KEYが立っている(=直前にdoGoogleでリダイレクトし、
+      // 戻ってきた)場合のみ処理する。詳細は上のOAUTH_PENDING_KEYのコメントを参照。
+      if (session?.user && sessionStorage.getItem(OAUTH_PENDING_KEY)) {
+        sessionStorage.removeItem(OAUTH_PENDING_KEY);
+        proceedOrChallenge(session.user, "Google");
+      }
     });
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,11 +100,18 @@ export default function LoginForm() {
 
   const doGoogle = async () => {
     localStorage.setItem("ll_last_consent", Date.now().toString());
+    sessionStorage.setItem(OAUTH_PENDING_KEY, "1");
+    // r はBase64文字列(encR由来)で "+" "/" "=" を含み得るため、クエリ文字列に
+    // そのまま埋め込むと "+" が空白として再解釈される等でGoogle OAuth往復後に
+    // decR()が壊れた値を受け取ってしまう。encodeURIComponentで再エンコードする。
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/account/login${r ? `?r=${r}` : ""}` },
+      options: { redirectTo: `${location.origin}/account/login${r ? `?r=${encodeURIComponent(r)}` : ""}` },
     });
-    if (error) setGoogleError(error.message);
+    if (error) {
+      sessionStorage.removeItem(OAUTH_PENDING_KEY);
+      setGoogleError(error.message);
+    }
   };
 
   const doPasskey = async () => {

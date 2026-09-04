@@ -4,6 +4,8 @@ export const metadata: Metadata = {
   title: "学習",
   description:
     "このページはlegal&lifeの学習ページです。当ページでは法令文の条文の意義や解釈をわかりやすく詳しく学習できるコンテンツを制作しています。ぜひご利用ください。当サイトは法令知識の普及と法知識不足による不利益を生まないことを目指しているサイトです。",
+  // 正式公開前の機能のためサイト内ナビゲーションからは意図的にブロックしており、検索エンジンにも公開しない。
+  robots: { index: false, follow: true },
 };
 
 export default function StudyPage() {

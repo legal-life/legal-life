@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "沿革",
   description:
     "このページはlegal&lifeの沿革ページです。当ページではサイトの開発経緯と成長の歴史をご紹介します。当サイトは法令知識の普及と法知識不足による不利益を生まないことを目指しているサイトです。",
+  // CSS・内容がまだ完全ではないため正式公開前として扱い、サイト内ナビゲーションから
+  // 意図的にブロックしており、検索エンジンにも公開しない。
+  robots: { index: false, follow: true },
 };
 
 const TIMELINE = [
