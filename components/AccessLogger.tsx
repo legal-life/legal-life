@@ -99,11 +99,16 @@ export default function AccessLogger() {
       cleanupFns.push(() => window.removeEventListener("scroll", onScroll));
 
       // 滞在時間
-      const start = Date.now();
+      let start = Date.now();
       const sendEngagement = () => {
         const ms = Date.now() - start;
         if (ms < 2000) return;
         logEvent("engagement", { ms, sec: Math.round(ms / 1000) });
+        // タブの表示/非表示を何度も切り替えた場合、startをリセットしないと
+        // visibilitychangeのたびに「ページ表示開始からの累計時間」が重複して
+        // 送信され続け、滞在時間の集計が実際より大きく水増しされるバグになる。
+        // 送信のたびに起点をリセットし、以降は前回送信からの差分のみを計測する。
+        start = Date.now();
       };
       window.addEventListener("beforeunload", sendEngagement);
       cleanupFns.push(() => window.removeEventListener("beforeunload", sendEngagement));

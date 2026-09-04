@@ -21,6 +21,10 @@ export default function OtpPanel({
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    // Enterキーはボタンのdisabled状態を経由しないため、ここでガードしないと
+    // 連打で二重にonVerify(検証API呼び出し)が発行されてしまう
+    // (試行回数制限のあるOTP検証では、意図せず残り試行回数を消費するバグになる)。
+    if (submitting) return;
     const input = code.trim();
     if (!input) {
       setError("コードを入力してください");
