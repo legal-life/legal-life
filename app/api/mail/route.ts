@@ -23,12 +23,47 @@ const MAX_LENGTHS: Record<string, number> = {
   content: 5000,
 };
 
-function findOversizedField(params: Record<string, unknown>): string | null {
-  for (const [field, max] of Object.entries(MAX_LENGTHS)) {
+// notice(会員向け通知)側にはcontactと違いフィールド長の上限がなく、認証済みユーザーであれば
+// 誰でも呼べてしまうため、巨大なpurpose/to_name等を送りつけて肥大化したメールを大量生成
+// させることができてしまう。to_email自体は正規の呼び出し元(email_change等)で任意の宛先
+// (変更先の未確認メールアドレス)になり得るため制限できないが、各フィールドの長さは制限する。
+const NOTICE_MAX_LENGTHS: Record<string, number> = {
+  to_email: 254,
+  to_name: 100,
+  purpose: 300,
+};
+
+function findOversizedField(params: Record<string, unknown>, limits: Record<string, number>): string | null {
+  for (const [field, max] of Object.entries(limits)) {
     const value = params[field];
     if (typeof value === "string" && value.length > max) return field;
   }
   return null;
+}
+
+// notice送信は認証済みユーザーなら誰でも呼べ、Bearer検証(Round1)は「未ログインの第三者」
+// からの乱用しか防げない。to_emailは正規のユースケース(メールアドレス変更確認等)で
+// 呼び出し元ユーザー自身のアドレスと一致しないことがあるため宛先を本人メールに固定できず、
+// 制限なしだと本サイトのGmailアカウントを使って認証済みユーザーが任意の第三者へ大量の
+// メールを送りつける踏み台(スパム/なりすまし)に悪用され得る。ユーザーID単位の
+// インメモリ・スライディングウィンドウで送信頻度を抑える(chat/route.tsのIP制限と同様、
+// サーバーレスの複数インスタンスでは完全な防御にはならないが最低限の抑止力とする)。
+const NOTICE_RATE_LIMIT_WINDOW_MS = 5 * 60_000;
+const NOTICE_RATE_LIMIT_MAX_REQUESTS = 5;
+const noticeRequestTimestamps = new Map<string, number[]>();
+
+function isNoticeRateLimited(uid: string): boolean {
+  const now = Date.now();
+  const timestamps = (noticeRequestTimestamps.get(uid) || []).filter(
+    (t) => now - t < NOTICE_RATE_LIMIT_WINDOW_MS,
+  );
+  if (timestamps.length >= NOTICE_RATE_LIMIT_MAX_REQUESTS) {
+    noticeRequestTimestamps.set(uid, timestamps);
+    return true;
+  }
+  timestamps.push(now);
+  noticeRequestTimestamps.set(uid, timestamps);
+  return false;
 }
 
 // メール送信API。旧 legal-life-mailer (Cloudflare Workers) の api/index.js を統合したもの。
@@ -71,7 +106,7 @@ export async function POST(req: NextRequest) {
       if (!params.from_name || !params.inquiry_type || !params.content) {
         return NextResponse.json({ error: "Missing fields" }, { status: 400 });
       }
-      const oversizedField = findOversizedField(params as unknown as Record<string, unknown>);
+      const oversizedField = findOversizedField(params as unknown as Record<string, unknown>, MAX_LENGTHS);
       if (oversizedField) {
         return NextResponse.json(
           { error: `${oversizedField}が長すぎます(最大${MAX_LENGTHS[oversizedField]}文字)` },
@@ -137,8 +172,23 @@ export async function POST(req: NextRequest) {
     const { data: authData, error: authError } = await supabase.auth.getUser(token);
     if (authError || !authData.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    if (isNoticeRateLimited(authData.user.id)) {
+      return NextResponse.json(
+        { error: "リクエストが多すぎます。しばらく待ってから再度お試しください。" },
+        { status: 429 },
+      );
+    }
+
     const to_email = body.to_email as string | undefined;
     if (!to_email) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+
+    const oversizedNoticeField = findOversizedField(body, NOTICE_MAX_LENGTHS);
+    if (oversizedNoticeField) {
+      return NextResponse.json(
+        { error: `${oversizedNoticeField}が長すぎます(最大${NOTICE_MAX_LENGTHS[oversizedNoticeField]}文字)` },
+        { status: 400 },
+      );
+    }
 
     const purpose = body.purpose as string | undefined;
     const html = buildNoticeHTML({ to_name: body.to_name as string | undefined, purpose });
