@@ -881,7 +881,7 @@ const infoDetailsSource: InfoDetail[] = [
   },
   {
     slug: "0015",
-    date: "2025/5/20",
+    date: "2026/5/20",
     title: "Google I/O 2026での発表に伴う、チャット機能AIモデルの最新版「Gemini 3.5 Flash」移行のお知らせ",
     dateLabel: `公開日: 2026/05/20`,
     bodyHtml: `<p>

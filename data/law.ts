@@ -8,7 +8,7 @@ export type LawDoc = {
 export const lawDocs: Record<"privacy" | "terms" | "disclaimer" | "cookie", LawDoc> = {
   privacy: {
     title: "プライバシーポリシー",
-    dateLabel: `最終更新日:2026年8月28日`,
+    dateLabel: `最終更新日: 2026年8月28日`,
     bodyHtml: `<p>このプライバシーポリシーは、個人情報、Cookie、外部サービス利用、AI利用、セキュリティ対策、運営体制に関する包括的な情報開示文書です。</p>
 
                     <h2 id="section1">1. 基本方針</h2>
