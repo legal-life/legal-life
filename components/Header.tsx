@@ -17,8 +17,23 @@ export default function Header() {
       if (menuRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
       setOpen(false);
     };
+    // マウスでオーバーレイをクリックすれば閉じられるが、キーボード操作のみの
+    // ユーザーにはそれに相当する手段がなくメニューを閉じられなくなるため、
+    // Escapeキーでも閉じられるようにする。閉じた後はフォーカスをハンバーガー
+    // ボタンへ戻し、フォーカスがメニュー項目のまま(閉じて非表示化された要素)
+    // に取り残されるのを防ぐ。
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
     document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [open]);
 
   return (

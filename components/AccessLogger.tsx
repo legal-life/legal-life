@@ -95,6 +95,12 @@ export default function AccessLogger() {
           }
         });
       };
+      // ページ内アンカー(例: /law/privacy#section5)経由で着地した場合、
+      // ロード直後から既に到達しているスクロール位置がある。scrollイベント
+      // 待ちだけだと、その後ユーザーが一切スクロールしなかった場合に
+      // 到達済みのマイルストーンが一切記録されず、滞在ページの実際の
+      // 閲覧範囲が過小に計測されるバグになるため、登録直後に一度評価する。
+      onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
       cleanupFns.push(() => window.removeEventListener("scroll", onScroll));
 
